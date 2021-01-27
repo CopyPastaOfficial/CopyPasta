@@ -14,5 +14,8 @@
     <Compile Update="Image_preview.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="qr_form.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

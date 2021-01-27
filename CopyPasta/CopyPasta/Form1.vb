@@ -1,6 +1,6 @@
 ﻿Imports System.Net.Sockets
 Imports System.Text
-
+Imports System.Net.NetworkInformation
 
 Public Class Form1
     Dim text = ""
@@ -13,6 +13,7 @@ Public Class Form1
         If Not My.Computer.FileSystem.FileExists("download_dir.Blue") Then
             My.Computer.FileSystem.WriteAllText("download_dir.Blue", "C:\Users\" & Environment.UserName & "\Downloads\", False)
         End If
+
 
         Timer1.Start()
 
@@ -49,8 +50,14 @@ Public Class Form1
             End If
         Next
 
+        Dim nics() As NetworkInterface = NetworkInterface.GetAllNetworkInterfaces()
+        Dim mac = nics(1).GetPhysicalAddress.ToString
+        Using client As New System.Net.WebClient()
 
-        MessageBox.Show("IP Address: " & GetIPv4Address & vbCrLf & "You just have to register it into the phone app")
+            client.DownloadFile("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MAC:" & mac & "/IP:" & GetIPv4Address, "qr.jpeg")
+        End Using
+
+        qr_form.Show()
 
     End Sub
 
@@ -82,7 +89,7 @@ Public Class Form1
 
                     If dataFromClient.StartsWith("[IMAGE FLAG]") Then
 
-                        If My.Computer.FileSystem.FileExists("as_scan.Blue") Then
+                        If My.Computer.FileSystem.FileExists("ask_scan.Blue") Then
                             If MsgBox("Un scan a été reçu, l'accepter ? ", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
                                 Try
                                     Dim ms As New IO.MemoryStream(bytesFrom)
@@ -117,7 +124,7 @@ Public Class Form1
 
                     Else
 
-                        If My.Computer.FileSystem.FileExists("as_scan.Blue") Then
+                        If My.Computer.FileSystem.FileExists("ask_scan.Blue") Then
                             If MsgBox("Un scan a été reçu, l'accepter ? ", MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
                                 Try
                                     My.Computer.FileSystem.WriteAllText("tmp.Blue", dataFromClient, False)
