@@ -1,5 +1,0 @@
-C:\Users\thaao\source\repos\CopyPasta\CopyPasta\bin\Release\net5.0-windows\publish\CopyPasta.exe
-C:\Users\thaao\source\repos\CopyPasta\CopyPasta\bin\Release\net5.0-windows\publish\CopyPasta.dll
-C:\Users\thaao\source\repos\CopyPasta\CopyPasta\bin\Release\net5.0-windows\publish\CopyPasta.deps.json
-C:\Users\thaao\source\repos\CopyPasta\CopyPasta\bin\Release\net5.0-windows\publish\CopyPasta.runtimeconfig.json
-C:\Users\thaao\source\repos\CopyPasta\CopyPasta\bin\Release\net5.0-windows\publish\CopyPasta.pdb
