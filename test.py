@@ -1,5 +1,5 @@
 import socket
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory,send_file,request
 from requests import get
 import os
 from multiprocessing import Process, freeze_support
@@ -8,11 +8,18 @@ import sys
 import PIL.Image as Image
 import io
 from array import array
+from pyperclip import copy
+from time import sleep
+from random import randint
+from flaskwebgui import FlaskUI
+from subprocess import run
 
 app = Flask(__name__)
+ui = FlaskUI(app)
+
 if not os.path.exists("static/"):
     os.mkdir("static")
-app.config['UPLOAD FOLDER'] = "static/"
+app.config['UPLOAD_FOLDER'] = "static/"
 
 @app.route("/")
 def home():
@@ -24,10 +31,17 @@ def img_preview():
     
     return render_template("img_preview.html")
 
-@app.route("/scan_preview")
+@app.route("/scan_preview",methods=["GET", "POST"])
 def scan_preview():
     with open("static/scan.Blue","r") as f:
-        return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
+
+        if request.method == 'POST':
+            title = request.form.get("title")
+            return send_file('static/scan.Blue',attachment_filename=title+".txt",as_attachment=True)
+        else:
+            a = f.read()
+            leng = len(a.split("\n"))
+            return render_template("scan_preview.html",scan = a.replace("/n","<br>"),len=leng)
         
 
 
@@ -35,12 +49,20 @@ def scan_preview():
 def process(process_id):
 
     if process_id == "[DOWNLOAD IMG]":
-        return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename="imgscan.jpeg")
+        return send_file('static/imgscan.jpeg',
+                     attachment_filename='imgscan'+str(randint(0,167645454))+'.jpeg',
+                     as_attachment=True)
 
     if process_id == "[CLEAR SCAN]":
         open("static/scan.Blue","w")
         with open("static/scan.Blue","r") as f:
             return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
+
+    if process_id == "[COPY SCAN]":
+        with open("static/scan.Blue","r") as f:
+            copy(f.read())
+
+
 
 
 def listen_to_file_scan():
@@ -69,8 +91,7 @@ def listen_to_file_scan():
 
         image = Image.open(io.BytesIO(imgbytes))
         image.save("static/imgscan.jpeg")
-        webbrowser.open("127.0.0.1/image_preview")
-
+        run("start msedge \"127.0.0.1/image_preview\"",shell=True)
             
 
 
@@ -93,12 +114,13 @@ def listen_to_text_scan():
                break
             elif b"[END FILE FLAG]" in b:
                 pass
-            else
+
+            else:
 
                 with open("static/scan.Blue","a") as f:
                     f.write(b.decode("UTF-8"))
     
-                webbrowser.open("127.0.0.1/scan_preview")
+                    run("start msedge \"127.0.0.1/scan_preview\"",shell=True)
             
 
 
@@ -120,6 +142,6 @@ if __name__ == "__main__":
     Process(target=listen_to_text_scan).start()
     Process(target=listen_to_file_scan).start()
 
-    webbrowser.open("127.0.0.1")
+    run("start msedge \"127.0.0.1/\"",shell=True)
     app.run(debug=True,host="0.0.0.0",port=80)
     
