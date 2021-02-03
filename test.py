@@ -1,10 +1,9 @@
 import socket
-from flask import Flask, render_template, send_from_directory,send_file,request
+from flask import Flask, render_template, send_from_directory,send_file,request,redirect
 from requests import get
-import os
+from os import path, chdir, mkdir,remove
 from multiprocessing import Process, freeze_support
-import webbrowser
-import sys
+from sys import stdout
 import PIL.Image as Image
 from io import BytesIO
 import win32clipboard
@@ -14,24 +13,52 @@ from time import sleep
 from random import randint
 from flaskwebgui import FlaskUI
 from subprocess import run
-
+from datetime import date
 
 app = Flask(__name__)
 ui = FlaskUI(app)
 
-if not os.path.exists("static/"):
-    os.mkdir("static")
+if not path.exists("static/"):
+    mkdir("static")
+    open("static/hist.blue","w")
+    open("static/dates.Blue","w")
+
 app.config['UPLOAD_FOLDER'] = "static/"
 
 @app.route("/")
 def home():
+    with open("static/hist.Blue","r",encoding="utf-8") as f:
+        a = f.read()
+        a = a.split("=")
+        a.reverse()
+        with open("static/dates.Blue","r") as f:
+            dates=f.read().split("\n")
+        
+    return render_template("index.html",hist = a, len = len(a),dates=dates)
 
-    return render_template("index.html")
+
+
+@app.route("/hist/<i>")
+def history(i):
+    with open("static/hist.Blue","r",encoding="utf-8") as f:
+        a = f.read()
+        a = a.split("=")
+        a.reverse()
+    text = a[int(i)]
+    with open("static/scan.Blue","w",encoding="utf-8") as f:
+        f.write(text)
+
+    return redirect("/scan_preview")
+
+
+
 
 @app.route("/image_preview")
 def img_preview():
     
     return render_template("img_preview.html")
+
+
 
 @app.route("/scan_preview",methods=["GET", "POST"])
 def scan_preview():
@@ -57,7 +84,7 @@ def process(process_id):
 
     if process_id == "[CLEAR SCAN]":
         open("static/scan.Blue","w")
-        with open("static/scan.Blue","r") as f:
+        with open("static/scan.Blue","r",encoding="utf-8") as f:
             return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
 
     if process_id == "[COPY SCAN]":
@@ -86,7 +113,7 @@ def listen_to_file_scan():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(("",8836))
     print("bound images")
-    sys.stdout.flush()
+    stdout.flush()
     while True:
         s.listen()
         cli,addr = s.accept()
@@ -96,12 +123,12 @@ def listen_to_file_scan():
             b = cli.recv(99999)
             imgbytes.extend(b)
             print(b)
-            sys.stdout.flush()
+            stdout.flush()
             if b == b"":
                 cli.close()
                 break
-            elif os.path.exists("bool"):
-                os.remove("bool")
+            elif path.exists("bool"):
+                remove("bool")
                 cli.close()
                 break
 
@@ -118,15 +145,15 @@ def listen_to_text_scan():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(("",8835))
     print("bound text")
-    sys.stdout.flush()
+    stdout.flush()
     while True:
         s.listen()
         cli,addr = s.accept()
         print(addr)
         while True:
-            b = cli.recv(1024)
+            b = cli.recv(99999)
             print(b.decode("utf-8"))
-            sys.stdout.flush()
+            stdout.flush()
             if b == b"":
                s.close()
                break
@@ -136,11 +163,17 @@ def listen_to_text_scan():
 
             else:
 
-                with open("static/scan.Blue","a") as f:
+                with open("static/scan.Blue","a",encoding="utf-8") as f:
                     f.write(b.decode("UTF-8"))
-    
+                
+                with open("static/hist.Blue","a",encoding="utf-8") as f:
+                    
+                    f.write("\n=\n"+b.decode("UTF-8"))
                     run("start msedge \"127.0.0.1/scan_preview\"",shell=True)
-            
+                with open("static/dates.Blue","a") as f:
+                    today = date.today()
+                    f.write(str(today.strftime("%d/%m/%Y"))+"\n")
+
 
 
 
@@ -149,7 +182,7 @@ if __name__ == "__main__":
 
     freeze_support()
     
-    os.chdir(os.path.abspath(__file__).replace("test.py",""))
+    chdir(path.abspath(__file__).replace("test.py",""))
     r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+str(socket.gethostbyname(socket.gethostname())),allow_redirects=True)
     
 

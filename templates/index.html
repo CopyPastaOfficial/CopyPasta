@@ -6,15 +6,67 @@
     <title>Document</title>
 </head>
 <body>
-    <li><button onclick="window.location='/[SETTINGS]'">Settings</button></li>  
-    <h1>Scan the QR code with your CopyPasta app and begin sending scans ;D</h1>
+    <li><button id="button" class="center" onclick="window.location='/[SETTINGS]'" >Settings</button></li>
+    <br>  
+    <h1 style="color: white; margin-left: auto;">Scan the QR code with your CopyPasta app and begin sending whatever the fuck you want ;D</h1>
+    <br>
     <img src="static/qr.jpeg" alt="Scan me :D" class="center">
-    
+    <br>
+    <h2 style="color: white;">History :</h2>
+    <table >
+      <tr>
+        <th class="c1">Date</th>
+        <th class ="c2">Preview</th>
+        <th class="c3">Go and see it Button!</th>
+      </tr>
+      {%for i in range(0, len-1)%}
+      <tr>
+        <td class="c1">{{dates[i]}}</td>
+        <td class="c2">{{hist[i][1:64]}}...</td>
+        <td class="c3"><button id="button" class="center" style="width: 100%; margin-bottom: 10%;" onclick="window.location='/hist/{{i}}'">GO !</button></td>
+      </tr>
+      
+    {%endfor%} 
+    </table>
+
+
+     
+
 </body>
 
 
 <style>
-
+tr th{
+	font-weight:bold;
+    }
+tr th, tr td{
+	padding:5px;
+}
+th{
+    border: 5px solid #C1DAD7;
+}
+td{
+	border: 5px solid #C1DAD7;
+}
+.c1{
+	background:#4b8c74;
+}
+.c2{
+	background:#74c476;
+}
+.c3{
+	background:#a4e56d;
+}
+.c4{
+	background:#cffc83;
+}
+* {
+  outline:none;
+	border:none;
+	margin:0px;
+	padding:0px;
+	font-family:Courier, monospace;
+}
 .center {
   display: block;
   margin-left: auto;
@@ -23,6 +75,60 @@
   width: 20%;
 }
 
+body {
+	background:#333 url(https://static.tumblr.com/maopbtg/a5emgtoju/inflicted.png) repeat;        
+}
+#paper {
+	color:#FFF;
+	font-size:20px;
+}
+#margin {
+	margin-left:12px;
+	margin-bottom:20px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none; 
+}
+#button {
+	cursor:pointer;
+	margin-top:20px;
+	height:40px;
+	padding-left:24px;
+	padding-right:24px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:20px;
+	color:#FFF;
+	text-shadow: 0px -1px 0px #000000;
+	-webkit-border-radius:8px;
+	border-radius:8px;
+	border-top:1px solid #FFF;
+	-webkit-box-shadow: 0px 2px 14px #000;
+	box-shadow: 0px 2px 14px #000;
+	background-color: #62add6;
+	background-image:url(https://static.tumblr.com/maopbtg/ZHLmgtok7/button.png);
+	background-repeat:repeat-x;
+}
+#button:active {
+	zoom: 1;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+}
+#button:focus {
+	zoom: 1;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+}
+#wrapper {
+	width:700px;
+	height:auto;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:24px;
+	margin-bottom:100px;
+}
 </style>
 
 
