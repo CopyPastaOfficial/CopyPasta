@@ -6,13 +6,15 @@ from multiprocessing import Process, freeze_support
 import webbrowser
 import sys
 import PIL.Image as Image
-import io
+from io import BytesIO
+import win32clipboard
 from array import array
 from pyperclip import copy
 from time import sleep
 from random import randint
 from flaskwebgui import FlaskUI
 from subprocess import run
+
 
 app = Flask(__name__)
 ui = FlaskUI(app)
@@ -61,6 +63,20 @@ def process(process_id):
     if process_id == "[COPY SCAN]":
         with open("static/scan.Blue","r") as f:
             copy(f.read())
+            return render_template("image_preview.html")
+    
+    if process_id == "[COPY IMG]":
+        output = BytesIO()
+        image = Image.open("static/imgscan.jpeg")
+        image.convert('RGB').save(output, 'BMP')
+        data = output.getvalue()[14:]
+        output.close()
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+        win32clipboard.CloseClipboard()
+        
+        return render_template("img_preview.html")
 
 
 
@@ -89,10 +105,12 @@ def listen_to_file_scan():
                 cli.close()
                 break
 
-        image = Image.open(io.BytesIO(imgbytes))
+        image = Image.open(BytesIO(imgbytes))
         image.save("static/imgscan.jpeg")
         run("start msedge \"127.0.0.1/image_preview\"",shell=True)
             
+
+
 
 
 def listen_to_text_scan():
@@ -113,6 +131,7 @@ def listen_to_text_scan():
                s.close()
                break
             elif b"[END FILE FLAG]" in b:
+                open('bool',"w")
                 pass
 
             else:

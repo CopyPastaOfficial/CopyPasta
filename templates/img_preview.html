@@ -6,19 +6,82 @@
     <title>Document</title>
 </head>
 <body>
-    <img src="static/imgscan.jpeg" alt="Your beautiful picture :D" class="center">
-    <li><button onclick="window.location='/process/[DOWNLOAD IMG]'">Download Image</button></li>
-    <li><button onclick="window.location='/'">Main menu</button></li>
+    <img src="static/imgscan.jpeg" alt="Your beautiful picture :D" class="center" style="margin-top: 50px;">
+    <button id="button" class="center" onclick="window.location='/process/[DOWNLOAD IMG]'" >Download Image</button>
+    <button id="button" class="center" onclick="window.location='/process/[COPY IMG]'" >Copy Image</button>
+    <button id="button" class="center" onclick="window.location='/'">Main menu</button>
 </body>
 
 <style>
+
+* {
+  outline:none;
+	border:none;
+	margin:0px;
+	padding:0px;
+	font-family:Courier, monospace;
+}
 .center {
   display: block;
   margin-left: auto;
   margin-right: auto;
   margin-top: auto;
-  width: 20%;
+  width: 30%;
 }
 
+body {
+	background:#333 url(https://static.tumblr.com/maopbtg/a5emgtoju/inflicted.png) repeat;        
+}
+#paper {
+	color:#FFF;
+	font-size:20px;
+}
+#margin {
+	margin-left:12px;
+	margin-bottom:20px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none; 
+}
+#button {
+	cursor:pointer;
+	margin-top:20px;
+	height:40px;
+	padding-left:24px;
+	padding-right:24px;
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:bold;
+	font-size:20px;
+	color:#FFF;
+	text-shadow: 0px -1px 0px #000000;
+	-webkit-border-radius:8px;
+	border-radius:8px;
+	border-top:1px solid #FFF;
+	-webkit-box-shadow: 0px 2px 14px #000;
+	box-shadow: 0px 2px 14px #000;
+	background-color: #62add6;
+	background-image:url(https://static.tumblr.com/maopbtg/ZHLmgtok7/button.png);
+	background-repeat:repeat-x;
+}
+#button:active {
+	zoom: 1;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+}
+#button:focus {
+	zoom: 1;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+}
+#wrapper {
+	width:700px;
+	height:auto;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:24px;
+	margin-bottom:100px;
+}
 </style>
 </html>
