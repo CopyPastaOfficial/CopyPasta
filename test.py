@@ -1,5 +1,5 @@
 import socket
-from flask import Flask, render_template, send_from_directory,send_file,request,redirect
+from flask import Flask, render_template, send_from_directory,send_file,request,redirect,flash
 from requests import get
 from os import path, chdir, mkdir,remove
 from multiprocessing import Process, freeze_support
@@ -17,6 +17,17 @@ from datetime import date
 
 app = Flask(__name__)
 ui = FlaskUI(app)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
+
+
+@app.after_request
+def add_header(response):
+    # response.cache_control.no_store = True
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 if not path.exists("static/"):
     mkdir("static")
@@ -51,7 +62,10 @@ def history(i):
     return redirect("/scan_preview")
 
 
+@app.route("/[SETTINGS]")
+def settings():
 
+    return render_template("settings.html")
 
 @app.route("/image_preview")
 def img_preview():
@@ -105,7 +119,10 @@ def process(process_id):
         
         return render_template("img_preview.html")
 
-
+    if process_id == "[DEL HISTORY]":
+        open("static/hist.Blue","w")
+        flash("Your scan History has been deleted :D")
+        return redirect("/[SETTINGS]")
 
 
 def listen_to_file_scan():
@@ -163,10 +180,10 @@ def listen_to_text_scan():
 
             else:
 
-                with open("static/scan.Blue","a",encoding="utf-8") as f:
+                with open("static/scan.Blue","a") as f:
                     f.write(b.decode("UTF-8"))
                 
-                with open("static/hist.Blue","a",encoding="utf-8") as f:
+                with open("static/hist.Blue","a") as f:
                     
                     f.write("\n=\n"+b.decode("UTF-8"))
                     run("start msedge \"127.0.0.1/scan_preview\"",shell=True)
