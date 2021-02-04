@@ -15,10 +15,42 @@ from flaskwebgui import FlaskUI
 from subprocess import run
 from datetime import date
 
+
+
 app = Flask(__name__)
-ui = FlaskUI(app)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
+
+
+if not path.exists("static/"):
+    mkdir("static")
+    open("static/hist.blue","w")
+    open("static/dates.Blue","w")
+
+
+if not path.exists("templates/"):
+    mkdir("templates")
+
+    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
+    with open("templates/index.html","wb") as f:
+        f.write(r.content)
+
+    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
+    with open("templates/scan_preview.html","wb") as f:
+        f.write(r.content)
+
+    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/settings.html",allow_redirects=True)
+    with open("templates/settings.html","wb") as f:
+        f.write(r.content)
+
+    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
+    with open("templates/favicon.ico","wb") as f:
+        f.write(r.content)
+
+
+
+app.config['UPLOAD_FOLDER'] = "static/"
+
 
 
 @app.after_request
@@ -29,16 +61,16 @@ def add_header(response):
     response.headers['Expires'] = '-1'
     return response
 
-if not path.exists("static/"):
-    mkdir("static")
-    open("static/hist.blue","w")
-    open("static/dates.Blue","w")
 
-app.config['UPLOAD_FOLDER'] = "static/"
+
+
+
+
+
 
 @app.route("/")
 def home():
-    with open("static/hist.Blue","r",encoding="utf-8") as f:
+    with open("static/hist.Blue","r") as f:
         a = f.read()
         a = a.split("=")
         a.reverse()
@@ -51,12 +83,12 @@ def home():
 
 @app.route("/hist/<i>")
 def history(i):
-    with open("static/hist.Blue","r",encoding="utf-8") as f:
+    with open("static/hist.Blue","r") as f:
         a = f.read()
         a = a.split("=")
         a.reverse()
     text = a[int(i)]
-    with open("static/scan.Blue","w",encoding="utf-8") as f:
+    with open("static/scan.Blue","w") as f:
         f.write(text)
 
     return redirect("/scan_preview")
@@ -98,13 +130,14 @@ def process(process_id):
 
     if process_id == "[CLEAR SCAN]":
         open("static/scan.Blue","w")
-        with open("static/scan.Blue","r",encoding="utf-8") as f:
+        with open("static/scan.Blue","r") as f:
             return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
 
     if process_id == "[COPY SCAN]":
         with open("static/scan.Blue","r") as f:
             copy(f.read())
-            return render_template("image_preview.html")
+            flash("Scan copied in your clipboard :D")
+            return render_template("scan_preview.html")
     
     if process_id == "[COPY IMG]":
         output = BytesIO()
@@ -134,25 +167,26 @@ def listen_to_file_scan():
     while True:
         s.listen()
         cli,addr = s.accept()
-
         imgbytes = bytearray()
+        print(addr)
+        if path.exists("static/imgscan.jpeg"):
+            remove("static/imgscan.jpeg")
+
         while True:
             b = cli.recv(99999)
-            imgbytes.extend(b)
+            
             print(b)
             stdout.flush()
-            if b == b"":
-                cli.close()
+            if (b == b""):
+                print("[OUICECIESTUNEFINFLAG]")
                 break
-            elif path.exists("bool"):
-                remove("bool")
-                cli.close()
-                break
+            else:
+                imgbytes.extend(b)
 
         image = Image.open(BytesIO(imgbytes))
         image.save("static/imgscan.jpeg")
         run("start msedge \"127.0.0.1/image_preview\"",shell=True)
-            
+        cli.close()
 
 
 
@@ -174,9 +208,6 @@ def listen_to_text_scan():
             if b == b"":
                s.close()
                break
-            elif b"[END FILE FLAG]" in b:
-                open('bool',"w")
-                pass
 
             else:
 
@@ -200,7 +231,9 @@ if __name__ == "__main__":
     freeze_support()
     
     chdir(path.abspath(__file__).replace("test.py",""))
-    r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+str(socket.gethostbyname(socket.gethostname())),allow_redirects=True)
+    ip = str(socket.gethostbyname(socket.gethostname()))
+    print(ip)
+    r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+ip,allow_redirects=True)
     
 
 
