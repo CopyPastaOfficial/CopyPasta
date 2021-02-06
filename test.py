@@ -76,6 +76,7 @@ def home():
         a.reverse()
         with open("static/dates.Blue","r") as f:
             dates=f.read().split("\n")
+            dates.reverse()
         
     return render_template("index.html",hist = a, len = len(a),dates=dates)
 
@@ -88,6 +89,7 @@ def history(i):
         a = a.split("=")
         a.reverse()
     text = a[int(i)]
+
     with open("static/scan.Blue","w") as f:
         f.write(text)
 
@@ -154,6 +156,7 @@ def process(process_id):
 
     if process_id == "[DEL HISTORY]":
         open("static/hist.Blue","w")
+        open("static/dates.Blue","w")
         flash("Your scan History has been deleted :D")
         return redirect("/[SETTINGS]")
 
@@ -172,20 +175,29 @@ def listen_to_file_scan():
         if path.exists("static/imgscan.jpeg"):
             remove("static/imgscan.jpeg")
 
+        Process(target=end_sock_process).start()
         while True:
-            b = cli.recv(99999)
+            b = cli.recv(1024)
             
             print(b)
             stdout.flush()
-            if (b == b""):
+
+            if (b == b"") or ( path.exists("static/end")):
                 print("[OUICECIESTUNEFINFLAG]")
+                stdout.flush()
+
                 break
             else:
                 imgbytes.extend(b)
 
+        
         image = Image.open(BytesIO(imgbytes))
         image.save("static/imgscan.jpeg")
         run("start msedge \"127.0.0.1/image_preview\"",shell=True)
+
+        if path.exists("static/end"):
+            remove("static/end")
+
         cli.close()
 
 
