@@ -16,16 +16,18 @@ from subprocess import run
 from datetime import date
 
 
-
+#init flask app and secret key
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
 
+#check if the necesarry files exists, if not download and/or create them.
 if not path.exists("static/"):
     mkdir("static")
     open("static/hist.blue","w")
     open("static/dates.Blue","w")
+
 
 
 if not path.exists("templates/"):
@@ -49,10 +51,12 @@ if not path.exists("templates/"):
 
 
 
+#specify the folder where the scan are uploaded
 app.config['UPLOAD_FOLDER'] = "static/"
 
 
 
+#necessary to update images (stack overflow)
 @app.after_request
 def add_header(response):
     # response.cache_control.no_store = True
@@ -67,9 +71,11 @@ def add_header(response):
 
 
 
-
+#home
 @app.route("/")
 def home():
+
+    #read history files, convert it to an array and reverse it to have the most recent first
     with open("static/hist.Blue","r") as f:
         a = f.read()
         a = a.split("=")
@@ -78,69 +84,88 @@ def home():
             dates=f.read().split("\n")
             dates.reverse()
         
+    #render the html with the history
     return render_template("index.html",hist = a, len = len(a),dates=dates)
 
 
 
 @app.route("/hist/<i>")
 def history(i):
+    """
+    :params: i is the index of the scan on the history list, given when and user click on a button
+
+    """
+
+    #read scan history file, convert it to an array and get the specified scan
     with open("static/hist.Blue","r") as f:
         a = f.read()
         a = a.split("=")
         a.reverse()
     text = a[int(i)]
 
+    #rewrite the scan temporary file with the old scan
     with open("static/scan.Blue","w") as f:
         f.write(text)
 
+    #redirect to the usual scan preview
     return redirect("/scan_preview")
 
-
+#settings page
 @app.route("/[SETTINGS]")
 def settings():
 
     return render_template("settings.html")
 
+#image preview when the user send a picture
 @app.route("/image_preview")
 def img_preview():
     
     return render_template("img_preview.html")
 
 
-
+#scan preview
 @app.route("/scan_preview",methods=["GET", "POST"])
 def scan_preview():
-    with open("static/scan.Blue","r") as f:
 
-        if request.method == 'POST':
-            title = request.form.get("title")
-            return send_file('static/scan.Blue',attachment_filename=title+".txt",as_attachment=True)
-        else:
+    #download file is post request
+    if request.method == 'POST':
+        #get the file title
+        title = request.form.get("title")
+        #send file
+        return send_file('static/scan.Blue',attachment_filename=title+".txt",as_attachment=True)
+
+    else:
+        #read scan temp file, split it by lines and return it to the template
+        with open("static/scan.Blue","r") as f:
             a = f.read()
             leng = len(a.split("\n"))
             return render_template("scan_preview.html",scan = a.replace("/n","<br>"),len=leng)
         
 
-
+#processes
 @app.route("/process/<process_id>")
 def process(process_id):
 
+    #download the image received
     if process_id == "[DOWNLOAD IMG]":
         return send_file('static/imgscan.jpeg',
                      attachment_filename='imgscan'+str(randint(0,167645454))+'.jpeg',
                      as_attachment=True)
 
+    #empty the scan temporary file
     if process_id == "[CLEAR SCAN]":
         open("static/scan.Blue","w")
         with open("static/scan.Blue","r") as f:
             return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
 
+    #copy the scan temporary file to clipboard
     if process_id == "[COPY SCAN]":
         with open("static/scan.Blue","r") as f:
             copy(f.read())
             flash("Scan copied in your clipboard :D")
             return render_template("scan_preview.html")
     
+    #copy an image to the clipboard with a win32 api
     if process_id == "[COPY IMG]":
         output = BytesIO()
         image = Image.open("static/imgscan.jpeg")
@@ -154,6 +179,7 @@ def process(process_id):
         
         return render_template("img_preview.html")
 
+    #empty the history files
     if process_id == "[DEL HISTORY]":
         open("static/hist.Blue","w")
         open("static/dates.Blue","w")
@@ -161,6 +187,7 @@ def process(process_id):
         return redirect("/[SETTINGS]")
 
 
+#funtion run by another process to receive images
 def listen_to_file_scan():
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -172,17 +199,19 @@ def listen_to_file_scan():
         cli,addr = s.accept()
         imgbytes = bytearray()
         print(addr)
+
+        #make sure there is no old pic file
         if path.exists("static/imgscan.jpeg"):
             remove("static/imgscan.jpeg")
 
-        Process(target=end_sock_process).start()
+        #receive the image and store it to bytearray
         while True:
             b = cli.recv(1024)
             
             print(b)
             stdout.flush()
 
-            if (b == b"") or ( path.exists("static/end")):
+            if (b == b""):
                 print("[OUICECIESTUNEFINFLAG]")
                 stdout.flush()
 
@@ -190,25 +219,25 @@ def listen_to_file_scan():
             else:
                 imgbytes.extend(b)
 
-        
+        #save the bytearray to a real image file and display the preview
         image = Image.open(BytesIO(imgbytes))
         image.save("static/imgscan.jpeg")
         run("start msedge \"127.0.0.1/image_preview\"",shell=True)
 
-        if path.exists("static/end"):
-            remove("static/end")
 
         cli.close()
 
 
 
-
+#funtion run by another process to receive text scan
 def listen_to_text_scan():
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(("",8835))
     print("bound text")
     stdout.flush()
+
+    #receive text scanned and put it to scan temporary file and history files
     while True:
         s.listen()
         cli,addr = s.accept()
@@ -223,13 +252,17 @@ def listen_to_text_scan():
 
             else:
 
+                #scan temporary file
                 with open("static/scan.Blue","a") as f:
                     f.write(b.decode("UTF-8"))
                 
+                #history file to store scans
                 with open("static/hist.Blue","a") as f:
                     
                     f.write("\n=\n"+b.decode("UTF-8"))
                     run("start msedge \"127.0.0.1/scan_preview\"",shell=True)
+                
+                #history file to store dates
                 with open("static/dates.Blue","a") as f:
                     today = date.today()
                     f.write(str(today.strftime("%d/%m/%Y"))+"\n")
@@ -240,22 +273,32 @@ def listen_to_text_scan():
 
 if __name__ == "__main__":
 
+    #suppport multiprocessing
     freeze_support()
     
+    #make sure we are in the right path
     chdir(path.abspath(__file__).replace("test.py",""))
+    #get the ip (pray that this is the right one and not some virutal machines)
     ip = str(socket.gethostbyname(socket.gethostname()))
     print(ip)
+
+    #create a qr code containing the ip with google chart api
     r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+ip,allow_redirects=True)
     
 
-
+    #write it
     with open("static/qr.jpeg","wb") as f:
         f.write(r.content)
 
-    
+    #start text scan server
     Process(target=listen_to_text_scan).start()
+
+    #start images scan server
     Process(target=listen_to_file_scan).start()
 
+    #open a webbrowser to display the main page
     run("start msedge \"127.0.0.1/\"",shell=True)
+
+    #run flask web server
     app.run(debug=True,host="0.0.0.0",port=80)
     
