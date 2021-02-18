@@ -2,8 +2,6 @@ import socket
 from flask import Flask, render_template, send_from_directory,send_file,request,redirect,flash
 from requests import get
 from os import path, chdir, mkdir,remove
-from multiprocessing import Process, freeze_support
-from sys import stdout
 import PIL.Image as Image
 from io import BytesIO
 import win32clipboard
@@ -11,17 +9,15 @@ from array import array
 from pyperclip import copy
 from time import sleep
 from random import randint
-from flaskwebgui import FlaskUI
-from datetime import date
-from subprocess import run
-from webbrowser import open as open_website
 from platform import system
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import ssl
-from OpenSSL import crypto, SSL
+from flaskwebgui import FlaskUI
+from image_proc import start_image_proc
+from text_proc import start_text_proc
+
 
 #init flask app and secret key
 app = Flask(__name__)
+ui = FlaskUI(app)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
@@ -192,141 +188,8 @@ def process(process_id):
         return redirect("/[SETTINGS]")
 
 
-#funtion run by another process to receive images
-def listen_to_file_scan():
-    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(("",8836))
-    print("bound images")
-    stdout.flush()
-    while True:
-        s.listen()
-        cli,addr = s.accept()
-        imgbytes = bytearray()
-        print(addr)
-
-        #make sure there is no old pic file
-        if path.exists("static/imgscan.jpeg"):
-            remove("static/imgscan.jpeg")
-
-        #receive the image and store it to bytearray
-        while True:
-            b = cli.recv(1024)
-            
-            print(b)
-            stdout.flush()
-
-            if (b == b""):
-                print("[OUICECIESTUNEFINFLAG]")
-                stdout.flush()
-
-                break
-            else:
-                imgbytes.extend(b)
-
-        #save the bytearray to a real image file and display the preview
-        image = Image.open(BytesIO(imgbytes))
-        image.save("static/imgscan.jpeg")
-        open_browser("127.0.0.1/image_preview")
-
-
-        cli.close()
-
-
-
-#funtion run by another process to receive text scan
-def listen_to_text_scan():
-    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(("",8835))
-    print("bound text")
-    stdout.flush()
-
-    #receive text scanned and put it to scan temporary file and history files
-    while True:
-        s.listen()
-        cli,addr = s.accept()
-        print(addr)
-        while True:
-            b = cli.recv(99999)
-            print(b.decode("utf-8"))
-            stdout.flush()
-            if b == b"":
-               s.close()
-               break
-
-            else:
-
-                #scan temporary file
-                with open("static/scan.Blue","a") as f:
-                    f.write(b.decode("UTF-8"))
-                
-                #history file to store scans
-                with open("static/hist.Blue","a") as f:
-                    
-                    f.write("\n=\n"+b.decode("UTF-8"))
-                    open_browser("127.0.0.1/scan_preview")
-                
-                #history file to store dates
-                with open("static/dates.Blue","a") as f:
-                    today = date.today()
-                    f.write(str(today.strftime("%d/%m/%Y"))+"\n")
-
-def open_browser(url):
-    #run(["rundll32","url.dll,FileProtocolHandler " + url],shell=True)
-    if system() == "Windows":
-        run(["start","msedge",url],shell=True)
-        print("open")
-    else:
-        open_website(url)
-
-
-
-def cert_gen(
-    emailAddress="thaaoblues81@gmail.com",
-    commonName="commonName",
-    countryName="France",
-    localityName="France",
-    stateOrProvinceName="France",
-    organizationName="Blue",
-    organizationUnitName="inc",
-    serialNumber=0,
-    validityStartInSeconds=0,
-    validityEndInSeconds=10*365*24*60*60,
-    KEY_FILE = "private.key",
-    CERT_FILE="selfsigned.crt"):
-    #can look at generated file using openssl:
-    #openssl x509 -inform pem -in selfsigned.crt -noout -text
-    # create a key pair
-    k = crypto.PKey()
-    k.generate_key(crypto.TYPE_RSA, 4096)
-    # create a self-signed cert
-    cert = crypto.X509()
-    cert.get_subject().C = countryName
-    cert.get_subject().ST = stateOrProvinceName
-    cert.get_subject().L = localityName
-    cert.get_subject().O = organizationName
-    cert.get_subject().OU = organizationUnitName
-    cert.get_subject().CN = commonName
-    cert.get_subject().emailAddress = emailAddress
-    cert.set_serial_number(serialNumber)
-    cert.gmtime_adj_notBefore(0)
-    cert.gmtime_adj_notAfter(validityEndInSeconds)
-    cert.set_issuer(cert.get_subject())
-    cert.set_pubkey(k)
-    cert.sign(k, 'sha512')
-    with open(CERT_FILE, "wt") as f:
-        f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
-    with open(KEY_FILE, "wt") as f:
-        f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, k).decode("utf-8"))
-
-
-
 
 if __name__ == "__main__":
-
-    #suppport multiprocessing
-    freeze_support()
     
     #make sure we are in the right path
     chdir(path.abspath(__file__).replace("main.py",""))
@@ -342,18 +205,11 @@ if __name__ == "__main__":
     with open("static/qr.jpeg","wb") as f:
         f.write(r.content)
 
-    #start text scan server
-    Process(target=listen_to_text_scan).start()
 
-    #start images scan server
-    Process(target=listen_to_file_scan).start()
-
-    #generate ssl certificate
-    #cert_gen()
-
-    open_browser("127.0.0.1")
+    start_image_proc()
+    start_text_proc()
 
     #run flask web server
-    app.run(host="127.0.0.1",port=80)
+    ui.run()
     
 
