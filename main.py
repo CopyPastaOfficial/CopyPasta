@@ -17,7 +17,7 @@ from text_proc import start_text_proc
 
 #init flask app and secret key
 app = Flask(__name__)
-ui = FlaskUI(app)
+ui = FlaskUI(app,port=80)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
@@ -68,25 +68,21 @@ def add_header(response):
 
 
 
-
-
-
-
 #home
 @app.route("/")
 def home():
-
     #read history files, convert it to an array and reverse it to have the most recent first
     with open("static/hist.Blue","r") as f:
         a = f.read()
         a = a.split("=")
         a.reverse()
+
         with open("static/dates.Blue","r") as f:
             dates=f.read().split("\n")
             dates.reverse()
         
-    #render the html with the history
-    return render_template("index.html",hist = a, len = len(a),dates=dates)
+            #render the html with the history
+            return render_template("index.html",hist = a, len = len(a),dates=dates)
 
 
 
@@ -190,6 +186,7 @@ def process(process_id):
 
 
 if __name__ == "__main__":
+
     
     #make sure we are in the right path
     chdir(path.abspath(__file__).replace("main.py",""))
