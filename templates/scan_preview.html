@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan preview</title>
+    <title>CopyPasta</title>
 </head>
 <body>
   
@@ -142,5 +142,14 @@ function autosize(){
     el.style.cssText = 'height:' + el.scrollHeight + 'px';
   },0);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+
+var url = 'http://127.0.0.1:5001/GUI-is-still-open'; 
+fetch(url, { mode: 'no-cors'});
+setInterval(function(){ fetch(url, { mode: 'no-cors'});}, 5000)();
+
+});
+
 </script>
 </html>
