@@ -3,7 +3,7 @@ from os import chdir,kill
 from getpass import getuser
 import psutil
 
-chdir("main")
+chdir("copypasta")
 run(["start","copypasta.exe"],shell=True)
 
 
@@ -25,4 +25,5 @@ while True:
     window_starts = lambda title: [(hwnd,full_title) for (hwnd,full_title) in all_titles if full_title.startswith(title)]
     all_matching_windows = window_starts('CopyPasta')
     if len(all_matching_windows) < 1:
-        run(["taskkill","copypasta.exe"])
+        for _ in range(len(all_matching_windows)):
+            run(["taskkill","copypasta.exe"])

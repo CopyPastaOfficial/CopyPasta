@@ -46,11 +46,6 @@ def scan_preview():
 @app.route("/process/<process_id>")
 def process(process_id):
 
-    #download the image received
-    if process_id == "[DOWNLOAD IMG]":
-        return send_file('static/imgscan.jpeg',
-                     attachment_filename='imgscan'+str(randint(0,167645454))+'.jpeg',
-                     as_attachment=True)
 
     #empty the scan temporary file
     if process_id == "[CLEAR SCAN]":
@@ -63,21 +58,9 @@ def process(process_id):
         with open("static/scan.Blue","r") as f:
             copy(f.read())
             flash("Scan copied in your clipboard :D")
-            return render_template("scan_preview.html")
+        with open("static/scan.Blue","r") as f:
+            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
     
-    #copy an image to the clipboard with a win32 api
-    if process_id == "[COPY IMG]":
-        output = BytesIO()
-        image = Image.open("static/imgscan.jpeg")
-        image.convert('RGB').save(output, 'BMP')
-        data = output.getvalue()[14:]
-        output.close()
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-        win32clipboard.CloseClipboard()
-        
-        return render_template("img_preview.html")
 
     #empty the history files
     if process_id == "[DEL HISTORY]":
@@ -85,6 +68,20 @@ def process(process_id):
         open("static/dates.Blue","w")
         flash("Your scan History has been deleted :D")
         return redirect("/[SETTINGS]")
+
+    if process_id == "[HOME]":
+        #read history files, convert it to an array and reverse it to have the most recent first
+        with open("static/hist.Blue","r") as f:
+            a = f.read()
+            a = a.split("=")
+            a.reverse()
+            with open("static/dates.Blue","r") as f:
+                dates=f.read().split("\n")
+                dates.reverse()
+
+                #render the html with the history
+                qr_url = "../static/qr.jpeg"
+                return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
 
 
 

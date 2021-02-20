@@ -9,7 +9,7 @@ import PIL.Image as Image
 from random import randint
 import win32clipboard
 from io import BytesIO
-
+from os import remove, path
 
 app = Flask(__name__)
 
@@ -28,7 +28,7 @@ def init_flask():
 #image preview when the user send a picture
 @app.route("/")
 def img_preview():
-    return render_template("img_preview.html")
+    return render_template("img_preview.html",img_url="static\imgscan.jpeg")
 
 
 #processes
@@ -41,22 +41,20 @@ def process(process_id):
                      attachment_filename='imgscan'+str(randint(0,167645454))+'.jpeg',
                      as_attachment=True)
 
-    #empty the scan temporary file
-    if process_id == "[CLEAR SCAN]":
-        open("static/scan.Blue","w")
-        with open("static/scan.Blue","r") as f:
-            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
+    if process_id == "[HOME]":
+        #read history files, convert it to an array and reverse it to have the most recent first
+        with open("static/hist.Blue","r") as f:
+            a = f.read()
+            a = a.split("=")
+            a.reverse()
+            with open("static/dates.Blue","r") as f:
+                dates=f.read().split("\n")
+                dates.reverse()
 
-    #copy the scan temporary file to clipboard
-    if process_id == "[COPY SCAN]":
-        with open("static/scan.Blue","r") as f:
-            copy(f.read())
-        
-            flash("Scan copied in your clipboard :D")
+                #render the html with the history
+                qr_url = "../static/qr.jpeg"
+                return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
 
-        with open("static/scan.Blue","r") as f:
-            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))    
-    
     #copy an image to the clipboard with a win32 api
     if process_id == "[COPY IMG]":
         output = BytesIO()
@@ -69,7 +67,7 @@ def process(process_id):
         win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
         win32clipboard.CloseClipboard()
         
-        return render_template("img_preview.html")
+        return render_template("img_preview.html",img_url="..\static\imgscan.jpeg")
 
     #empty the history files
     if process_id == "[DEL HISTORY]":
@@ -98,13 +96,9 @@ def image_process():
 
         #receive the image and store it to bytearray
         while True:
-            b = cli.recv(1024)
+            b = cli.recv(9999)
             
-            print(b)
-            stdout.flush()
-
             if (b == b""):
-                print("[OUICECIESTUNEFINFLAG]")
                 stdout.flush()
 
                 break

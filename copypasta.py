@@ -13,6 +13,7 @@ from platform import system
 from flaskwebgui import FlaskUI
 from image_proc import start_image_proc
 from text_proc import start_text_proc
+from util import get_private_ip
 
 
 #init flask app and secret key
@@ -82,7 +83,8 @@ def home():
             dates.reverse()
         
             #render the html with the history
-            return render_template("index.html",hist = a, len = len(a),dates=dates)
+            qr_url = "static/qr.jpeg"
+            return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
 
 
 
@@ -117,7 +119,7 @@ def settings():
 @app.route("/image_preview")
 def img_preview():
     
-    return render_template("img_preview.html")
+    return render_template("img_preview.html",img_url="static\imgscan.jpeg")
 
 
 #scan preview
@@ -160,7 +162,9 @@ def process(process_id):
         with open("static/scan.Blue","r") as f:
             copy(f.read())
             flash("Scan copied in your clipboard :D")
-            return render_template("scan_preview.html")
+            f.close()
+        with open("static/scan.Blue","r") as f:
+            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
     
     #copy an image to the clipboard with a win32 api
     if process_id == "[COPY IMG]":
@@ -174,7 +178,7 @@ def process(process_id):
         win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
         win32clipboard.CloseClipboard()
         
-        return render_template("img_preview.html")
+        return render_template("img_preview.html",img_url="..\static\imgscan.jpeg")
 
     #empty the history files
     if process_id == "[DEL HISTORY]":
@@ -184,14 +188,27 @@ def process(process_id):
         return redirect("/[SETTINGS]")
 
 
+    if process_id == "[HOME]":
+        #read history files, convert it to an array and reverse it to have the most recent first
+        with open("static/hist.Blue","r") as f:
+            a = f.read()
+            a = a.split("=")
+            a.reverse()
+            with open("static/dates.Blue","r") as f:
+                dates=f.read().split("\n")
+                dates.reverse()
+                #render the html with the history
+                qr_url = "../static/qr.jpeg"
+                return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
+
 
 if __name__ == "__main__":
 
     
     #make sure we are in the right path
-    chdir(path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe",""))
+    chdir(path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py",""))
     #get the ip (pray that this is the right one and not some virutal machines)
-    ip = str(socket.gethostbyname(socket.gethostname()))
+    ip = get_private_ip()
 
     #create a qr code containing the ip with google chart api
     r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+ip,allow_redirects=True)
