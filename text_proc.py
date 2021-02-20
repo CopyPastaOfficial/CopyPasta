@@ -23,6 +23,11 @@ def init_flask():
 
 
 
+
+
+
+
+
 #scan preview
 @app.route("/",methods=["GET", "POST"])
 def scan_preview():
@@ -40,6 +45,32 @@ def scan_preview():
             a = f.read()
             leng = len(a.split("\n"))
             return render_template("scan_preview.html",scan = a.replace("/n","<br>"),len=leng)
+
+
+
+@app.route("/hist/<i>")
+def history(i):
+    """
+    :params: i is the index of the scan on the history list, given when and user click on a button
+
+    """
+
+    #read scan history file, convert it to an array and get the specified scan
+    with open("static/hist.Blue","r") as f:
+        a = f.read()
+        a = a.split("=")
+        a.reverse()
+    text = a[int(i)]
+
+    #rewrite the scan temporary file with the old scan
+    with open("static/scan.Blue","w") as f:
+        f.write(text)
+
+    #redirect to the usual scan preview
+    return redirect("/scan_preview")
+
+
+
 
 
 #processes
@@ -83,6 +114,13 @@ def process(process_id):
                 qr_url = "../static/qr.jpeg"
                 return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
 
+
+
+#settings page
+@app.route("/[SETTINGS]")
+def settings():
+
+    return render_template("settings.html")
 
 
 
