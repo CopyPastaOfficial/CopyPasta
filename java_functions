@@ -58,7 +58,29 @@ public void takePhoto() throws IOException {
     }
     
     
-    
+    //ONACTIVITY RESULTS
+    if (requestCode == 2 && resultCode == RESULT_OK ) {
+            //performCrop();
+
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                StringBuilder b = new StringBuilder();
+                byte[] bytes = stream.toByteArray();
+
+                sendMessage(bytes);
+
+                Log.d("MESSAGE","ALL BYTES ARE SENT");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        
+        
     
     
     
