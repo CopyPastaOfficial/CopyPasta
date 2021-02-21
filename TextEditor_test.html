@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+      <link rel="shortcut icon" type="image/x-icon" href="https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+      <link rel="mask-icon" type="" href="https://cpwebassets.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111">
+      <link rel="canonical" href="https://codepen.io/MatthewLeFevre/pen/RzLmao">
+    
+      <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.9.0/css/all.css" integrity="sha384-vlOMx0hKjUCl4WzuhIhSNZSm2yQCaf0mOU1hEDK/iztH3gU4v5NMmJln9273A6Jz" crossorigin="anonymous">
+      
+    
+      <style class="INLINE_PEN_STYLESHEET_ID">
+        *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
+    
+    .tool-list {
+      display: flex;
+      flex-flow: row nowrap;
+      list-style: none;
+      padding: 0;
+      margin: 1rem;
+      overflow: hidden;
+      border-raduis: 10px;
+    }
+    
+    .tool--btn {
+      display: block;
+      border: none;
+      padding: 0.5rem;
+      font-size: 20px;
+    }
+    
+    #output {
+      height: 400px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+      margin: 1rem;
+      padding: 1rem;
+    }
+      </style>
+  
+    
+    <script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeConsoleRunner-7f4d47902dc785f30dedcac9c996b9f31d4dfcc33567cc48f0431bc918c2bf05.js"></script>
+    <script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRefreshCSS-bb9a2ba1f03f6147732cb3cd52ac86c6b24524aa87a05ed0b726f11e46d7e277.js"></script>
+    <script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRuntimeErrors-4f205f2c14e769b448bcf477de2938c681660d5038bc464e3700256713ebe261.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="toolbar">
+        <ul class="tool-list">
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command='justifyLeft'
+                    class="tool--btn">
+                    <i class=' fas fa-align-left'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command='justifyCenter' 
+                    class="tool--btn">
+                    <i class=' fas fa-align-center'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command="bold" 
+                    class="tool--btn">
+                    <i class=' fas fa-bold'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command="italic"
+                    class="tool--btn">
+                    <i class=' fas fa-italic'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command="underline"
+                    class="tool--btn">
+                    <i class=' fas fa-underline'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command="insertOrderedList"
+                    class="tool--btn">
+                    <i class=' fas fa-list-ol'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command="insertUnorderedList"
+                    class="tool--btn">
+                    <i class=' fas fa-list-ul'></i>
+                </button>
+            </li>
+            <li class="tool">
+                <button 
+                    type="button" 
+                    data-command="createlink" 
+                    class="tool--btn">
+                    <i class=' fas fa-link'></i>
+                </button>
+            </li>
+        </ul>
+    </div>
+    
+    <div id="output" contenteditable="true"></div>
+</body>
+    <style>
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+.toolbar {}
+.tool-list {
+	display: flex;
+	flex-flow: row nowrap;
+	list-style: none;
+	padding: 0;
+	margin: 1rem;
+	overflow: hidden;
+	border-raduis: 10px;
+}
+.tool {}
+.tool--btn {
+	display: block;
+	border: none;
+	padding: .5rem;
+	font-size: 20px;
+}
+
+#output {
+	height: 400px; 
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	margin: 1rem;
+	padding: 1rem;
+}
+
+    </style>
+
+
+    <script>
+
+let output = document.getElementById('output');
+let buttons = document.getElementsByClassName('tool--btn');
+for (let btn of buttons) {
+	btn.addEventListener('click', () => {
+		let cmd = btn.dataset['command'];
+		if(cmd === 'createlink') {
+			let url = prompt("Enter the link here: ", "http:\/\/");
+			document.execCommand(cmd, false, url);
+		} else {
+			document.execCommand(cmd, false, null);
+		}
+	})
+}
+
+
+    </script>
+</html>
