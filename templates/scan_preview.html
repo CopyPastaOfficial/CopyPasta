@@ -3,26 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="mask-icon" type="" href="favicon.ico">
+    <link rel="canonical" href="https://codepen.io/MatthewLeFevre/pen/RzLmao">
+  
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.9.0/css/all.css" integrity="sha384-vlOMx0hKjUCl4WzuhIhSNZSm2yQCaf0mOU1hEDK/iztH3gU4v5NMmJln9273A6Jz" crossorigin="anonymous">
+    
+  
+  <style class="INLINE_PEN_STYLESHEET_ID">
+      *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+  
+  .tool-list {
+    display: flex;
+    flex-flow: row nowrap;
+    list-style: none;
+    padding: 0;
+    margin: 1rem;
+    overflow: hidden;
+    border-raduis: 10px;
+  }
+  
+  .tool--btn {
+    display: block;
+    border: none;
+    padding: 0.5rem;
+    font-size: 20px;
+  }
+  
+  #output {
+    height: 400px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    margin: 1rem;
+    padding: 1rem;
+  }
+  </style>
+
+  
+  <script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeConsoleRunner-7f4d47902dc785f30dedcac9c996b9f31d4dfcc33567cc48f0431bc918c2bf05.js"></script>
+  <script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRefreshCSS-bb9a2ba1f03f6147732cb3cd52ac86c6b24524aa87a05ed0b726f11e46d7e277.js"></script>
+  <script src="https://cpwebassets.codepen.io/assets/editor/iframe/iframeRuntimeErrors-4f205f2c14e769b448bcf477de2938c681660d5038bc464e3700256713ebe261.js"></script>
+
+
+
     <title>CopyPasta</title>
+
+
+
+
 </head>
 <body>
   
     <br>
     <br>
     <div id="wrapper">
-        <button id="button" onclick="window.location='/process/[CLEAR SCAN]'" style="margin-left: 30px;">Clear scan</button>
-        <button id="button" onclick="window.location='/process/[COPY SCAN]'" style="margin-left: 30px;">Copy scan</button>
-        <button id="button" onclick="window.location='/process/[HOME]'" style="margin-left: 30px;">Main menu</button> 
+		
+		
+		
+    <form id="paper" method="POST" action=""  class="helvetica">
+            <div class="buttons">
+              <a onclick="window.location='/process/[CLEAR SCAN]'" class="btn effect01" target="_blank" style="margin-top: 5%; margin-left: 2%;"><span>Clear scan</span></a>
+              <a onclick="window.location='/process/[COPY SCAN]'" class="btn effect01" target="_blank" style="margin-top: 5%; margin-left: 2%;"><span>Copy scan</span></a>
+              <a onclick="window.location='/process/[HOME]'" class="btn effect01" target="_blank" style="margin-top: 5%; margin-left: 2%;"><span>Main menu</span></a>
+              <button class="btn effect01" id="button" type="submit" style="margin-top: 5%; margin-left: 2%;">Download scan</button>
+            </div>
+            <br>
+            <br>
+            <div class="bg-white">
 
-        <form id="paper" method="POST" action="">
+              <div id="margin" class="helvetica" style="font-size: large;">Title: <input id="title" type="text" name="title" value="MyTextScan" class="bg-white helvetica" style="margin-left: 2%; border-style:groove;"></div>
+              <div class="toolbar bg-white" style="margin-left: 30%;">
 
-            <button id="button" type="submit" style="margin-left: 30px;">Download scan</button>
-            <br>
-            <br>
-            <div id="margin">Title: <input id="title" type="text" name="title" value="MyTextScan"></div>
-            <textarea placeholder="Here will be your text ;D" id="text" name="text" style="overflow: hidden; word-wrap: break-word;height: 200000px;">{{scan}}</textarea>  
-            <br>
-        </form>
+                <ul class="tool-list bg-white">
+
+
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command='justifyLeft'
+                            class="tool--btn">
+                            <i class=' fas fa-align-left'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command='justifyCenter' 
+                            class="tool--btn">
+                            <i class=' fas fa-align-center'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command="bold" 
+                            class="tool--btn">
+                            <i class=' fas fa-bold'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command="italic"
+                            class="tool--btn">
+                            <i class=' fas fa-italic'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command="underline"
+                            class="tool--btn">
+                            <i class=' fas fa-underline'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command="insertOrderedList"
+                            class="tool--btn">
+                            <i class=' fas fa-list-ol'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command="insertUnorderedList"
+                            class="tool--btn">
+                            <i class=' fas fa-list-ul'></i>
+                        </button>
+                    </li>
+                    <li class="tool">
+                        <button 
+                            type="button" 
+                            data-command="createlink" 
+                            class="tool--btn">
+                            <i class=' fas fa-link'></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div id="text" name="text" contenteditable="true" class="bg-white helvetica" style="min-height: 20px; border-style: groove;">{{scan}}</div> 
+              <br>
+          </form>
+            </div>
+            
     
     </div>
     
@@ -35,95 +165,167 @@
 	padding:0px;
 	font-family:Courier, monospace;
 }
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  width: 20%;
+}
+
+.bg-white{
+  background-color:rgb(238, 236, 236);
+}
+
 body {
-	background:#333 url(https://static.tumblr.com/maopbtg/a5emgtoju/inflicted.png) repeat;        
+	background:#333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+	      
 }
-#paper {
-	color:#FFF;
-	font-size:20px;
+
+.helvetica{
+	font-family: "Helvetica";
 }
-#margin {
-	margin-left:12px;
-	margin-bottom:20px;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none; 
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+      flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+/*   padding: 2em 0em; */
 }
-#text {
-	width:500px;
-    height: 200000px;
-	overflow:hidden;
-	background-color:#FFF;
-	color:#222;
-	font-family:Courier, monospace;
-	font-weight:normal;
-	font-size:24px;
-	line-height:40px;
-	padding-left:100px;
-	padding-right:100px;
-	padding-top:45px;
-	padding-bottom:34px;
-	background-image:url(https://static.tumblr.com/maopbtg/E9Bmgtoht/lines.png), url(https://static.tumblr.com/maopbtg/nBUmgtogx/paper.png);
-	background-repeat:repeat-y, repeat;
-	-webkit-border-radius:12px;
-	border-radius:12px;
-	-webkit-box-shadow: 0px 2px 14px #000;
-	box-shadow: 0px 2px 14px #000;
-	border-top:1px solid #FFF;
-	border-bottom:1px solid #FFF;
+
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  background-color: #FFF;
+  padding:  40px 0px;
+  width: 240px;
 }
-#title {
-	background-color:transparent;
-	border-bottom:3px solid #FFF;
-	color:#FFF;
-	font-size:20px;
-	font-family:Courier, monospace;
-	height:28px;
-	font-weight:bold;
-	width:220px;
+
+.btn {
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 45px;
+  max-width: 160px;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: 100%;
 }
-#button {
-	cursor:pointer;
-	margin-top:20px;
-	height:40px;
-	padding-left:24px;
-	padding-right:24px;
-	font-family:Arial, Helvetica, sans-serif;
-	font-weight:bold;
-	font-size:20px;
-	color:#FFF;
-	text-shadow: 0px -1px 0px #000000;
-	-webkit-border-radius:8px;
-	border-radius:8px;
-	border-top:1px solid #FFF;
-	-webkit-box-shadow: 0px 2px 14px #000;
-	box-shadow: 0px 2px 14px #000;
-	background-color: #62add6;
-	background-image:url(https://static.tumblr.com/maopbtg/ZHLmgtok7/button.png);
-	background-repeat:repeat-x;
+.btn:hover {
+  text-decoration: none;
 }
-#button:active {
-	zoom: 1;
-	filter: alpha(opacity=80);
-	opacity: 0.8;
+
+/*btn_background*/
+.effect01 {
+  color: #FFF;
+  border: 4px solid rgb(34, 128, 206);
+  box-shadow:0px 0px 0px 1px rgb(34, 128, 206);
+  background-color: rgb(34, 128, 206);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease-in-out;
 }
-#button:focus {
-	zoom: 1;
-	filter: alpha(opacity=80);
-	opacity: 0.8;
+.effect01:hover {
+  border: 4px solid #666;
+  background-color: #FFF;
+  box-shadow:0px 0px 0px 4px #EEE inset;
 }
-#wrapper {
-	width:700px;
-	height:auto;
-	margin-left:auto;
-	margin-right:auto;
-	margin-top:24px;
-	margin-bottom:100px;
+
+/*btn_text*/
+.effect01 span {
+  transition: all 0.2s ease-out;
+  z-index: 2;
 }
+.effect01:hover span{
+  letter-spacing: 0.13em;
+  color: #333;
+}
+
+/*highlight*/
+.effect01:after {
+  background: #FFF;
+  border: 0px solid #000;
+  content: "";
+  height: 155px;
+  left: -75px;
+  opacity: .8;
+  position: absolute;
+  top: -50px;
+  -webkit-transform: rotate(35deg);
+          transform: rotate(35deg);
+  width: 50px;
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);/*easeOutCirc*/
+  z-index: 1;
+}
+.effect01:hover:after {
+  background: #FFF;
+  border: 20px solid #000;
+  opacity: 0;
+  left: 120%;
+  -webkit-transform: rotate(40deg);
+          transform: rotate(40deg);
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+.toolbar {}
+.tool-list {
+	display: flex;
+	flex-flow: row nowrap;
+	list-style: none;
+	padding: 0;
+	margin: 1rem;
+	overflow: hidden;
+	border-raduis: 10px;
+}
+.tool {}
+.tool--btn {
+	display: block;
+	border: none;
+	padding: .5rem;
+	font-size: 20px;
+}
+
+#output {
+	height: 400px; 
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	margin: 1rem;
+	padding: 1rem;
+}
+
 </style>
 <script>
+
+  let output = document.getElementById('output');
+let buttons = document.getElementsByClassName('tool--btn');
+for (let btn of buttons) {
+	btn.addEventListener('click', () => {
+		let cmd = btn.dataset['command'];
+		if(cmd === 'createlink') {
+			let url = prompt("Enter the link here: ", "http:\/\/");
+			document.execCommand(cmd, false, url);
+		} else {
+			document.execCommand(cmd, false, null);
+		}
+	})
+}
+
+
+
     $(document).ready(function(){
   $('#title').focus();
     $('#text').autosize();

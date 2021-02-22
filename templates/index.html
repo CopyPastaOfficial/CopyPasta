@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyPasta</title>
+
 </head>
 <body>
 	<div class="buttons">
-		<a href="/[SETTINGS]" class="btn effect01 center" target="_blank" style="margin-top: 5%;"><span>Settings</span></a>
+		<a onclick="window.location.href='/[SETTINGS]'" class="btn effect01 center" target="_blank" style="margin-top: 5%;"><span>Settings</span></a>
 	</div>
     <br>
 	<br>  
@@ -17,7 +18,7 @@
     <br>
 	<br>
 	<br>
-    <h2 class="center helvetica" style="color: rgb(0, 0, 0);">History :</h2>
+    <h2 class="helvetica" style="color: rgb(0, 0, 0); font-size:large; margin-left: 5%;">History :</h2>
 	<br>
 
 
@@ -32,7 +33,7 @@
         <td class="c1">{{dates[i]}}</td>
         <td class="c2">{{hist[i][1:64]}}...</td>
         <td class="c3"><div class="buttons">
-				<a href="/hist/{{i}}" class="btn effect01 center" target="_blank" style="width: 100%; margin-bottom: 10%; margin-top: 10%;"><span>GO !</span></a>
+				<a onclick="window.location.href='/hist/{{i}}'" class="btn effect01 center" target="_blank" style="width: 100%; margin-bottom: 10%; margin-top: 10%;"><span>GO !</span></a>
 			</div>
 		</td>
       </tr>

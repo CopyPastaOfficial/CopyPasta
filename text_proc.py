@@ -82,15 +82,20 @@ def process(process_id):
     if process_id == "[CLEAR SCAN]":
         open("static/scan.Blue","w")
         with open("static/scan.Blue","r") as f:
-            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
+            a = f.read()
+            leng = len(a.split("\n"))
+            return render_template("scan_preview.html",scan = a.replace("/n","<br>"),len=leng)
 
     #copy the scan temporary file to clipboard
     if process_id == "[COPY SCAN]":
         with open("static/scan.Blue","r") as f:
             copy(f.read())
             flash("Scan copied in your clipboard :D")
+
         with open("static/scan.Blue","r") as f:
-            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
+            a = f.read()
+            leng = len(a.split("\n"))
+            return render_template("scan_preview.html",scan = a.replace("/n","<br>"),len=leng)
     
 
     #empty the history files
