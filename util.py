@@ -1,5 +1,7 @@
 import socket
-
+from getpass import getuser
+from random import randint
+from json import dumps
 
 def get_private_ip():
     """
@@ -13,5 +15,8 @@ def get_private_ip():
 
 
 
+def make_qr_url():
+    url = {"name" : getuser(),"ip" : get_private_ip(), "key" : str(randint(0,100000000000))}
+    return dumps(url,indent=4)
 
 
