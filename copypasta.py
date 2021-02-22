@@ -13,7 +13,7 @@ from platform import system
 from flaskwebgui import FlaskUI
 from image_proc import start_image_proc
 from text_proc import start_text_proc
-from util import get_private_ip
+from util import make_qr_url
 
 
 #init flask app and secret key
@@ -207,12 +207,9 @@ if __name__ == "__main__":
     
     #make sure we are in the right path
     chdir(path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py",""))
-    #get the ip (pray that this is the right one and not some virutal machines)
-    ip = get_private_ip()
 
     #create a qr code containing the ip with google chart api
-    r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+ip,allow_redirects=True)
-    
+    r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+make_qr_url(),allow_redirects=True)
     
 
     #write it
