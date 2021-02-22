@@ -6,14 +6,22 @@
     <title>CopyPasta</title>
 </head>
 <body>
-    <li><button id="button" class="center" onclick="window.location='/[SETTINGS]'" >Settings</button></li>
-    <br>  
-    <h1 style="color: white; margin-left: auto;">Scan the QR code with your CopyPasta app and begin sending whatever the fuck you want ;D</h1>
+	<div class="buttons">
+		<a href="/[SETTINGS]" class="btn effect01 center" target="_blank" style="margin-top: 5%;"><span>Settings</span></a>
+	</div>
+    <br>
+	<br>  
+    <h1 class="helvetica" style="color: rgb(0, 0, 0); width: 70%; margin-left: 15%;">Scan the QR code with your CopyPasta app and begin sending whatever you want ;D</h1>
     <br>
     <img src="{{qr_url}}" alt="Scan me :D" class="center">
     <br>
-    <h2 style="color: white;">History :</h2>
-    <table >
+	<br>
+	<br>
+    <h2 class="center helvetica" style="color: rgb(0, 0, 0);">History :</h2>
+	<br>
+
+
+    <table style="height: max-content; width: 70%; margin-left: 15%;">
       <tr>
         <th class="c1">Date</th>
         <th class ="c2">Preview</th>
@@ -23,14 +31,21 @@
       <tr>
         <td class="c1">{{dates[i]}}</td>
         <td class="c2">{{hist[i][1:64]}}...</td>
-        <td class="c3"><button id="button" class="center" style="width: 100%; margin-bottom: 10%;" onclick="window.location='/hist/{{i}}'">GO !</button></td>
+        <td class="c3"><div class="buttons">
+				<a href="/hist/{{i}}" class="btn effect01 center" target="_blank" style="width: 100%; margin-bottom: 10%; margin-top: 10%;"><span>GO !</span></a>
+			</div>
+		</td>
       </tr>
       
     {%endfor%} 
     </table>
 
-
-     
+	
+	
+	
+	
+	
+    
 
 </body>
 
@@ -43,22 +58,22 @@ tr th, tr td{
 	padding:5px;
 }
 th{
-    border: 5px solid #C1DAD7;
+    border: 5px solid #0fd8c1;
 }
 td{
 	border: 5px solid #C1DAD7;
 }
 .c1{
-	background:#4b8c74;
+	background:#ffffff;
 }
 .c2{
-	background:#74c476;
+	background:#ffffff;
 }
 .c3{
-	background:#a4e56d;
+	background:#ffffff;
 }
 .c4{
-	background:#cffc83;
+	background:#ffffff;
 }
 * {
   outline:none;
@@ -76,59 +91,108 @@ td{
 }
 
 body {
-	background:#333 url(https://static.tumblr.com/maopbtg/a5emgtoju/inflicted.png) repeat;        
+	background:#333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+	      
 }
-#paper {
-	color:#FFF;
-	font-size:20px;
+
+.helvetica{
+	font-family: "Helvetica";
 }
-#margin {
-	margin-left:12px;
-	margin-bottom:20px;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none; 
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+      flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+/*   padding: 2em 0em; */
 }
-#button {
-	cursor:pointer;
-	margin-top:20px;
-	height:40px;
-	padding-left:24px;
-	padding-right:24px;
-	font-family:Arial, Helvetica, sans-serif;
-	font-weight:bold;
-	font-size:20px;
-	color:#FFF;
-	text-shadow: 0px -1px 0px #000000;
-	-webkit-border-radius:8px;
-	border-radius:8px;
-	border-top:1px solid #FFF;
-	-webkit-box-shadow: 0px 2px 14px #000;
-	box-shadow: 0px 2px 14px #000;
-	background-color: #62add6;
-	background-image:url(https://static.tumblr.com/maopbtg/ZHLmgtok7/button.png);
-	background-repeat:repeat-x;
+
+.container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  background-color: #FFF;
+  padding:  40px 0px;
+  width: 240px;
 }
-#button:active {
-	zoom: 1;
-	filter: alpha(opacity=80);
-	opacity: 0.8;
+
+.btn {
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 45px;
+  max-width: 160px;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: 100%;
 }
-#button:focus {
-	zoom: 1;
-	filter: alpha(opacity=80);
-	opacity: 0.8;
+.btn:hover {
+  text-decoration: none;
 }
-#wrapper {
-	width:700px;
-	height:auto;
-	margin-left:auto;
-	margin-right:auto;
-	margin-top:24px;
-	margin-bottom:100px;
+
+/*btn_background*/
+.effect01 {
+  color: #FFF;
+  border: 4px solid rgb(34, 128, 206);
+  box-shadow:0px 0px 0px 1px rgb(34, 128, 206);
+  background-color: rgb(34, 128, 206);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease-in-out;
 }
+.effect01:hover {
+  border: 4px solid #666;
+  background-color: #FFF;
+  box-shadow:0px 0px 0px 4px #EEE inset;
+}
+
+/*btn_text*/
+.effect01 span {
+  transition: all 0.2s ease-out;
+  z-index: 2;
+}
+.effect01:hover span{
+  letter-spacing: 0.13em;
+  color: #333;
+}
+
+/*highlight*/
+.effect01:after {
+  background: #FFF;
+  border: 0px solid #000;
+  content: "";
+  height: 155px;
+  left: -75px;
+  opacity: .8;
+  position: absolute;
+  top: -50px;
+  -webkit-transform: rotate(35deg);
+          transform: rotate(35deg);
+  width: 50px;
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);/*easeOutCirc*/
+  z-index: 1;
+}
+.effect01:hover:after {
+  background: #FFF;
+  border: 20px solid #000;
+  opacity: 0;
+  left: 120%;
+  -webkit-transform: rotate(40deg);
+          transform: rotate(40deg);
+}
+
+
+
+
+
 </style>
 
 <script>
