@@ -168,17 +168,20 @@ def process(process_id):
     
     #copy an image to the clipboard with a win32 api
     if process_id == "[COPY IMG]":
-        output = BytesIO()
-        image = Image.open("static/imgscan.jpeg")
-        image.convert('RGB').save(output, 'BMP')
-        data = output.getvalue()[14:]
-        output.close()
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-        win32clipboard.CloseClipboard()
-        
-        return render_template("img_preview.html",img_url="..\static\imgscan.jpeg")
+        try:
+            output = BytesIO()
+            image = Image.open("static/imgscan.jpeg")
+            image.convert('RGB').save(output, 'BMP')
+            data = output.getvalue()[14:]
+            output.close()
+            win32clipboard.OpenClipboard()
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+            win32clipboard.CloseClipboard()
+
+            return render_template("img_preview.html",img_url="..\static\imgscan.jpeg")
+        except ImportError:
+            pass 
 
     #empty the history files
     if process_id == "[DEL HISTORY]":
