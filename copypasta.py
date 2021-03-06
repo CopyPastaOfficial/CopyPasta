@@ -4,7 +4,10 @@ from requests import get
 from os import path, chdir, mkdir,remove
 import PIL.Image as Image
 from io import BytesIO
-import win32clipboard
+try:
+    import win32clipboard
+except ImportError:
+    pass
 from array import array
 from pyperclip import copy
 from time import sleep

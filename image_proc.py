@@ -7,7 +7,10 @@ from sys import stdout
 from datetime import date
 import PIL.Image as Image
 from random import randint
-import win32clipboard
+try:
+    import win32clipboard
+except ImportError:
+    pass
 from io import BytesIO
 from os import remove, path
 from pyperclip import copy
