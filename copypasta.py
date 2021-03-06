@@ -18,7 +18,7 @@ from util import make_qr_url
 
 #init flask app and secret key
 app = Flask(__name__)
-ui = FlaskUI(app,port=80)
+ui = FlaskUI(app,port=21053)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
