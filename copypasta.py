@@ -30,7 +30,7 @@ app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("static/"):
     mkdir("static")
-    open("static/hist.blue","w")
+    open("static/hist.Blue","w")
     open("static/dates.Blue","w")
 
 
