@@ -13,15 +13,18 @@ from pyperclip import copy
 from time import sleep
 from random import randint
 from platform import system
-from flaskwebgui import FlaskUI
+#from flaskwebgui import FlaskUI
 from image_proc import start_image_proc
 from text_proc import start_text_proc
 from util import make_qr_url
+from webbrowser import open as display_website
+from multiprocessing import Process, freeze_support
+from time import sleep
 
 
 #init flask app and secret key
 app = Flask(__name__)
-ui = FlaskUI(app,port=21053)
+#ui = FlaskUI(app,port=21053)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
@@ -208,14 +211,22 @@ def process(process_id):
                 return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
 
 
+def open_tab():
+    sleep(1)
+    display_website("http://127.0.0.1:21987")
+
+
+
+
 if __name__ == "__main__":
 
+    freeze_support()
     
     #make sure we are in the right path
     chdir(path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py",""))
 
     #create a qr code containing the ip with google chart api
-    r = get("https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl="+make_qr_url(),allow_redirects=True)
+    r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
     
 
     #write it
@@ -226,7 +237,17 @@ if __name__ == "__main__":
     start_image_proc()
     start_text_proc()
 
+    #open tab in web browser
+    Process(target=open_tab).start()
+
+
     #run flask web server
-    ui.run()
+    app.run(host="127.0.0.1",port=21987)
+
+
+
+
+
+    
     
 
