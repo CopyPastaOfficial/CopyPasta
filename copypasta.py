@@ -49,6 +49,10 @@ if not path.exists("templates/"):
     with open("templates/scan_preview.html","wb") as f:
         f.write(r.content)
 
+    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/img_preview.html",allow_redirects=True)
+    with open("templates/img_preview.html","wb") as f:
+        f.write(r.content)
+
     r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/settings.html",allow_redirects=True)
     with open("templates/settings.html","wb") as f:
         f.write(r.content)
