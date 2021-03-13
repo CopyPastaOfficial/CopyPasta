@@ -6,3 +6,4 @@
 - After you scan something, at the bottom a card appears ("Last text scanned") and there is a problem of margin and there is a problem of alignment in the two buttons.
 - If you scan QR Code of WiFi or Calendar for exemple, the title is in english and so there is a problem of translation.
 - When you would like share the last scan, if the scan is for exemple a calendar, you can't share with a calendar app (I think it's not important at the moment but I think I will solve this problem in future updates.
+- When you change the orientation of the device, the card where is the last scanned text disappears.
