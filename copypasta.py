@@ -93,8 +93,7 @@ def home():
             dates.reverse()
         
             #render the html with the history
-            qr_url = "static/qr.jpeg"
-            return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
+            return render_template("index.html",hist = a, len = len(a),dates=dates)
 
 
 
@@ -129,7 +128,7 @@ def settings():
 @app.route("/image_preview")
 def img_preview():
     
-    return render_template("img_preview.html",img_url="static\imgscan.jpeg")
+    return render_template("img_preview.html")
 
 
 #scan preview
@@ -164,18 +163,19 @@ def process(process_id):
     #empty the scan temporary file
     if process_id == "[CLEAR SCAN]":
         open("static/scan.Blue","w")
-        with open("static/scan.Blue","r") as f:
-            #return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
-            return redirect("/scan_preview")
-            
+
+        #redirect to the usual scan preview
+        return redirect("/scan_preview")
+
     #copy the scan temporary file to clipboard
     if process_id == "[COPY SCAN]":
         with open("static/scan.Blue","r") as f:
             copy(f.read())
             flash("Scan copied in your clipboard :D")
             f.close()
-        with open("static/scan.Blue","r") as f:
-            return render_template("scan_preview.html",scan = f.read().replace("/n","<br>"))
+
+        #redirect to the usual scan preview
+        return redirect("/scan_preview")
     
     #copy an image to the clipboard with a win32 api
     if process_id == "[COPY IMG]":
@@ -190,9 +190,10 @@ def process(process_id):
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
             win32clipboard.CloseClipboard()
 
-            return render_template("img_preview.html",img_url="..\static\imgscan.jpeg")
+            return redirect("/image_preview")
+            
         except ImportError:
-            pass 
+            return redirect("/image_preview") 
 
     #empty the history files
     if process_id == "[DEL HISTORY]":
@@ -203,17 +204,9 @@ def process(process_id):
 
 
     if process_id == "[HOME]":
-        #read history files, convert it to an array and reverse it to have the most recent first
-        with open("static/hist.Blue","r") as f:
-            a = f.read()
-            a = a.split("=")
-            a.reverse()
-            with open("static/dates.Blue","r") as f:
-                dates=f.read().split("\n")
-                dates.reverse()
-                #render the html with the history
-                qr_url = "../static/qr.jpeg"
-                return render_template("index.html",hist = a, len = len(a),dates=dates,qr_url = qr_url)
+
+        #redirect to homepage
+        return redirect("/")
 
 
 def open_tab():

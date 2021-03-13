@@ -14,7 +14,7 @@
 	<br>  
     <h1 class="helvetica" style="color: rgb(0, 0, 0); width: 70%; margin-left: 15%;">Scan the QR code with your CopyPasta app and begin sending whatever you want ;D</h1>
     <br>
-    <img src="{{qr_url}}" alt="Scan me :D" class="center">
+    <img src="static/qr.jpeg" alt="Scan me :D" class="center">
     <br>
 	<br>
 	<br>
@@ -196,14 +196,4 @@ body {
 
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-
-var url = 'http://127.0.0.1:5001/GUI-is-still-open'; 
-fetch(url, { mode: 'no-cors'});
-setInterval(function(){ fetch(url, { mode: 'no-cors'});}, 5000)();
-
-});
-
-</script>
 </html>

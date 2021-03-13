@@ -6,7 +6,7 @@
     <title>CopyPasta</title>
 </head>
 <body>
-    <img src="{{img_url}}" alt="Your beautiful picture :D" class="center" style="margin-top: 50px;">
+    <img src="static\imgscan.jpeg" alt="Your beautiful picture :D" class="center" style="margin-top: 50px;">
 	<div class="buttons">
 		<button class="btn effect01 center" onclick="window.location='/process/[DOWNLOAD IMG]'" style="margin-top: 5%;">Download Image</button>
 		<button class="btn effect01 center" onclick="window.location='/process/[COPY IMG]'" style="margin-top: 5%;">Copy Image</button>
@@ -130,14 +130,5 @@ body {
           transform: rotate(40deg);
 }
 </style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
 
-var url = 'http://127.0.0.1:5001/GUI-is-still-open'; 
-fetch(url, { mode: 'no-cors'});
-setInterval(function(){ fetch(url, { mode: 'no-cors'});}, 5000)();
-
-});
-
-</script>
 </html>
