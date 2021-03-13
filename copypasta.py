@@ -16,7 +16,7 @@ from platform import system
 #from flaskwebgui import FlaskUI
 from image_proc import start_image_proc
 from text_proc import start_text_proc
-from util import make_qr_url
+from util import make_qr_url, get_private_ip, download_templates, check_updates
 from webbrowser import open as display_website
 from multiprocessing import Process, freeze_support
 from time import sleep
@@ -35,31 +35,14 @@ if not path.exists("static/"):
     mkdir("static")
     open("static/hist.Blue","w")
     open("static/dates.Blue","w")
+    with open("static/update.Blue","w") as f:
+        f.write("1")
 
 
 
 if not path.exists("templates/"):
     mkdir("templates")
-
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
-    with open("templates/index.html","wb") as f:
-        f.write(r.content)
-
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
-    with open("templates/scan_preview.html","wb") as f:
-        f.write(r.content)
-
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/img_preview.html",allow_redirects=True)
-    with open("templates/img_preview.html","wb") as f:
-        f.write(r.content)
-
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/settings.html",allow_redirects=True)
-    with open("templates/settings.html","wb") as f:
-        f.write(r.content)
-
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
-    with open("templates/favicon.ico","wb") as f:
-        f.write(r.content)
+    download_templates()
 
 
 
@@ -234,6 +217,9 @@ if __name__ == "__main__":
 
     start_image_proc()
     start_text_proc()
+
+    #check if the templates are up-to-date
+    check_updates()
 
     #open tab in web browser
     Process(target=open_tab).start()
