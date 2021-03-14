@@ -9,3 +9,4 @@
 - When you change the orientation of the device, the card where is the last scanned text disappears.
 - I will add a option to send the last scanned text, because if there is a error of communication, then the user will send the text.
 - I will add the permission for the storage, even if the app works, it's better to add them.
+- When using the application in local mode, you can send image.
