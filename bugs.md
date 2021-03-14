@@ -7,3 +7,4 @@
 - I will add a option to send the last scanned text, because if there is a error of communication, then the user will send the text.
 - I will add the permission for the storage, even if the app works, it's better to add them.
 - When scanning something, the text "Scan or choose a picture from gallery" changes font or weight or letter spacing (i don't know).
+- You can't take a photo in the app to send image, you can only get a image from the gallery.
