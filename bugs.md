@@ -8,3 +8,4 @@
 - I will add the permission for the storage, even if the app works, it's better to add them.
 - When scanning something, the text "Scan or choose a picture from gallery" changes font or weight or letter spacing (i don't know).
 - You can't take a photo in the app to send image, you can only get a image from the gallery.
+- When you don't accept the permission to the first time, when you close the app and open the app, when you scan something with the camera, a message shows (to enable permission) and this message is not in full.
