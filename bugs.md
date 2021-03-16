@@ -10,3 +10,5 @@
 - You can't take a photo in the app to send image, you can only get a image from the gallery.
 - When you don't accept the permission to the first time, when you close the app and open the app, when you scan something with the camera, a message shows (to enable permission) and this message is not in full.
 - I will add a option to send the text from the clipboard.
+- When you make a long click on a device in the first page, there is a problem with a lot a device, you remove the device (it's the objective) and you will redirect to the device at the bottom.
+- The scan of QR CODE don't support visit card (there is not label)
