@@ -13,7 +13,6 @@ from pyperclip import copy
 from time import sleep
 from random import randint
 from platform import system
-#from flaskwebgui import FlaskUI
 from image_proc import start_image_proc
 from text_proc import start_text_proc
 from util import make_qr_url, get_private_ip, download_templates, check_updates
@@ -22,9 +21,9 @@ from multiprocessing import Process, freeze_support
 from time import sleep
 
 
+
 #init flask app and secret key
 app = Flask(__name__)
-#ui = FlaskUI(app,port=21053)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
@@ -38,10 +37,15 @@ if not path.exists("static/"):
     with open("static/update.Blue","w") as f:
         f.write("1")
 
+    mkdir("static/dist")
+    mkdir("static/dist/css")
+    mkdir("static/dist/js")
+
 
 
 if not path.exists("templates/"):
     mkdir("templates")
+    
     download_templates()
 
 
@@ -76,7 +80,9 @@ def home():
             dates.reverse()
         
             #render the html with the history
-            return render_template("index.html",hist = a, len = len(a),dates=dates)
+            return render_template("index.html",hist = a, len = len(a),dates=dates,hostname=socket.gethostname(),ip=get_private_ip())
+
+
 
 
 
@@ -136,6 +142,38 @@ def scan_preview():
 #processes
 @app.route("/process/<process_id>")
 def process(process_id):
+
+
+    #copy scan from history page
+    if "[COPY_SCAN_FROM_HIST]" in process_id:
+        process_id = process_id.replace("[COPY_SCAN_FROM_HIST]","")
+        with open("static/hist.Blue","r") as f:
+            a = f.read()
+            a = a.split("=")
+            a.reverse()
+            text = a[int(process_id)]
+            copy(text)
+            f.close()
+        return redirect("/")
+
+    if "[DELETE_SCAN_FROM_HIST]" in process_id:
+        process_id = process_id.replace("[DELETE_SCAN_FROM_HIST]","")
+        with open("static/hist.Blue","r") as f:
+            a = f.read()
+            a = a.split("=")
+            a.reverse()
+            text = a[int(process_id)]+"\n=\n" 
+            f.close()
+        
+        with open("static/hist.Blue","r") as f:
+            a = f.read()
+            f.close()
+
+        with open("static/hist.Blue","w") as f:
+            f.write(a.replace(text,"",1))
+            f.close()
+
+        return redirect("/")
 
     #download the image received
     if process_id == "[DOWNLOAD IMG]":

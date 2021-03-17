@@ -9,11 +9,6 @@ from pyperclip import copy
 from webbrowser import open as display_website
 
 
-
-
-
-
-
 #funtion run by another process to receive text scan
 def text_process():
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -47,7 +42,7 @@ def text_process():
                 #history file to store scans
                 with open("static/hist.Blue","a") as f:
                     
-                    f.write("\n=\n"+b.decode("UTF-8"))
+                    f.write(b.decode("UTF-8")+"\n=\n")
 
                 #history file to store dates
                 with open("static/dates.Blue","a") as f:
