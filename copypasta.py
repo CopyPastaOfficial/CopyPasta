@@ -161,7 +161,7 @@ def process(process_id):
             a = f.read()
             a = a.split("=")
             a.reverse()
-            text = a[int(process_id)]+"\n=\n" 
+            text = "="+a[int(process_id)]
             f.close()
         
         with open("static/hist.Blue","r") as f:

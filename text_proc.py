@@ -42,7 +42,7 @@ def text_process():
                 #history file to store scans
                 with open("static/hist.Blue","a") as f:
                     
-                    f.write(b.decode("UTF-8")+"\n=\n")
+                    f.write("=\n"+b.decode("UTF-8"))
 
                 #history file to store dates
                 with open("static/dates.Blue","a") as f:

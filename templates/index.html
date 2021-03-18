@@ -36,7 +36,7 @@
             <div class="col-md">
                 <h1>Last scanned text :</h1>
                 <hr/>
-                <a href="#" class="btn btn-primary mb-3">Delete all history</a>
+                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
                 <table class="table table-striped text-center">
                     <thead>
@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.min.js') }}"></script>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
       <script>
