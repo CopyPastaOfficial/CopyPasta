@@ -33,6 +33,7 @@ app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 if not path.exists("static/"):
     mkdir("static")
     open("static/hist.Blue","w")
+    open("static/images_hist.Blue","w")
     open("static/dates.Blue","w")
     with open("static/update.Blue","w") as f:
         f.write("1")
@@ -40,6 +41,9 @@ if not path.exists("static/"):
     mkdir("static/dist")
     mkdir("static/dist/css")
     mkdir("static/dist/js")
+    mkdir("static/images_hist")
+
+    download_templates()
 
 
 
@@ -107,12 +111,6 @@ def history(i):
     #redirect to the usual scan preview
     return redirect("/scan_preview")
 
-#settings page
-@app.route("/[SETTINGS]")
-def settings():
-
-    return render_template("settings.html")
-
 #image preview when the user send a picture
 @app.route("/image_preview")
 def img_preview():
@@ -154,6 +152,7 @@ def process(process_id):
             text = a[int(process_id)]
             copy(text)
             f.close()
+        flash("scan copied to clipboard :D")
         return redirect("/")
 
     if "[DELETE_SCAN_FROM_HIST]" in process_id:
@@ -195,6 +194,7 @@ def process(process_id):
             flash("Scan copied in your clipboard :D")
             f.close()
 
+        flash("scan copied to clipboard :D")
         #redirect to the usual scan preview
         return redirect("/scan_preview")
     
@@ -210,6 +210,8 @@ def process(process_id):
             win32clipboard.EmptyClipboard()
             win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
             win32clipboard.CloseClipboard()
+
+            flash("Image copied to clipboard :D")
 
             return redirect("/image_preview")
             

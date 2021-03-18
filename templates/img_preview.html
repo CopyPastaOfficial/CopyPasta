@@ -131,4 +131,13 @@ body {
 }
 </style>
 
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <script>
+    var messages = {{ messages | safe }};
+      alert(messages[messages.length-1]);
+  </script>
+{% endif %}
+{% endwith %}
+
 </html>

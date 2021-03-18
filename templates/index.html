@@ -63,10 +63,23 @@
         </div>
     </div>
     <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <script>
+        var messages = {{ messages | safe }};
+          alert(messages[messages.length-1]);
+      </script>
+    {% endif %}
+    {% endwith %}
+    
     <style>
         .btn-primary {
             color: white;
         }
+        body {
+	background:#333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+	      
+}
     </style>
 </body>
 

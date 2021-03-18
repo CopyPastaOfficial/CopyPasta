@@ -15,6 +15,8 @@ from io import BytesIO
 from os import remove, path
 from pyperclip import copy
 from webbrowser import open as display_website
+from random import randint
+from datetime import date
 
 
 def image_process():
@@ -45,9 +47,20 @@ def image_process():
             else:
                 imgbytes.extend(b)
 
-        #save the bytearray to a real image file and display the preview
+        #save the bytearray to a real image file and display the preview, 
+        # also update the history
         image = Image.open(BytesIO(imgbytes))
+        full_name = "imgscan"+str(randint(0,167645454))+'.jpeg'
         image.save("static/imgscan.jpeg")
+        image.save("static/images_hist/"+full_name)
+
+        with open("static/images_hist.Blue","a") as f:
+            today = date.today()
+            today = str(today.strftime("%d/%m/%Y"))
+            f.write(f"{full_name}:{today}\n")
+            f.close()
+
+
         cli.close()
         display_website("http://127.0.0.1:21987/image_preview")
 
