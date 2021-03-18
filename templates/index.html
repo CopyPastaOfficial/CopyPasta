@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {%for i in range(0, len-1)%}
+                    {%for i in range(0, len1-1)%}
                         <tr>
                             <td>{{dates[i]}}</td>
                             <td>{{hist[i][1:64]}}...</td>
@@ -60,8 +60,40 @@
                     </tbody>
                 </table>
             </div>
+
+            
         </div>
+        <br>
+            <br>
+            <div class="col-md" style="margin-left: 290px;">
+                <h1>Last scanned Images :</h1>
+                <hr/>
+                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
+
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr class="bg-primary" style="color: white;">
+                            <th scope="col">Date</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {%for i in range(0, len2)%}
+                        <tr>
+                            <td>{{images_dates[i]}}</td>
+                            <td><img src="../static/images_hist/{{images_hist[i]}}" height="100px" width="100px"></td>
+                            <td>
+                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open Image</a>
+                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {%endfor%} 
+                    </tbody>
+                </table>
+            </div>
     </div>
+    
     <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.min.js') }}"></script>
     {% with messages = get_flashed_messages() %}
     {% if messages %}

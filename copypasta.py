@@ -1,7 +1,7 @@
 import socket
 from flask import Flask, render_template, send_from_directory,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir, mkdir,remove
+from os import path, chdir, mkdir,remove,listdir
 import PIL.Image as Image
 from io import BytesIO
 try:
@@ -78,13 +78,27 @@ def home():
         a = f.read()
         a = a.split("=")
         a.reverse()
+        f.close()
 
-        with open("static/dates.Blue","r") as f:
-            dates=f.read().split("\n")
-            dates.reverse()
+    with open("static/dates.Blue","r") as f:
+        dates=f.read().split("\n")
+        dates.reverse()
+        f.close()
+    
+    with open("static/images_hist.Blue") as f:
+        images_dates = []
+        images_hist = []
+        for ele in f.read().split("\n")[:-1]:
+            print(ele)
+            ele = ele.split(":")
+            images_dates.append(ele[1])
+            images_hist.append(ele[0])
+            f.close()
+            
+
         
-            #render the html with the history
-            return render_template("index.html",hist = a, len = len(a),dates=dates,hostname=socket.gethostname(),ip=get_private_ip())
+    #render the html with the history
+    return render_template("index.html",hist = a, len1 = len(a),dates=dates,hostname=socket.gethostname(),ip=get_private_ip(),images_hist = images_hist,images_dates = images_dates,len2=len(images_dates))
 
 
 
@@ -141,6 +155,47 @@ def scan_preview():
 @app.route("/process/<process_id>")
 def process(process_id):
 
+
+    #wipe the images scan history
+    if process_id == "[DEL_IMAGE HISTORY]":
+        for file in listdir("static/images_hist/"):
+            remove(file)
+
+        return redirect("/")
+
+    #delete a particular image from history table
+    if "[DELETE_IMAGE_SCAN_FROM_HIST]" in process_id:
+        process_id = process_id.replace("[DELETE_IMAGE_SCAN_FROM_HIST]","")
+        with open("static/images_hist.Blue","r") as f:
+            file_ctt = f.read()
+            for line in file_ctt.splitlines():
+                if process_id == line.split(":")[0]:
+                    line_to_remove = line + "\n"
+
+            f.close()
+
+        
+        with open("static/images_hist.Blue","w") as f:
+            f.write(file_ctt.replace(line_to_remove,"",1))
+            f.close()
+
+        remove("static/images_hist/"+process_id)
+        
+        return redirect("/")
+
+    #open an image preview from image history table
+    if "[OPEN_IMAGE_SCAN_FROM_HIST]" in process_id:
+        process_id = process_id.replace("[OPEN_IMAGE_SCAN_FROM_HIST]","")
+
+        with open("static/images_hist/"+process_id,"rb") as f:
+            file_ctt = f.read()
+            f.close()
+
+        with open("static/imgscan.jpeg","wb") as f:
+            f.write(file_ctt)
+            f.close()
+
+        return redirect("/image_preview")
 
     #copy scan from history page
     if "[COPY_SCAN_FROM_HIST]" in process_id:
