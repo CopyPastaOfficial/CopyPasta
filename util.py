@@ -33,9 +33,9 @@ def check_updates():
             
 
 def download_templates():
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
+    """r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
     with open("templates/index.html","wb") as f:
-        f.write(r.content)
+        f.write(r.content)"""
 
     r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
     with open("templates/scan_preview.html","wb") as f:
@@ -45,12 +45,17 @@ def download_templates():
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/settings.html",allow_redirects=True)
-    with open("templates/settings.html","wb") as f:
-        f.write(r.content)
 
     r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
     with open("templates/favicon.ico","wb") as f:
+        f.write(r.content)
+
+    r = get("https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/bootstrap/dist/css/bootstrap.min.css")
+    with open("static/dist/css/bootstrap.min.css","wb") as f:
+        f.write(r.content)
+
+    r = get("https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/bootstrap/dist/js/bootstrap.bundle.min.js")
+    with open("static/dist/js/bootstrap.bundle.min.js","wb") as f:
         f.write(r.content)
 
     with open("static/update.Blue","w") as f:
