@@ -126,10 +126,10 @@ def history(i):
     return redirect("/scan_preview")
 
 #image preview when the user send a picture
-@app.route("/image_preview")
-def img_preview():
+@app.route("/image_preview/<img_path>")
+def img_preview(img_path):
     
-    return render_template("img_preview.html")
+    return render_template("img_preview.html",img_path=img_path.strip("[").strip("]").replace("=","/"),img_path_formated=img_path)
 
 
 #scan preview
@@ -187,15 +187,7 @@ def process(process_id):
     if "[OPEN_IMAGE_SCAN_FROM_HIST]" in process_id:
         process_id = process_id.replace("[OPEN_IMAGE_SCAN_FROM_HIST]","")
 
-        with open("static/images_hist/"+process_id,"rb") as f:
-            file_ctt = f.read()
-            f.close()
-
-        with open("static/imgscan.jpeg","wb") as f:
-            f.write(file_ctt)
-            f.close()
-
-        return redirect("/image_preview")
+        return redirect("/image_preview/[static=images_hist="+process_id.replace("/","=")+"]")
 
     #copy scan from history page
     if "[COPY_SCAN_FROM_HIST]" in process_id:
@@ -230,9 +222,10 @@ def process(process_id):
         return redirect("/")
 
     #download the image received
-    if process_id == "[DOWNLOAD IMG]":
-        return send_file('static/imgscan.jpeg',
-                     attachment_filename='imgscan'+str(randint(0,167645454))+'.jpeg',
+    if "[DOWNLOAD IMG]" in process_id:
+        process_id = process_id.replace("[DOWNLOAD IMG]","")
+        return send_file(process_id.strip("[").strip("]").replace("=","/"),
+                     attachment_filename=process_id.strip("[").strip("]").replace("=","/").replace("static/images_hist/",""),
                      as_attachment=True)
 
     #empty the scan temporary file
@@ -254,10 +247,11 @@ def process(process_id):
         return redirect("/scan_preview")
     
     #copy an image to the clipboard with a win32 api
-    if process_id == "[COPY IMG]":
+    if "[COPY IMG]" in process_id:
+        process_id = process_id.replace("[COPY IMG]","")
         try:
             output = BytesIO()
-            image = Image.open("static/imgscan.jpeg")
+            image = Image.open(process_id.strip("[").strip("]").replace("=","/"))
             image.convert('RGB').save(output, 'BMP')
             data = output.getvalue()[14:]
             output.close()
@@ -268,10 +262,12 @@ def process(process_id):
 
             flash("Image copied to clipboard :D")
 
-            return redirect("/image_preview")
+            return redirect("/image_preview/"+process_id)
             
         except ImportError:
-            return redirect("/image_preview") 
+            return redirect("/image_preview/"+process_id)
+
+
 
     #empty the history files
     if process_id == "[DEL HISTORY]":
