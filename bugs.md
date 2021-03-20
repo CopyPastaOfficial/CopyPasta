@@ -4,7 +4,6 @@
 - If you scan QR Code of WiFi or Calendar for exemple, the title is in english and so there is a problem of translation.
 - When you would like share the last scan, if the scan is for exemple a calendar, you can't share with a calendar app (I think it's not important at the moment but I think I will solve this problem in future updates.
 - When you change the orientation of the device, the card where is the last scanned text disappears.
-- I will add a option to send the last scanned text, because if there is a error of communication, then the user will send the text.
 - I will add the permission for the storage, even if the app works, it's better to add them.
 - When scanning something, the text "Scan or choose a picture from gallery" changes font or weight or letter spacing (i don't know).
 - You can't take a photo in the app to send image, you can only get a image from the gallery.
@@ -12,3 +11,4 @@
 - I will add a option to send the text from the clipboard.
 - When you make a long click on a device in the first page, there is a problem with a lot a device, you remove the device (it's the objective) and you will redirect to the device at the bottom.
 - The scan of QR CODE don't support visit card (there is not label)
+- When showing the loading bar at the bottom of the topbar (after scan text or send image), when you scroll, the loading bar is not in the foreground. 
