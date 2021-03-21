@@ -3,6 +3,8 @@ from getpass import getuser
 from random import randint
 from json import dumps
 from requests import get
+from locale import getlocale
+
 
 def get_private_ip():
     """
@@ -22,31 +24,38 @@ def make_qr_url():
 
 
 def check_updates():
-    with open("static/update.Blue","r") as f:
+    """with open("static/update.Blue","r") as f:
         n = int(f.read())
         if n == 10:
             download_templates()
         else:
             with open("static/update.Blue","w") as f:
-                f.write(str(n+1))
-                
+                f.write(str(n+1))"""
+
+    pass               
             
 
 def download_templates():
-    """r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
-    with open("templates/index.html","wb") as f:
-        f.write(r.content)"""
+    locale = getlocale()[1]
 
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
+    if locale not in get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/supported_languages.Blue",allow_redirects=True).text.split("/")
+        locale = "en_EN"
+
+
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/index.html",allow_redirects=True)
+    with open("templates/index.html","wb") as f:
+        f.write(r.content)
+
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/scan_preview.html",allow_redirects=True)
     with open("templates/scan_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/img_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/img_preview.html",allow_redirects=True)
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
 
 
-    r = get("https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
     with open("templates/favicon.ico","wb") as f:
         f.write(r.content)
 
