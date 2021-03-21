@@ -29,6 +29,11 @@ app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
 
 
+if not path.exists("templates/"):
+    mkdir("templates")  
+    download_templates()
+
+
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("static/"):
     mkdir("static")
@@ -43,13 +48,6 @@ if not path.exists("static/"):
     mkdir("static/dist/js")
     mkdir("static/images_hist")
 
-    download_templates()
-
-
-
-if not path.exists("templates/"):
-    mkdir("templates")
-    
     download_templates()
 
 
