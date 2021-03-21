@@ -24,13 +24,13 @@ def make_qr_url():
 
 
 def check_updates():
-    """with open("static/update.Blue","r") as f:
+    with open("static/update.Blue","r") as f:
         n = int(f.read())
         if n == 10:
             download_templates()
         else:
             with open("static/update.Blue","w") as f:
-                f.write(str(n+1))"""
+                f.write(str(n+1))
 
     pass               
             
