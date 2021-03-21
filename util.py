@@ -36,12 +36,19 @@ def check_updates():
             
 
 def download_templates():
-    locale = getlocale()[1]
+    locale = getlocale()[0]
 
-    if locale not in get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/supported_languages.Blue",allow_redirects=True).text.split("/")
+    #get supported languages list
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/supported_languages.Blue",allow_redirects=True).text
+    r = r.replace("\n","").split("/")
+
+    #check if the computer default language is supported
+    if locale not in r:
+        #if not, set to english
         locale = "en_EN"
 
 
+    #get the templates
     r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/index.html",allow_redirects=True)
     with open("templates/index.html","wb") as f:
         f.write(r.content)
