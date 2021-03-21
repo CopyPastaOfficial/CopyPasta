@@ -45,7 +45,7 @@ def download_templates():
     #check if the computer default language is supported
     if locale not in r:
         #if not, set to english
-        locale = "en_EN"
+        locale = "en_GB"
 
 
     #get the templates
