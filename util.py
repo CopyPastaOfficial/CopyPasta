@@ -4,7 +4,7 @@ from random import randint
 from json import dumps
 from requests import get
 from locale import getlocale
-
+from os import mkdir
 
 def get_private_ip():
     """
@@ -33,7 +33,24 @@ def check_updates():
                 f.write(str(n+1))
 
     pass               
-            
+
+def emergency_redownload():
+    mkdir("templates")
+
+    mkdir("static")
+    open("static/hist.Blue","w")
+    open("static/images_hist.Blue","w")
+    open("static/dates.Blue","w")
+    
+    with open("static/update.Blue","w") as f:
+        f.write("1")
+
+    mkdir("static/dist")
+    mkdir("static/dist/css")
+    mkdir("static/dist/js")
+    mkdir("static/images_hist")
+
+    download_templates()
 
 def download_templates():
     locale = getlocale()[0][:2]

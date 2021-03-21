@@ -15,7 +15,7 @@ from random import randint
 from platform import system
 from image_proc import start_image_proc
 from text_proc import start_text_proc
-from util import make_qr_url, get_private_ip, download_templates, check_updates
+from util import make_qr_url, get_private_ip, download_templates, check_updates, emergency_redownload
 from webbrowser import open as display_website
 from multiprocessing import Process, freeze_support
 from time import sleep
@@ -28,27 +28,14 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = b"6{#~@873gJHGZ@sfa54ZZEd^\\@#'"
 
 
-
-if not path.exists("templates/"):
-    mkdir("templates")  
-    download_templates()
-
-
 #check if the necesarry files exists, if not download and/or create them.
+if not path.exists("templates/"):
+    emergency_redownload()
+
+
+
 if not path.exists("static/"):
-    mkdir("static")
-    open("static/hist.Blue","w")
-    open("static/images_hist.Blue","w")
-    open("static/dates.Blue","w")
-    with open("static/update.Blue","w") as f:
-        f.write("1")
-
-    mkdir("static/dist")
-    mkdir("static/dist/css")
-    mkdir("static/dist/js")
-    mkdir("static/images_hist")
-
-    download_templates()
+    emergency_redownload()
 
 
 
