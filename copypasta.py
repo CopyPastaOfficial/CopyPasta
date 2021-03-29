@@ -110,6 +110,8 @@ def history(i):
     #redirect to the usual scan preview
     return redirect("/scan_preview")
 
+
+
 #image preview when the user send a picture
 @app.route("/image_preview/<img_path>")
 def img_preview(img_path):
@@ -259,7 +261,7 @@ def process(process_id):
         open("static/hist.Blue","w")
         open("static/dates.Blue","w")
         flash("Your scan History has been deleted :D")
-        return redirect("/[SETTINGS]")
+        return redirect("/")
 
 
     if process_id == "[HOME]":
