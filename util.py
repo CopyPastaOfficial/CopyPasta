@@ -24,17 +24,14 @@ def make_qr_url():
 
 
 def check_updates():
-    """with open("static/update.Blue","r") as f:
+    with open("static/update.Blue","r") as f:
         n = int(f.read())
         if n == 10:
             download_templates()
         else:
             with open("static/update.Blue","w") as f:
                 f.write(str(n+1))
-
-                """
-
-    pass      
+  
 
 def emergency_redownload():
     mkdir("templates")
@@ -79,7 +76,6 @@ def download_templates():
     r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/img_preview.html",allow_redirects=True)
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
-
 
     r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
     with open("templates/favicon.ico","wb") as f:
