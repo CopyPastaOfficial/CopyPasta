@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">CopyPasta</a>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-header">
+                        Configuration
+                    </div>
+                    <div class="card-body">
+                        <h5>Welcome to CopyPasta</h5>
+                        <h6>Scan this QR Code</h6>
+                        <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
+                        <h6>Name : {{hostname}}</h6>
+                        <h6>IP : {{ip}}</h6>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md">
+                <h1>Last scanned text :</h1>
+                <hr/>
+                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
+
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr class="bg-primary" style="color: white;">
+                            <th scope="col">Date</th>
+                            <th scope="col">Text</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for i in range(0, len1-1)%}
+                        <tr>
+                            <td>{{dates[i]}}</td>
+                            <td>{{hist[i][1:64]}}...</td>
+                            <td>
+                                <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copy</a>
+                                <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+
+                <h1>Last scanned Images :</h1>
+                <hr/>
+                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
+
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr class="bg-primary" style="color: white;">
+                            <th scope="col">Date</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for i in range(0, len2)%}
+                        <tr>
+                            <td>{{images_dates[i]}}</td>
+                            <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
+                            <td>
+                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open Image</a>
+                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.min.js') }}"></script>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <script>
+        var messages = {
+            {
+                messages | safe
+            }
+        };
+        alert(messages[messages.length - 1]);
+    </script>
+    {% endif %} {% endwith %}
+
+    <style>
+        .btn-primary {
+            color: white;
+        }
+        
+        body {
+            background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+        }
+    </style>
+</body>
+
+</html>
