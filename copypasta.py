@@ -146,7 +146,10 @@ def process(process_id):
     #wipe the images scan history
     if process_id == "[DEL_IMAGE HISTORY]":
         for file in listdir("static/images_hist/"):
-            remove(file)
+            remove("static/images_hist/"+file)
+
+
+        open("static/images_hist.Blue","w")
 
         return redirect("/")
 

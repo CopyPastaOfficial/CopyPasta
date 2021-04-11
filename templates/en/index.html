@@ -49,8 +49,8 @@
                     <tbody>
                         {%for i in range(0, len1-1)%}
                         <tr>
-                            <td>{{dates[i+1]}}</td>
-                            <td>{{hist[i][1:25]}}...</td>
+                            <td>{{dates[i]}}</td>
+                            <td>{{hist[i][1:64]}}...</td>
                             <td>
                                 <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copy</a>
                                 <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Delete</a>
@@ -59,6 +59,10 @@
                         {%endfor%}
                     </tbody>
                 </table>
+                {%if len1-1 == 0%}
+                <h3 style="margin-bottom: 20px; border-bottom: 1px solid rgb(180, 180, 180);">You don't have scanned any text</h3>
+                {%endif%}
+
 
                 <h1>Last scanned Images :</h1>
                 <hr/>
@@ -85,6 +89,10 @@
                         {%endfor%}
                     </tbody>
                 </table>
+                {%if len1-1 == 0%}
+                <h3 style="margin-bottom: 20px; border-bottom: 1px solid rgb(180, 180, 180);">You don't have scanned any image</h3>
+                {%endif%}
+
             </div>
         </div>
     </div>
