@@ -4,130 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyPasta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
 </head>
 <body>
-    <img src="../{{img_path}}" alt="¡Tu bella imagen! :D" class="center" style="margin-top: 50px;">
-	<div class="buttons">
-		<button class="btn effect01 center" onclick="window.location='/process/[DOWNLOAD IMG]{{img_path_formated}}'" style="margin-top: 5%;">Descargar imagen</button>
-		<button class="btn effect01 center" onclick="window.location='/process/[COPY IMG]{{img_path_formated}}'" style="margin-top: 5%;">Copiar la imagen</button>
-		<button class="btn effect01 center" onclick="window.location='/process/[HOME]'" style="margin-top: 5%;">Menú principal</button>
-	</div>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+
+    <div class="container-fluid">
+    <a class="navbar-brand">CopyPasta</a>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/process/[DOWNLOAD IMG]{{img_path_formated}}">Descargar la imagen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/process/[COPY IMG]{{img_path_formated}}">Copiar la imagen</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/process/[HOME]">Menú principal</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </nav>
+  <img src="../{{img_path}}" alt="Ta belle image ! :D" class="center" style="margin-top: 50px;">
     
 </body>
 
 <style>
-
-* {
-  outline:none;
-	border:none;
-	margin:0px;
-	padding:0px;
-	font-family:Courier, monospace;
-}
 .center {
   display: block;
   margin-left: auto;
   margin-right: auto;
   margin-top: auto;
-  width: 30%;
-}
-
-body {
-	background:#333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
-	      
-}
-.helvetica{
-	font-family: "Helvetica";
-}
-
-.buttons {
-  display: flex;
-  flex-direction: row;
-      flex-wrap: wrap;
-  justify-content: center;
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  margin: 0 auto;
-/*   padding: 2em 0em; */
-}
-
-.container {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  background-color: #FFF;
-  padding:  40px 0px;
-  width: 240px;
-}
-
-.btn {
-  letter-spacing: 0.1em;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 45px;
-  max-width: 200px;
-  position: relative;
-  text-decoration: none;
-  text-transform: uppercase;
-  width: 100%;
-}
-.btn:hover {
-  text-decoration: none;
-}
-
-/*btn_background*/
-.effect01 {
-  color: #FFF;
-  border: 4px solid rgb(34, 128, 206);
-  box-shadow:0px 0px 0px 1px rgb(34, 128, 206);
-  background-color: rgb(34, 128, 206);
-  overflow: hidden;
-  position: relative;
-  transition: all 0.3s ease-in-out;
-}
-.effect01:hover {
-  border: 4px solid #666;
-  background-color: #FFF;
-  box-shadow:0px 0px 0px 4px #EEE inset;
-}
-
-/*btn_text*/
-.effect01 span {
-  transition: all 0.2s ease-out;
-  z-index: 2;
-}
-.effect01:hover span{
-  letter-spacing: 0.13em;
-  color: #333;
-}
-
-/*highlight*/
-.effect01:after {
-  background: #FFF;
-  border: 0px solid #000;
-  content: "";
-  height: 155px;
-  left: -75px;
-  opacity: .8;
-  position: absolute;
-  top: -50px;
-  -webkit-transform: rotate(35deg);
-          transform: rotate(35deg);
-  width: 50px;
-  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);/*easeOutCirc*/
-  z-index: 1;
-}
-.effect01:hover:after {
-  background: #FFF;
-  border: 20px solid #000;
-  opacity: 0;
-  left: 120%;
-  -webkit-transform: rotate(40deg);
-          transform: rotate(40deg);
+  width: 50%;
 }
 </style>
 

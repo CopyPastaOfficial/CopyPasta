@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CopyPasta</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">CopyPasta</a>
+            <a class="navbar-brand">CopyPasta</a>
         </div>
     </nav>
     <div class="container mt-3">
@@ -23,8 +23,8 @@
                         Configuration
                     </div>
                     <div class="card-body">
-                        <h5>Welcome to CopyPasta</h5>
-                        <h6>Scan this QR Code</h6>
+                        <h5>Welcome in CopyPasta</h5>
+                        <h6>Scan this QR Code in your CopyPasta app :</h6>
                         <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
                         <h6>Name : {{hostname}}</h6>
                         <h6>IP : {{ip}}</h6>
@@ -33,8 +33,9 @@
                 </div>
 
             </div>
+            
             <div class="col-md">
-                <h1>Last scanned text :</h1>
+                <h1>Derniers textes scannés :</h1>
                 <hr/>
                 <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
@@ -49,8 +50,8 @@
                     <tbody>
                         {%for i in range(0, len1-1)%}
                         <tr>
-                            <td>{{dates[i]}}</td>
-                            <td>{{hist[i][1:64]}}...</td>
+                            <td>{{dates[i+1]}}</td>
+                            <td>{{hist[i][1:25]}}...</td>
                             <td>
                                 <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copy</a>
                                 <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Delete</a>
@@ -59,12 +60,12 @@
                         {%endfor%}
                     </tbody>
                 </table>
-                {%if len1-1 == 0%}
-                <h3 style="margin-bottom: 20px; border-bottom: 1px solid rgb(180, 180, 180);">You don't have scanned any text</h3>
+                {%if (len1-1 == 0)%}
+                    <h3 style="">No text scanned</h3>
+                    <hr/>
                 {%endif%}
 
-
-                <h1>Last scanned Images :</h1>
+                <h1>Dernières images envoyées :</h1>
                 <hr/>
                 <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
@@ -72,7 +73,7 @@
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
-                            <th scope="col">Image</th>
+                            <th scope="col">Picture</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -82,16 +83,20 @@
                             <td>{{images_dates[i]}}</td>
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
-                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open Image</a>
+                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open picture</a>
                                 <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
                         {%endfor%}
                     </tbody>
+                    {%if (len2 == 0)%}
+                        <h3 style="">No picture scanned</h3>
+                        <hr/>
+                    {%endif%}
                 </table>
-                {%if len1-1 == 0%}
-                <h3 style="margin-bottom: 20px; border-bottom: 1px solid rgb(180, 180, 180);">You don't have scanned any image</h3>
-                {%endif%}
+
+                
+
 
             </div>
         </div>
