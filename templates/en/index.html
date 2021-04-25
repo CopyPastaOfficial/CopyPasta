@@ -35,7 +35,7 @@
             </div>
             
             <div class="col-md">
-                <h1>Derniers textes scannés :</h1>
+                <h1>Last scanned text :</h1>
                 <hr/>
                 <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
@@ -65,7 +65,7 @@
                     <hr/>
                 {%endif%}
 
-                <h1>Dernières images envoyées :</h1>
+                <h1>Last pictures sent :</h1>
                 <hr/>
                 <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
@@ -90,7 +90,7 @@
                         {%endfor%}
                     </tbody>
                     {%if (len2 == 0)%}
-                        <h3 style="">No picture scanned</h3>
+                        <h3 style="">No picture sent</h3>
                         <hr/>
                     {%endif%}
                 </table>

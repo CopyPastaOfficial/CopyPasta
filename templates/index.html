@@ -23,10 +23,10 @@
                         Configuration
                     </div>
                     <div class="card-body">
-                        <h5>Bienvenue dans CopyPasta</h5>
-                        <h6>Scannez ce QR Code dans l'application :</h6>
+                        <h5>Welcome in CopyPasta</h5>
+                        <h6>Scan this QR Code in your CopyPasta app :</h6>
                         <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
-                        <h6>Nom : {{hostname}}</h6>
+                        <h6>Name : {{hostname}}</h6>
                         <h6>IP : {{ip}}</h6>
 
                     </div>
@@ -37,7 +37,7 @@
             <div class="col-md">
                 <h1>Derniers textes scannés :</h1>
                 <hr/>
-                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Supprimer tout l'historique</a>
+                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
                 <table class="table table-striped text-center">
                     <thead>
@@ -53,27 +53,27 @@
                             <td>{{dates[i+1]}}</td>
                             <td>{{hist[i][1:25]}}...</td>
                             <td>
-                                <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copier</a>
-                                <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Supprimer</a>
+                                <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copy</a>
+                                <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
                         {%endfor%}
                     </tbody>
                 </table>
                 {%if (len1-1 == 0)%}
-                    <h3 style="">Aucun texte n'a été scanné</h3>
+                    <h3 style="">No text scanned</h3>
                     <hr/>
                 {%endif%}
 
                 <h1>Dernières images envoyées :</h1>
                 <hr/>
-                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Supprimer tout l'historique</a>
+                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
                 <table class="table table-striped text-center">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
-                            <th scope="col">Image</th>
+                            <th scope="col">Picture</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -83,14 +83,14 @@
                             <td>{{images_dates[i]}}</td>
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
-                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Ouvrir l'Image</a>
-                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Supprimer</a>
+                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open picture</a>
+                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
                         {%endfor%}
                     </tbody>
                     {%if (len2 == 0)%}
-                        <h3 style="">Aucune  image n'a été scannée</h3>
+                        <h3 style="">No picture scanned</h3>
                         <hr/>
                     {%endif%}
                 </table>
