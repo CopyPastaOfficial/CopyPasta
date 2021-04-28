@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyPasta</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+
+    
+
 </head>
 
 <body>
@@ -34,12 +37,12 @@
 
             </div>
             
-            <div class="col-md">
-                <h1>Derniers textes scannés :</h1>
+            <div class="col-md" >
+                <h1>Last scanned text :</h1>
                 <hr/>
                 <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
-                <table class="table table-striped text-center">
+                <table class="table table-striped text-center" id="text_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
@@ -65,11 +68,11 @@
                     <hr/>
                 {%endif%}
 
-                <h1>Dernières images envoyées :</h1>
+                <h1>Last pictures sent :</h1>
                 <hr/>
                 <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
 
-                <table class="table table-striped text-center">
+                <table class="table table-striped text-center" id="img_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
@@ -90,7 +93,7 @@
                         {%endfor%}
                     </tbody>
                     {%if (len2 == 0)%}
-                        <h3 style="">No picture scanned</h3>
+                        <h3 style="">No picture sent</h3>
                         <hr/>
                     {%endif%}
                 </table>
@@ -122,6 +125,31 @@
             background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
         }
     </style>
+
+<script>
+    function update(){
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
+        xmlHttp.send( null );
+        var html = xmlHttp.responseText;
+        var parsed_html = new DOMParser().parseFromString(html, "text/html");
+
+        if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
+            document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
+        }
+
+
+        if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
+            document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
+        }
+
+        setTimeout(update,5000);
+    }
+    window.onload = update();
+</script>
+
+
 </body>
 
 </html>
