@@ -13,6 +13,17 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand">CopyPasta</a>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    {%if tab==True%}
+                        <a style="color: white;">Ouvrir un nouvel onglet quand quand un scan arrive <input type="checkbox" onclick="change_tab_settings()" checked></a>
+                    {%else%}
+                        <a style="color: white;">Ouvrir un nouvel onglet quand quand un scan arrive <input type="checkbox" onclick="change_tab_settings()"></a>
+                    {%endif%}
+                </li>
+                </ul>
+              </div>
         </div>
     </nav>
     <div class="container mt-3">
