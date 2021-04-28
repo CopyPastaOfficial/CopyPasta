@@ -63,7 +63,8 @@ def image_process():
 
         cli.close()
 
-        #display_website("http://127.0.0.1:21987/image_preview/[static=imgscan.jpeg]")
+        if path.exists("static/tab"):
+            display_website("http://127.0.0.1:21987/image_preview/[static=imgscan.jpeg]")
 
 def start_image_proc():
     freeze_support()

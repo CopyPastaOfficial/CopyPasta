@@ -7,7 +7,7 @@ from datetime import date
 from random import randint
 from pyperclip import copy
 from webbrowser import open as display_website
-
+from os import path
 
 #funtion run by another process to receive text scan
 def text_process():
@@ -49,7 +49,11 @@ def text_process():
                     today = date.today()
                     f.write(str(today.strftime("%d/%m/%Y"))+"\n")
 
-            #display_website("http://127.0.0.1:21987/scan_preview")
+
+            if path.exists("static/tab"):
+                print("ONGLET")
+                display_website("http://127.0.0.1:21987/scan_preview")
+
             break
 
         cli.close()

@@ -80,10 +80,14 @@ def home():
             images_hist.append(ele[0])
             f.close()
             
+    if path.exists("static/tab"):
+        tab = True
 
+    else:
+        tab = False
         
     #render the html with the history
-    return render_template("index.html",hist = a, len1 = len(a),dates=dates,hostname=socket.gethostname(),ip=get_private_ip(),images_hist = images_hist,images_dates = images_dates,len2=len(images_dates))
+    return render_template("index.html",hist = a, len1 = len(a),dates=dates,hostname=socket.gethostname(),ip=get_private_ip(),images_hist = images_hist,images_dates = images_dates,len2=len(images_dates),tab=tab)
 
 
 
@@ -273,6 +277,15 @@ def process(process_id):
         return redirect("/")
 
 
+    if process_id == "[CHANGE TAB SETTINGS]":
+        if path.exists("static/tab"):
+            remove("static/tab")
+        else:
+            open("static/tab","w")
+        
+        return "OK"
+
+
 #api url(s)
 
 @app.route("/api/<api_req>")
@@ -298,16 +311,6 @@ def api(api_req):
             history.append({"id":f"{i}","content":f"{scans[i]}","date":f"{dates[i]}"})
         
         return str(history)
-
-
-
-
-
-
-
-
-
-
 
 
 
