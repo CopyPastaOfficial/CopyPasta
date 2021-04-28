@@ -136,7 +136,7 @@ def scan_preview():
             a = f.read()
             leng = len(a.split("\n"))
             return render_template("scan_preview.html",scan = a.replace("/n","<br>"),len=leng)
-        
+    
 
 #processes
 @app.route("/process/<process_id>")
@@ -271,6 +271,46 @@ def process(process_id):
 
         #redirect to homepage
         return redirect("/")
+
+
+#api url(s)
+
+@app.route("/api/<api_req>")
+def api(api_req):
+
+    if api_req == "get_history":
+
+        #get history
+        with open("static/hist.Blue","r") as f:
+            scans = f.read().split("=")
+            f.close()
+
+        #get dates
+        with open("static/dates.Blue") as f:
+            dates = f.read().split("\n")
+            dates.reverse()
+            for i in range(1,len(dates)):
+                dates[i] = dates[i]
+            f.close()
+        
+        history = []
+        for i in range(1,len(dates)):
+            history.append({"id":f"{i}","content":f"{scans[i]}","date":f"{dates[i]}"})
+        
+        return str(history)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def open_tab():

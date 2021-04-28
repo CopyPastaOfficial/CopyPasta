@@ -49,7 +49,7 @@ def text_process():
                     today = date.today()
                     f.write(str(today.strftime("%d/%m/%Y"))+"\n")
 
-            display_website("http://127.0.0.1:21987/scan_preview")
+            #display_website("http://127.0.0.1:21987/scan_preview")
             break
 
         cli.close()
