@@ -158,6 +158,17 @@
 
         setTimeout(update,5000);
     }
+        
+        
+    function change_tab_settings(){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
+        xmlHttp.send( null );
+        console.log("tab settings changed")
+    }
+        
+        
+        
     window.onload = update();
 </script>
     
