@@ -16,6 +16,17 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand">CopyPasta</a>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    {%if tab==True%}
+                        <a style="color: white;">Open a new tab each time you receive something <input type="checkbox" onclick="change_tab_settings()" checked></a>
+                    {%else%}
+                        <a style="color: white;">Open a new tab each time you receive something <input type="checkbox" onclick="change_tab_settings()"></a>
+                    {%endif%}
+                </li>
+                </ul>
+              </div>
         </div>
     </nav>
     <div class="container mt-3">
@@ -146,7 +157,26 @@
 
         setTimeout(update,5000);
     }
+
+
+    function change_tab_settings(){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
+        xmlHttp.send( null );
+        console.log("tab settings changed")
+    }
+
+
+
+
+
     window.onload = update();
+
+
+
+
+
+
 </script>
 
 
