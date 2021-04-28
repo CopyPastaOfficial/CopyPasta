@@ -122,6 +122,33 @@
             background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
         }
     </style>
+    
+    
+    <script>
+    function update(){
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
+        xmlHttp.send( null );
+        var html = xmlHttp.responseText;
+        var parsed_html = new DOMParser().parseFromString(html, "text/html");
+
+        if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
+            document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
+        }
+
+
+        if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
+            document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
+        }
+
+        setTimeout(update,5000);
+    }
+    window.onload = update();
+</script>
+    
+    
+    
 </body>
 
 </html>
