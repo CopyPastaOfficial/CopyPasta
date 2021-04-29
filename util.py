@@ -37,13 +37,13 @@ def emergency_redownload():
     
     if not path.exists("templates/"):
         mkdir("templates")
-        download_templates()
 
     if not path.exists("static/"):
         mkdir("static")
         open("static/hist.Blue","w")
         open("static/images_hist.Blue","w")
         open("static/dates.Blue","w")
+        open("static/favicon.ico","w")
 
         with open("static/update.Blue","w") as f:
             f.write("1")
@@ -52,7 +52,8 @@ def emergency_redownload():
         mkdir("static/dist/css")
         mkdir("static/dist/js")
         mkdir("static/images_hist")
-        download_templates()
+        
+    download_templates()
 
 
 
