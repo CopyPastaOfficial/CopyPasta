@@ -29,6 +29,9 @@
             
         </div>
     </nav>
+    <div class="alert alert-success" role="alert" id="notification" style="display: none;">
+        This is a success alert
+    </div>
     <div class="container mt-3">
         <div class="row">
             <div class="col-md-3">
@@ -51,7 +54,7 @@
             <div class="col-md">
                 <h1>Últimos textos escaneados:</h1>
                 <hr/>
-                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Eliminar todo el historial</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Scans history deleted !','/process/[DEL HISTORY]')">Eliminar todo el historial</a>
 
                 <table class="table table-striped text-center">
                     <thead>
@@ -67,8 +70,9 @@
                             <td>{{dates[i+1]}}</td>
                             <td>{{hist[i][1:25]}}...</td>
                             <td>
-                                <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copiar</a>
-                                <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Eliminar</a>
+                                <a class="btn btn-primary" onclick="request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]{{i}}')">Copiar</a>
+                                <a href="/hist/{{i}}" class="btn btn-primary">Abrir scan</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_SCAN_FROM_HIST]{{i}}')">Eliminar</a>
                             </td>
                         </tr>
                         {%endfor%}
@@ -81,7 +85,7 @@
 
                 <h1>Últimos imagenes escaneados:</h1>
                 <hr/>
-                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Eliminar todo el historial</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Pictures history deleted !','/process/[DEL_IMAGE HISTORY]')">Eliminar todo el historial</a>
 
                 <table class="table table-striped text-center">
                     <thead>
@@ -98,7 +102,7 @@
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
                                 <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Abrir imagen</a>
-                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Eliminar</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Eliminar</a>
                             </td>
                         </tr>
                         {%endfor%}
@@ -139,36 +143,79 @@
     
     
     <script>
-    function update(){
+        function update(){
 
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
-        xmlHttp.send( null );
-        var html = xmlHttp.responseText;
-        var parsed_html = new DOMParser().parseFromString(html, "text/html");
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
+            xmlHttp.send( null );
+            var html = xmlHttp.responseText;
+            var parsed_html = new DOMParser().parseFromString(html, "text/html");
 
-        if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
-            document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
+            if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
+                document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
+                notify("New text scan received !")
+            }
+
+
+            if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
+                document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
+                notify("New picture scan received !")
+
+            }
+
+
+            setTimeout(update,2000);
         }
 
 
-        if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
-            document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
-        }
-
-        setTimeout(update,5000);
-    }
-        
     function change_tab_settings(){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
         xmlHttp.send( null );
         console.log("tab settings changed")
-    }        
+    }
+    
+
+    function notify(text){
+        if (document.getElementById("notification").style.display == "none"){
+            document.getElementById("notification").innerText = text;
+            document.getElementById("notification").style.display = "block";
+        }else{
+            document.getElementById("notification").style.display = "none";
+        }
         
+        setTimeout(delete_notification,3000);
+    }
+
+    function delete_notification(){
+        document.getElementById("notification").style.display = "none";
+
+    }
+
+    function request_and_notify(text,url){
+        if (document.getElementById("notification").style.display == "none"){
+            document.getElementById("notification").innerText = text;
+            document.getElementById("notification").style.display = "block";
+        }else{
+            document.getElementById("notification").style.display = "none";
+        }
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false ); // false for synchronous request
+        xmlHttp.send( null );
         
-   
+        setTimeout(delete_notification,3000);
+    }
+
+
+
+
     window.onload = update();
+
+
+
+
+
 </script>
     
     
