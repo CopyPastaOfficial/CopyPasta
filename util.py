@@ -31,25 +31,32 @@ def check_updates():
         else:
             with open("static/update.Blue","w") as f:
                 f.write(str(n+1))
-  
+
 
 def emergency_redownload():
-    mkdir("templates")
-
-    mkdir("static")
-    open("static/hist.Blue","w")
-    open("static/images_hist.Blue","w")
-    open("static/dates.Blue","w")
     
-    with open("static/update.Blue","w") as f:
-        f.write("1")
+    if not path.exists("templates/"):
+        mkdir("templates")
+        download_templates()
 
-    mkdir("static/dist")
-    mkdir("static/dist/css")
-    mkdir("static/dist/js")
-    mkdir("static/images_hist")
+    if not path.exists("static/"):
+        mkdir("static")
+        open("static/hist.Blue","w")
+        open("static/images_hist.Blue","w")
+        open("static/dates.Blue","w")
 
-    download_templates()
+        with open("static/update.Blue","w") as f:
+            f.write("1")
+
+        mkdir("static/dist")
+        mkdir("static/dist/css")
+        mkdir("static/dist/js")
+        mkdir("static/images_hist")
+        download_templates()
+
+
+
+    
 
 def download_templates():
     locale = getlocale()[0][:2]
@@ -78,7 +85,7 @@ def download_templates():
         f.write(r.content)
 
     r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
-    with open("templates/favicon.ico","wb") as f:
+    with open("static/favicon.ico","wb") as f:
         f.write(r.content)
 
     r = get("https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/bootstrap/dist/css/bootstrap.min.css")
