@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -48,7 +48,7 @@
             <div class="col-md">
                 <h1>Derniers textes scannés :</h1>
                 <hr/>
-                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Supprimer tout l'historique</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Historique des scans supprimé !','/process/[DEL HISTORY]')">Supprimer tout l'historique</a>
 
                 <table class="table table-striped text-center">
                     <thead>
@@ -64,8 +64,9 @@
                             <td>{{dates[i+1]}}</td>
                             <td>{{hist[i][1:25]}}...</td>
                             <td>
-                                <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copier</a>
-                                <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Supprimer</a>
+                                <a class="btn btn-primary" onclick="request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]{{i}}')">Copier</a>
+                                <a href="/hist/{{i}}" class="btn btn-primary">Ouvrir</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Scan supprimé !','/process/[DELETE_SCAN_FROM_HIST]{{i}}')">Supprimer</a>
                             </td>
                         </tr>
                         {%endfor%}
@@ -78,7 +79,7 @@
 
                 <h1>Dernières images envoyées :</h1>
                 <hr/>
-                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Supprimer tout l'historique</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Historique des images supprimé !','/process/[DEL_IMAGE HISTORY]')">Supprimer tout l'historique</a>
 
                 <table class="table table-striped text-center">
                     <thead>
@@ -94,8 +95,8 @@
                             <td>{{images_dates[i]}}</td>
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
-                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Ouvrir l'Image</a>
-                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Supprimer</a>
+                                <a class="btn btn-primary" onclick="request_and_notify('Image copiée !','/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Ouvrir</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Image supprimée !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Supprimer</a>
                             </td>
                         </tr>
                         {%endfor%}
@@ -135,36 +136,76 @@
     </style>
     
     <script>
-    function update(){
+        function update(){
 
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
-        xmlHttp.send( null );
-        var html = xmlHttp.responseText;
-        var parsed_html = new DOMParser().parseFromString(html, "text/html");
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
+            xmlHttp.send( null );
+            var html = xmlHttp.responseText;
+            var parsed_html = new DOMParser().parseFromString(html, "text/html");
 
-        if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
-            document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
-        }
+            if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
+                document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
+                notify("New text scan received !")
+            }
 
 
-        if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
-            document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
-        }
+            if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
+                document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
+                notify("New picture scan received !")
 
-        setTimeout(update,5000);
+            }
+
+
+            setTimeout(update,2000);
     }
-        
+
+
     function change_tab_settings(){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
         xmlHttp.send( null );
         console.log("tab settings changed")
-    }    
-        
-        
+    }
     
+
+    function notify(text){
+        if (document.getElementById("notification").style.display == "none"){
+            document.getElementById("notification").innerText = text;
+            document.getElementById("notification").style.display = "block";
+        }else{
+            document.getElementById("notification").style.display = "none";
+        }
+        
+        setTimeout(delete_notification,3000);
+    }
+
+    function delete_notification(){
+        document.getElementById("notification").style.display = "none";
+
+    }
+
+    function request_and_notify(text,url){
+        if (document.getElementById("notification").style.display == "none"){
+            document.getElementById("notification").innerText = text;
+            document.getElementById("notification").style.display = "block";
+        }else{
+            document.getElementById("notification").style.display = "none";
+        }
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false ); // false for synchronous request
+        xmlHttp.send( null );
+        
+        setTimeout(delete_notification,3000);
+    }
+
+
+
+
     window.onload = update();
+
+
 </script>
     
     
