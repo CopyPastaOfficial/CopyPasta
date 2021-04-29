@@ -26,6 +26,9 @@
               </div>
         </div>
     </nav>
+    <div class="alert alert-success" role="alert" id="notification" style="display: none;">
+        This is a success alert
+    </div>
     <div class="container mt-3">
         <div class="row">
             <div class="col-md-3">
@@ -95,7 +98,7 @@
                             <td>{{images_dates[i]}}</td>
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
-                                <a class="btn btn-primary" onclick="request_and_notify('Image copiée !','/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Ouvrir</a>
+                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Ouvrir</a>
                                 <a class="btn btn-danger" onclick="request_and_notify('Image supprimée !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Supprimer</a>
                             </td>
                         </tr>
