@@ -193,25 +193,35 @@ def process(process_id):
             text = a[int(process_id)]
             copy(text)
             f.close()
-        flash("scan copied to clipboard :D")
         return redirect("/")
 
     if "[DELETE_SCAN_FROM_HIST]" in process_id:
         process_id = process_id.replace("[DELETE_SCAN_FROM_HIST]","")
         with open("static/hist.Blue","r") as f:
             a = f.read()
+            a_f = a
             a = a.split("=")
             a.reverse()
             text = "="+a[int(process_id)]
             f.close()
-        
-        with open("static/hist.Blue","r") as f:
-            a = f.read()
-            f.close()
 
         with open("static/hist.Blue","w") as f:
-            f.write(a.replace(text,"",1))
+            f.write(a_f.replace(text,"",1))
             f.close()
+
+        with open("static/dates.Blue","r") as f:
+            a = f.read()
+            a_f = a
+            a = a.split("\n")
+            a.reverse()
+            date = a[int(process_id)+1]
+            print(f"date : {a} process_id : {process_id}")
+            f.close()
+        
+        with open("static/dates.Blue","w") as f:
+            f.write(a_f.replace(date+"\n",""))
+            f.close()
+
 
         return redirect("/")
 
@@ -233,7 +243,6 @@ def process(process_id):
     if process_id == "[COPY SCAN]":
         with open("static/scan.Blue","r") as f:
             copy(f.read())
-            flash("Scan copied in your clipboard :D")
             f.close()
 
         flash("scan copied to clipboard :D")
@@ -267,7 +276,6 @@ def process(process_id):
     if process_id == "[DEL HISTORY]":
         open("static/hist.Blue","w")
         open("static/dates.Blue","w")
-        flash("Your scan History has been deleted :D")
         return redirect("/")
 
 
@@ -284,6 +292,9 @@ def process(process_id):
             open("static/tab","w")
         
         return "OK"
+
+
+
 
 
 #api url(s)
@@ -306,6 +317,7 @@ def api(api_req):
                 dates[i] = dates[i]
             f.close()
         
+        print(len(dates))
         history = []
         for i in range(1,len(dates)):
             history.append({"id":f"{i}","content":f"{scans[i]}","date":f"{dates[i]}"})
