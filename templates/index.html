@@ -99,8 +99,9 @@
                             <td>{{images_dates[i]}}</td>
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
-                                <a class="btn btn-primary" onclick="request_and_notify('Scan copied !','/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Open picture</a>
-                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Delete</a>                            </td>
+                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open picture</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Delete</a>
+                            </td>
                         </tr>
                         {%endfor%}
                     </tbody>
