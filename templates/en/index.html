@@ -7,14 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyPasta</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand">CopyPasta</a>
-            
-            
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item active">
@@ -26,9 +25,11 @@
                 </li>
                 </ul>
               </div>
-            
         </div>
     </nav>
+    <div class="alert alert-success" role="alert" id="notification" style="display: none;">
+        This is a success alert
+    </div>
     <div class="container mt-3">
         <div class="row">
             <div class="col-md-3">
@@ -48,12 +49,12 @@
 
             </div>
             
-            <div class="col-md">
+            <div class="col-md" >
                 <h1>Last scanned text :</h1>
                 <hr/>
-                <a href="/process/[DEL HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Scans history deleted !','/process/[DEL HISTORY]')">Delete all history</a>
 
-                <table class="table table-striped text-center">
+                <table class="table table-striped text-center" id="text_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
@@ -67,8 +68,9 @@
                             <td>{{dates[i+1]}}</td>
                             <td>{{hist[i][1:25]}}...</td>
                             <td>
-                                <a href="/process/[COPY_SCAN_FROM_HIST]{{i}}" class="btn btn-primary">Copy</a>
-                                <a href="/process/[DELETE_SCAN_FROM_HIST]{{i}}" class="btn btn-danger">Delete</a>
+                                <a class="btn btn-primary" onclick="request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]{{i}}')">Copy</a>
+                                <a href="/hist/{{i}}" class="btn btn-primary">Open scan</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_SCAN_FROM_HIST]{{i}}')">Delete</a>
                             </td>
                         </tr>
                         {%endfor%}
@@ -81,9 +83,9 @@
 
                 <h1>Last pictures sent :</h1>
                 <hr/>
-                <a href="/process/[DEL_IMAGE HISTORY]" class="btn btn-primary mb-3">Delete all history</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Pictures history deleted !','/process/[DEL_IMAGE HISTORY]')">Delete all history</a>
 
-                <table class="table table-striped text-center">
+                <table class="table table-striped text-center" id="img_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
@@ -97,8 +99,8 @@
                             <td>{{images_dates[i]}}</td>
                             <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
                             <td>
-                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open picture</a>
-                                <a href="/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-danger">Delete</a>
+                                <a class="btn btn-primary" onclick="request_and_notify('Scan copied !','/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Open picture</a>
+                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Delete</a>
                             </td>
                         </tr>
                         {%endfor%}
@@ -136,9 +138,8 @@
             background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
         }
     </style>
-    
-    
-    <script>
+
+<script>
     function update(){
 
         var xmlHttp = new XMLHttpRequest();
@@ -149,31 +150,73 @@
 
         if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
             document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
+            notify("New text scan received !")
         }
 
 
         if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
             document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
+            notify("New picture scan received !")
+        
         }
 
-        setTimeout(update,5000);
+
+        setTimeout(update,2000);
     }
-        
-        
+
+
     function change_tab_settings(){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
         xmlHttp.send( null );
         console.log("tab settings changed")
     }
+    
+
+    function notify(text){
+        if (document.getElementById("notification").style.display == "none"){
+            document.getElementById("notification").innerText = text;
+            document.getElementById("notification").style.display = "block";
+        }else{
+            document.getElementById("notification").style.display = "none";
+        }
         
+        setTimeout(delete_notification,3000);
+    }
+
+    function delete_notification(){
+        document.getElementById("notification").style.display = "none";
+
+    }
+
+    function request_and_notify(text,url){
+        if (document.getElementById("notification").style.display == "none"){
+            document.getElementById("notification").innerText = text;
+            document.getElementById("notification").style.display = "block";
+        }else{
+            document.getElementById("notification").style.display = "none";
+        }
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false ); // false for synchronous request
+        xmlHttp.send( null );
         
-        
+        setTimeout(delete_notification,3000);
+    }
+
+
+
+
     window.onload = update();
+
+
+
+
+
+
 </script>
-    
-    
-    
+
+
 </body>
 
 </html>
