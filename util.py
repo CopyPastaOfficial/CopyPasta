@@ -4,7 +4,7 @@ from random import randint
 from json import dumps
 from requests import get
 from locale import getlocale
-from os import mkdir
+from os import mkdir, path
 
 def get_private_ip():
     """
