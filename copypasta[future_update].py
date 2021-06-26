@@ -14,8 +14,6 @@ from pyperclip import copy
 from time import sleep
 from random import randint
 from platform import system
-from image_proc import start_image_proc
-from text_proc import start_text_proc
 from util import *
 from webbrowser import open as display_website
 from multiprocessing import Process, freeze_support
@@ -29,7 +27,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
 
 
-#store_to_history("""{"file_type" : "text_scan","date" : "time","text" : "file_content"}""")
+#store_to_history("""{"file_type" : "text_scan","date" : "time","text" : "ahaha lol ça fonctionne un peu"}""")
 
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
