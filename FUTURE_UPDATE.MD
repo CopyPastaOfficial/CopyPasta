@@ -23,8 +23,8 @@ data support ideas :
 
 Informations for the app :
 
-url to post requests : http://<ip_addr>/upload
+- url to post requests : http://<ip_addr>/upload
 response  of the server : {"upload_status\" : "true"} or {"upload_status" : "false"} if upload failed
 - to upload files, you need to POST a multipart request of the files
 - to upload text, you need to POST a simple request with the JSON content specified on upper part.
-maybe i will add a version number in the JSON integrated in the QR code, so the app will be able to notify the user when the desktop app needs an update.
+- maybe i will add a version number in the JSON integrated in the QR code, so the app will be able to notify the user when the desktop app needs an update. (need to see with my friend that is coding the app if he's okay with that )
