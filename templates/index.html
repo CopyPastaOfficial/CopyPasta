@@ -126,7 +126,7 @@
                 }
 
                 if(obj.file_type == "text_scan"){
-                    tab_element = "<tr>    <td>"+obj.date+"</td>    <td>"+ obj.text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]"+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>        <a class=\"btn btn-danger\" onclick=\"request_and_notify('Scan supprimé !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\">Supprimer</a>    </td></tr>";
+                    tab_element = "<tr>    <td>"+obj.date+"</td>    <td>"+ obj.text.substring(0,12)+"...</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]"+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>        <a class=\"btn btn-danger\" onclick=\"request_and_notify('Scan supprimé !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\">Supprimer</a>    </td></tr>";
 
                 }
 
