@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyPasta</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
-
 </head>
 
 <body>
@@ -15,6 +14,11 @@
         <div class="container-fluid">
             <a class="navbar-brand">CopyPasta</a>
             <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    
+                </li>
+                </ul>
               </div>
         </div>
     </nav>
@@ -29,22 +33,21 @@
                         Configuration
                     </div>
                     <div class="card-body">
-                        <h5>Welcome in CopyPasta</h5>
-                        <h6>Scan this QR Code in your CopyPasta app :</h6>
+                        <h5>Bienvenue dans CopyPasta</h5>
+                        <h6>Scannez ce QR Code dans l'application :</h6>
                         <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
-                        <h6>Name : {{hostname}}</h6>
+                        <h6>Nom : {{hostname}}</h6>
                         <h6>IP : {{ip}}</h6>
-                        
-                        
+                        <hr>
                         <h6>
                             {%if tab!=True%}
                             <div class="form-check form-switch">                                
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Open a new tab each time you receive something</label>
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Ouvrir un nouvel onglet quand quand un scan arrive</label>
                                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="change_tab_settings()"/>
                             </div>
                             {%else%}
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="flexSwitchCheckChecked">Open a new tab each time you receive something</label>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked">Ouvrir un nouvel onglet quand quand un scan arrive</label>
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onclick="change_tab_settings()" checked/>
                                 </div>
                             {%endif%}
@@ -55,71 +58,24 @@
 
             </div>
             
-            <div class="col-md" >
-                <h1>Last scanned text :</h1>
+            <div class="col-md">
+                <h1>Derniers fichiers et textes envoyés :</h1>
                 <hr/>
-                <a class="btn btn-primary mb-3" onclick="request_and_notify('Scans history deleted !','/process/[DEL HISTORY]')">Delete all history</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Historique des scans supprimé !','/process/[DEL HISTORY]')">Supprimer tout l'historique</a>
 
-                <table class="table table-striped text-center" id="text_table">
+                <table class="table table-striped text-center" id="history_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date</th>
-                            <th scope="col">Text</th>
-                            <th scope="col">Action</th>
-                            
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {%for i in range(0, len1-1)%}
-                        <tr>
-                            <td>{{dates[i+1]}}</td>
-                            <td>{{hist[i][1:25]}}...</td>
-                            <td>
-                                <a class="btn btn-primary" onclick="request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]{{i}}')">Copy</a>
-                                <a href="/hist/{{i}}" class="btn btn-primary">Open scan</a>
-                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_SCAN_FROM_HIST]{{i}}')">Delete</a>
-                            </td>
-                        </tr>
-                        {%endfor%}
-                    </tbody>
-                </table>
-                {%if (len1-1 == 0)%}
-                    <h3 style="">No text scanned</h3>
-                    <hr/>
-                {%endif%}
-
-                <h1>Last pictures sent :</h1>
-                <hr/>
-                <a class="btn btn-primary mb-3" onclick="request_and_notify('Pictures history deleted !','/process/[DEL_IMAGE HISTORY]')">Delete all history</a>
-
-                <table class="table table-striped text-center" id="img_table">
-                    <thead>
-                        <tr class="bg-primary" style="color: white;">
-                            <th scope="col">Date</th>
-                            <th scope="col">Picture</th>
+                            <th scope="col">Content</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {%for i in range(0, len2)%}
-                        <tr>
-                            <td>{{images_dates[i]}}</td>
-                            <td><img src="../static/images_hist/{{images_hist[i]}}" height="auto" width="100px"></td>
-                            <td>
-                                <a href="/process/[OPEN_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}" class="btn btn-primary">Open picture</a>
-                                <a class="btn btn-danger" onclick="request_and_notify('Scan deleted !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]{{images_hist[i]}}')">Delete</a>
-                            </td>
-                        </tr>
-                        {%endfor%}
+                    <tbody id="history_table_body">
+
                     </tbody>
-                    {%if (len2 == 0)%}
-                        <h3 style="">No picture sent</h3>
-                        <hr/>
-                    {%endif%}
                 </table>
 
-                
 
 
             </div>
@@ -145,32 +101,65 @@
         body {
             background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
         }
-    </style>
 
-<script>
-    function update(){
-
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", "http://127.0.0.1:21987/", false ); // false for synchronous request
-        xmlHttp.send( null );
-        var html = xmlHttp.responseText;
-        var parsed_html = new DOMParser().parseFromString(html, "text/html");
-
-        if (document.getElementById("text_table").innerHTML !== parsed_html.getElementById("text_table").innerHTML){
-            document.getElementById("text_table").innerHTML = parsed_html.getElementById("text_table").innerHTML;
-            notify("New text scan received !")
-        }
-
-
-        if (document.getElementById("img_table").innerHTML !== parsed_html.getElementById("img_table").innerHTML){
-            document.getElementById("img_table").innerHTML = parsed_html.getElementById("img_table").innerHTML;
-            notify("New picture scan received !")
         
+
+    </style>
+    
+    <script>
+
+
+        function fill_history_tab(){
+
+            var xmlHttp = new XMLHttpRequest();
+
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_history", false ); // false for synchronous request
+            xmlHttp.send( null );
+            var json = JSON.parse(xmlHttp.responseText).history;
+            var elements = [];
+
+            for (let i = 0; i < json.length; i++) {
+                var obj = json[i];
+                var tab_element = "";
+                if(obj.file_type == "image"){
+                    tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path=\""+obj.path+" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]?path="+obj.path+"&image_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
+                }
+
+                if(obj.file_type == "text_scan"){
+                    tab_element = "<tr>    <td>"+obj.date+"</td>    <td>"+ obj.text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]"+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>        <a class=\"btn btn-danger\" onclick=\"request_and_notify('Scan supprimé !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\">Supprimer</a>    </td></tr>";
+
+                }
+
+                if(obj.file_type == "other"){
+                    tab_element = "YOU NEED TO DO THE ORTHERS FILE TYPES";
+                }
+
+
+                elements.push(tab_element);
+
+
+            }
+            var all = "";
+            console.log(elements.length)
+            for(let i = 0;i<elements.length;i++){
+                all = all + elements[i];
+            }
+
+            if(document.getElementById("history_table_body").innerHTML != all){
+                notify("Nouvel élément reçu !");
+                document.getElementById("history_table_body").innerHTML = all;
+            }
+            
+
+
+            
+
+
+            setTimeout(fill_history_tab,1000);
         }
 
 
-        setTimeout(update,2000);
-    }
+
 
 
     function change_tab_settings(){
@@ -215,16 +204,12 @@
 
 
 
-    window.onload = update();
-
-
-
-
+    window.onload = fill_history_tab();
 
 
 </script>
-
-
+    
+    
 </body>
 
 </html>
