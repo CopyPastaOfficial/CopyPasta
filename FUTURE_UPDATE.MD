@@ -1,4 +1,4 @@
-##JSON EXAMPLES :
+## JSON EXAMPLES :
 
 this category will likely be subject to changes as we are still minding on what type of files we should make a special interface.
 
@@ -13,7 +13,7 @@ this category will likely be subject to changes as we are still minding on what 
 
 
 
-data support ideas :
+## data support ideas :
 
 - locations
 - wifi connection qr code
@@ -21,7 +21,7 @@ data support ideas :
 
 
 
-Informations for the app :
+## Informations for the app :
 
 - url to post requests : http://<ip_addr>/upload
 response  of the server : {"upload_status\" : "true"} or {"upload_status" : "false"} if upload failed
