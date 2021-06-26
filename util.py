@@ -1,10 +1,17 @@
 import socket
 from getpass import getuser
 from random import randint
-from json import dumps
+from json import *
 from requests import get
 from locale import getlocale
 from os import mkdir, path
+from xml.etree import ElementTree
+from xml.sax.saxutils import escape
+from multiprocessing import Process
+from webbrowser import open as open_tab
+
+
+
 
 def get_private_ip():
     """
@@ -40,9 +47,6 @@ def emergency_redownload():
 
     if not path.exists("static/"):
         mkdir("static")
-        open("static/hist.Blue","w")
-        open("static/images_hist.Blue","w")
-        open("static/dates.Blue","w")
         open("static/favicon.ico","w")
 
         with open("static/update.Blue","w") as f:
@@ -51,7 +55,11 @@ def emergency_redownload():
         mkdir("static/dist")
         mkdir("static/dist/css")
         mkdir("static/dist/js")
-        mkdir("static/images_hist")
+        mkdir("static/files_hist")
+
+        init_history_file()
+
+
         
     download_templates()
 
@@ -100,3 +108,80 @@ def download_templates():
     with open("static/update.Blue","w") as f:
         f.write("1")
 
+
+
+def store_to_history(json_data):
+
+    tree = ElementTree.parse("static/history.xml")
+    root = tree.getroot()
+    new_ele = ElementTree.SubElement(root,"file")
+    new_ele.text = escape(json_data)
+
+    tree.write("static/history.xml")
+
+
+def init_history_file():
+
+    """
+    initialize the history xml file
+
+    """
+    with open("static/history.xml","w") as f:
+        f.write("<history>\n</history>")
+        f.close()
+
+
+def get_history():
+
+    history = "{\"history\" : ["
+
+    for element in ElementTree.parse("static/history.xml").getroot():
+        history += element.text + ","
+
+    history = history[:-1] + "]}"
+
+    return history
+
+
+def get_history_file_by_id(id):
+
+    history = []
+
+    for element in ElementTree.parse("static/history.xml").getroot():
+        history.append(element.text)
+
+
+    return dumps(history[id])
+
+def delete_history_file_by_id(id):
+
+    history = []
+
+    for element in ElementTree.parse("static/history.xml").getroot():
+        history.append(element.text)
+
+    history.pop(id)
+
+    init_history_file()
+
+    for file in history:
+        store_to_history(file)
+
+
+def append_to_scan_file(text):
+
+    with open("static/scan.Blue","a") as f:
+        f.write(text)
+        f.close()
+
+def wipe_scan_file():
+    open("static/scan.Blue","w")
+
+
+def open_link_process(url):
+    open_tab(url)
+
+def open_browser_if_settings_okay(url):
+    
+    if path.exists("static/tab"):
+        Process(target=open_link_process,args=(url,)).start()
