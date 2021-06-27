@@ -121,12 +121,12 @@
             for (let i = 0; i < json.length; i++) {
                 var obj = json[i];
                 var tab_element = "";
-                console.log(obj.file_type)
+
                 var images_ext = ["jpeg","jpg","png","ico","gif"];
                 
                 //images
                 if(images_ext.includes(obj.file_type)){
-                    tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path="+obj.path+"\" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]?path="+obj.path+"&amp;image_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
+                    tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path="+obj.path+"\" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
                 }else{
                     //text scans
                     if(obj.file_type == "text_scan"){
@@ -134,7 +134,7 @@
                     
                     //all other stuff (will be updated)
                     }else{
-                        tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td><a href=\"/process/[OPEN FILES EXPLORER]\" class=\"btn btn-primary\">Ouvrir dans l'explorateur de fichiers</a><br><a href=\"/process/[OPEN FILE]?file_path="+obj.path+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Ouvrir</a></td></tr>";
+                        tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td><a href=\"/process/[OPEN FILES EXPLORER]\" class=\"btn btn-primary\">Ouvrir dans l'explorateur de fichiers</a><br><a href=\"/process/[OPEN FILE]?file_path="+obj.path+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Ouvrir</a><a class=\"btn btn-danger\" style=\"margin-top:10px;margin-left:10px;\" onclick=\"request_and_notify('Fichier supprimé !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\">Supprimer</a></td></tr>";
                     }
                 }
 
