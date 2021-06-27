@@ -151,7 +151,7 @@ def get_history_file_by_id(id):
         history.append(element.text)
 
 
-    return dumps(history[id])
+    return loads(history[id])
 
 def delete_history_file_by_id(id):
 

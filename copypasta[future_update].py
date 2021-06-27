@@ -157,10 +157,7 @@ def process(process_id):
             
             id = request.args.get("scan_id")
 
-            try:
-                text = get_history_file_by_id(int(id))['text']
-            except:
-                pass
+            text = get_history_file_by_id(int(id))['text']
 
             copy(text)
 
@@ -272,7 +269,12 @@ def upload():
     if request.method == "POST":
 
         r = request.get_json()
-        file_type = r['file_type']
+
+        if r != None:
+
+            file_type = r['file_type']
+
+
 
         time = date.today().strftime("%d/%m/%Y")
     
@@ -312,6 +314,7 @@ def upload():
 
                 elif file :
                     filename = secure_filename(file.filename)
+                    file_type = filename.split(".")[-1]
                     file.save(path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename))
                     path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename)
                     store_to_history("{"+f"\"file_name\" : \"{file.filename}\",\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"path\" : \"{path}\""+"}")
