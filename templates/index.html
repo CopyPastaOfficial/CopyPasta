@@ -121,8 +121,11 @@
             for (let i = 0; i < json.length; i++) {
                 var obj = json[i];
                 var tab_element = "";
-                if(obj.file_type == "image"){
-                    tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path=\""+obj.path+" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]?path="+obj.path+"&image_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
+                console.log(obj.file_type)
+                var images_ext = ["jpeg","jpg","png","ico","gif"];
+                
+                if(images_ext.includes(obj.file_type)){
+                    tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path="+obj.path+"\" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_IMAGE_SCAN_FROM_HIST]?path="+obj.path+"&amp;image_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
                 }
 
                 if(obj.file_type == "text_scan"){
@@ -140,13 +143,16 @@
 
             }
             var all = "";
-            console.log(elements.length)
+
+
             for(let i = 0;i<elements.length;i++){
                 all = all + elements[i];
             }
 
             if(document.getElementById("history_table_body").innerHTML != all){
                 notify("Nouvel élément reçu !");
+                console.log(all);
+                console.log(document.getElementById("history_table_body").innerHTML);
                 document.getElementById("history_table_body").innerHTML = all;
             }
             
@@ -155,7 +161,7 @@
             
 
 
-            setTimeout(fill_history_tab,1000);
+            setTimeout(fill_history_tab,1500);
         }
 
 
