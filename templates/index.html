@@ -115,53 +115,59 @@
 
             xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_history", false ); // false for synchronous request
             xmlHttp.send( null );
-            var json = JSON.parse(xmlHttp.responseText).history;
-            var elements = [];
+            var r = xmlHttp.responseText;
+            console.log(r);
+            if(r == "{\"history\" : []}"){
+                document.getElementById("history_table_body").innerHTML = "";
+            }else{
+                var json = JSON.parse(r).history;
+            
+                var elements = [];
 
-            for (let i = 0; i < json.length; i++) {
-                var obj = json[i];
-                var tab_element = "";
+                for (let i = 0; i < json.length; i++) {
+                    var obj = json[i];
+                    var tab_element = "";
 
-                var images_ext = ["jpeg","jpg","png","ico","gif"];
-                
-                //images
-                if(images_ext.includes(obj.file_type)){
-                    tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path="+obj.path+"\" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
-                }else{
-                    //text scans
-                    if(obj.file_type == "text_scan"){
-                        tab_element = "<tr>    <td>"+obj.date+"</td>    <td>"+ obj.text.substring(0,12)+"...</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>        <a class=\"btn btn-danger\" onclick=\"request_and_notify('Scan supprimé !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\">Supprimer</a>    </td></tr>";
+                    var images_ext = ["jpeg","jpg","png","ico","gif"];
                     
-                    //all other stuff (will be updated)
+                    //images
+                    if(images_ext.includes(obj.file_type)){
+                        tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+"<a href=\"/image_preview?path="+obj.path+"\" class=\"btn btn-primary\">Ouvrir</a>"+"<a class=\"btn btn-danger\" onclick=\"request_and_notify('Image supprimée !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\">Supprimer</a>"+"</td>"+"</tr>";
                     }else{
-                        tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td><a href=\"/process/[OPEN FILES EXPLORER]\" class=\"btn btn-primary\">Ouvrir dans l'explorateur de fichiers</a><br><a href=\"/process/[OPEN FILE]?file_path="+obj.path+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Ouvrir</a><a class=\"btn btn-danger\" style=\"margin-top:10px;margin-left:10px;\" onclick=\"request_and_notify('Fichier supprimé !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\">Supprimer</a></td></tr>";
+                        //text scans
+                        if(obj.file_type == "text_scan"){
+                            tab_element = "<tr>    <td>"+obj.date+"</td>    <td>"+ obj.text.substring(0,12)+"...</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>        <a class=\"btn btn-danger\" onclick=\"request_and_notify('Scan supprimé !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\">Supprimer</a>    </td></tr>";
+                        
+                        //all other stuff (will be updated)
+                        }else{
+                            tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td><a href=\"/process/[OPEN FILES EXPLORER]\" class=\"btn btn-primary\">Ouvrir dans l'explorateur de fichiers</a><br><a href=\"/process/[OPEN FILE]?file_path="+obj.path+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Ouvrir</a><a class=\"btn btn-danger\" style=\"margin-top:10px;margin-left:10px;\" onclick=\"request_and_notify('Fichier supprimé !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\">Supprimer</a></td></tr>";
+                        }
                     }
+
+                
+
+
+                    elements.push(tab_element);
+
+
+                }
+                var all = "";
+
+
+                for(let i = 0;i<elements.length;i++){
+                    all = all + elements[i];
                 }
 
-               
-
-
-                elements.push(tab_element);
+                if(document.getElementById("history_table_body").innerHTML != all){
+                    notify("Nouvel élément reçu !");
+                    console.log(all);
+                    console.log(document.getElementById("history_table_body").innerHTML);
+                    document.getElementById("history_table_body").innerHTML = all;
+                }
+                
 
 
             }
-            var all = "";
-
-
-            for(let i = 0;i<elements.length;i++){
-                all = all + elements[i];
-            }
-
-            if(document.getElementById("history_table_body").innerHTML != all){
-                notify("Nouvel élément reçu !");
-                console.log(all);
-                console.log(document.getElementById("history_table_body").innerHTML);
-                document.getElementById("history_table_body").innerHTML = all;
-            }
-            
-
-
-            
 
 
             setTimeout(fill_history_tab,1500);
