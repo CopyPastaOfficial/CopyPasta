@@ -139,14 +139,13 @@ def process(process_id):
 
 
         #delete a particular image from history table
-        if "[DELETE_IMAGE_SCAN_FROM_HIST]" in process_id:
+        if "[DELETE_FILE_FROM_HIST]" in process_id:
 
-            img_path = request.args.get("path")
-            img_id = int(request.args.get("image_id"))
+            file_id = int(request.args.get("file_id"))
 
+            remove(get_history_file_by_id(file_id)['path'])
 
-            remove(img_path)
-            delete_history_file_by_id(img_id)
+            delete_history_file_by_id(file_id)
 
             return redirect("/")
 
