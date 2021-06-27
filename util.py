@@ -138,7 +138,7 @@ def get_history():
     for element in ElementTree.parse("static/history.xml").getroot():
         history += element.text + ","
 
-    history = history[:-1] + "]}"
+    history = history[:-1] + "]}" if history != "{\"history\" : [" else history +"]}"
 
     return history
 
