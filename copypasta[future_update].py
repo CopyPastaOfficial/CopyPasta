@@ -2,7 +2,7 @@ import json
 import socket
 from flask import Flask, render_template, abort ,send_from_directory,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir, mkdir,remove,listdir
+from os import path, chdir, mkdir,remove,listdir, startfile
 import PIL.Image as Image
 from io import BytesIO
 try:
@@ -21,10 +21,13 @@ from json import dumps
 from werkzeug.utils import secure_filename
 from datetime import date
 
+
 #init flask app and secret key
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
+
+APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
 
 
 #store_to_history("""{"file_type" : "text_scan","date" : "time","text" : "ahaha lol ça fonctionne un peu"}""")
@@ -136,14 +139,13 @@ def process(process_id):
 
 
         #delete a particular image from history table
-        if "[DELETE_IMAGE_SCAN_FROM_HIST]" in process_id:
+        if "[DELETE_FILE_FROM_HIST]" in process_id:
 
-            img_path = request.args.get("path")
-            img_id = int(request.args.get("image_id"))
+            file_id = int(request.args.get("file_id"))
 
+            remove(get_history_file_by_id(file_id)['path'])
 
-            remove(img_path)
-            delete_history_file_by_id(img_id)
+            delete_history_file_by_id(file_id)
 
             return redirect("/")
 
@@ -243,6 +245,16 @@ def process(process_id):
 
             return "OK"
 
+        if process_id == "[OPEN FILES EXPLORER]":
+
+            Process(target=startfile,args=(f"{APP_PATH}static/files_hist",)).start()
+            return redirect("/")
+
+        if process_id == "[OPEN FILE]":
+            
+            Process(target=startfile,args=("{}{}".format(APP_PATH,request.args.get("file_path")),)).start()
+
+            return redirect("/")
     else:
         return abort(403)
 
@@ -329,7 +341,7 @@ if __name__ == "__main__":
     freeze_support()
     
     #make sure we are in the right path
-    chdir(path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py",""))
+    chdir(APP_PATH)
 
     #create a qr code containing the ip with google chart api
     r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
