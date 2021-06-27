@@ -137,11 +137,12 @@ def process(process_id):
 
         #delete a particular image from history table
         if "[DELETE_IMAGE_SCAN_FROM_HIST]" in process_id:
+
             img_path = request.args.get("path")
             img_id = int(request.args.get("image_id"))
 
 
-            remove("static/files_hist/"+img_path)
+            remove(img_path)
             delete_history_file_by_id(img_id)
 
             return redirect("/")
@@ -270,34 +271,30 @@ def upload():
 
         r = request.get_json()
 
+        time = date.today().strftime("%d/%m/%Y")
+
         if r != None:
 
             file_type = r['file_type']
 
+            if file_type == "text_scan":
+                
+                file_content = r['text']
+                time = r['date']
+
+                append_to_scan_file(file_content)
 
 
-        time = date.today().strftime("%d/%m/%Y")
-    
+                with open(f"{app.config['UPLOAD_FOLDER']}/scan.txt","w") as f:
+                    f.write(file_content)
+                    f.close()
 
-        if file_type == "text_scan":
-            
-            file_content = r['text']
-            time = r['date']
+                store_to_history("{"+f"\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"text\" : \"{file_content}\""+"}")
 
-            append_to_scan_file(file_content)
+                open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
+                
 
-
-            with open(f"{app.config['UPLOAD_FOLDER']}/scan.txt","w") as f:
-                f.write(file_content)
-                f.close()
-
-            store_to_history("{"+f"\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"text\" : \"{file_content}\""+"}")
-
-            open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
-            
-
-            return "{\"upload_status\" : \"true\"}"
-
+                return "{\"upload_status\" : \"true\"}"
 
         else:
 
@@ -316,8 +313,8 @@ def upload():
                     filename = secure_filename(file.filename)
                     file_type = filename.split(".")[-1]
                     file.save(path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename))
-                    path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename)
-                    store_to_history("{"+f"\"file_name\" : \"{file.filename}\",\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"path\" : \"{path}\""+"}")
+                    file_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename).replace("\\","/")
+                    store_to_history("{"+f"\"file_name\" : \"{file.filename}\",\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"path\" : \"{file_path}\""+"}")
 
                     open_browser_if_settings_okay(f"http://127.0.0.1:21987/image_preview?path={path}")
                     
