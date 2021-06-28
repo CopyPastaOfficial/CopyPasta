@@ -111,7 +111,7 @@ def download_templates():
 
 
 def store_to_history(json_data):
-
+    json_data = dumps(json_data)
     tree = ElementTree.parse("static/history.xml")
     root = tree.getroot()
     new_ele = ElementTree.SubElement(root,"file")

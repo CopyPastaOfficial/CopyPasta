@@ -1,6 +1,6 @@
 import json
 import socket
-from flask import Flask, render_template, abort ,send_from_directory,send_file,request,redirect,flash
+from flask import Flask, render_template, abort ,send_from_directory,jsonify,send_file,request,redirect,flash
 from requests import get
 from os import path, chdir, mkdir,remove,listdir, startfile
 import PIL.Image as Image
@@ -20,6 +20,7 @@ from multiprocessing import Process, freeze_support
 from json import dumps
 from werkzeug.utils import secure_filename
 from datetime import date
+from pyautogui import write as send_keystrokes
 
 
 #init flask app and secret key
@@ -30,8 +31,7 @@ app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#E
 APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
 
 
-#store_to_history("""{"file_type" : "text_scan","date" : "time","text" : "ahaha lol ça fonctionne un peu"}""")
-
+store_to_history({ "file_type" : "file_type", "date" : "time","text" : "file_content"})
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
     emergency_redownload()
@@ -287,7 +287,8 @@ def upload():
 
         if r != None:
 
-            file_type = r['file_type']
+            file_type = r['type']
+            r = r['content']
 
             if file_type == "text_scan":
                 
@@ -301,12 +302,41 @@ def upload():
                     f.write(file_content)
                     f.close()
 
-                store_to_history("{"+f"\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"text\" : \"{file_content}\""+"}")
+                store_to_history({ "file_type" : f"{file_type}", "date" : f"{time}","text" : f"{file_content}"})
 
                 open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
                 
 
-                return "{\"upload_status\" : \"true\"}"
+                return jsonify({"upload_status" : "true"})
+
+            elif file_type == "keystrokes":
+                keystrokes = r['text']
+                send_keystrokes(keystrokes)
+
+                return jsonify({"upload_status" : "true"})
+
+            elif file_type == "wifi":
+
+                ssid = r['ssid']
+                enctype = r['encryption']
+                password = r['key']
+
+                store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}"})
+
+                return jsonify({"upload_status" : "true"})
+
+
+            elif file_type == "isbn":
+
+                isbn = r['isbn']
+                
+                store_to_history({"file_type" : "isbn", "content" : f"{isbn}"})
+                
+                return jsonify({"upload_status" : "true"})
+
+            else:
+
+                return jsonify({"upload_status" : "true","error" : "unknown type"})
 
         else:
 
@@ -319,18 +349,18 @@ def upload():
                 if file.filename == '':
 
                     flash('No selected file')
-                    return "{\"upload_status\" : \"false\"}"
+                    return jsonify({"upload_status" : "false"})
 
                 elif file :
                     filename = secure_filename(file.filename)
                     file_type = filename.split(".")[-1]
                     file.save(path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename))
                     file_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename).replace("\\","/")
-                    store_to_history("{"+f"\"file_name\" : \"{file.filename}\",\"file_type\" : \"{file_type}\",\"date\" : \"{time}\",\"path\" : \"{file_path}\""+"}")
+                    store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{file_path}"})
 
                     open_browser_if_settings_okay(f"http://127.0.0.1:21987/image_preview?path={path}")
                     
-            return "{\"upload_status\" : \"true\"}"
+            return jsonify({"upload_status" : "true"})
 
 
 
