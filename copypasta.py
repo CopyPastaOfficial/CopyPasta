@@ -1,23 +1,16 @@
-import json
 import socket
-from flask import Flask, render_template, abort ,send_from_directory,jsonify,send_file,request,redirect,flash
+from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir, mkdir,remove,listdir, startfile
+from os import path, chdir,remove, startfile
 import PIL.Image as Image
 from io import BytesIO
 try:
     import win32clipboard
 except ImportError:
     pass
-from array import array
 from pyperclip import copy
-from time import sleep
-from random import randint
-from platform import system
 from util import *
-from webbrowser import open as display_website
 from multiprocessing import Process, freeze_support
-from json import dumps
 from werkzeug.utils import secure_filename
 from datetime import date
 from pyautogui import write as send_keystrokes
@@ -341,7 +334,7 @@ def upload():
         else:
 
 
-            files = request.files.getlist("file")
+            files = request.files.getlist("files")
 
             for file in files :
                 # If the user does not select a file, the browser submits an
