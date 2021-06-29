@@ -24,7 +24,7 @@ app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#E
 APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
 
 
-store_to_history({ "file_type" : "file_type", "date" : "time","text" : "file_content"})
+#store_to_history({ "file_type" : "file_type", "date" : "time","text" : "file_content"})
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
     emergency_redownload()
@@ -286,7 +286,6 @@ def upload():
             if file_type == "text_scan":
                 
                 file_content = r['text']
-                time = r['date']
 
                 append_to_scan_file(file_content)
 
@@ -323,7 +322,7 @@ def upload():
 
                 isbn = r['isbn']
                 
-                store_to_history({"file_type" : "isbn", "content" : f"{isbn}"})
+                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" : f"{time}"})
                 
                 return jsonify({"upload_status" : "true"})
 
