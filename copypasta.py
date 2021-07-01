@@ -20,8 +20,8 @@ from flask_cors import CORS, cross_origin
 #init flask app and secret key
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-#app.config['CORS_HEADERS'] = 'Content-Type'
-#CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
 
 app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
 
@@ -56,7 +56,7 @@ def add_header(response):
 
 #home
 @app.route("/")
-#@cross_origin(origin='127.0.0.1',headers=['Content- Type','Authorization'])
+@cross_origin(origin='127.0.0.1',headers=['Content- Type','Authorization'])
 def home():
 
     if request.remote_addr == "127.0.0.1":
