@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -23,17 +24,17 @@
     <a class="navbar-brand">CopyPasta</a>
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/process/[CLEAR SCAN]">Vider le scan</a>
+          <li class="nav-item">
+            <a class="nav-link active" name="over" href="/process/[CLEAR SCAN]">Vider le scan</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/process/[COPY SCAN]">Copier le scan</a>
+            <a class="nav-link active" name="over" href="/process/[COPY SCAN]">Copier le scan</a>
           </li>
           <li class="nav-item">
-            <a type="submit" class="nav-link" onclick="document.getElementById('paper').submit();">Télécharger le scan</a>
+            <a type="submit" class="nav-link active" name="over" onclick="document.getElementById('paper').submit();">Télécharger le scan</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/process/[HOME]">Menu principal</a>
+            <a class="nav-link active" name="over" href="/process/[HOME]">Menu principal</a>
           </li>
         </ul>
       </div>
@@ -45,31 +46,37 @@
     <br>
     <div id="wrapper">
 
-      <form id="paper" method="POST" action=""  class="helvetica">
-        <div id="margin" class="helvetica" style="font-size: large;">Titre: <input id="title" type="text" name="title" value="MyTextScan" class="bg-white helvetica" style="margin-left: 2%; border-style:groove;"></div>
-
-        <div id="text" name="text" contenteditable="true" class="bg-white helvetica" style="min-height: 20px; border-style: groove;">{{scan}}</div>
+      <form id="paper" method="POST" action=""  class="center">
+        <div class="col-2">          
+          <label for="title">Nom du fichier:</label>
+          <input id="title" type="text" name="title" value="MyTextScan" class="form-control">
+        </div>
+        <div class="col-10">
+          <div id="text" name="text" contenteditable="true" class="form-control" style="min-height: 20px; margin-top: 10px;">{{scan}}</div>
+          <small id="charcount" class="form-text text-muted" style="float: left;">0 characters</small>
+        </div>
       </form>
             
     </div>
+
+
     
 </body>
 
 
 <style>
-    * {
-  outline:none;
-	border:none;
-	margin:0px;
-	padding:0px;
-	font-family:Courier, monospace;
+
+
+.sep_left{
+  border-left: 1px solid #ffffff;
+  margin-left: 10px;
 }
+
+
 .center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  width: 20%;
+  margin: 0 auto;
+  margin-left: 7%;
+  width: 100%;
 }
 
 
@@ -78,56 +85,47 @@ body {
 	      
 }
 
-.helvetica{
-	font-family: "Helvetica";
-}
 
-
-#output {
-	height: 400px; 
-	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-	margin: 1rem;
-	padding: 1rem;
-}
 
 </style>
+
 <script>
+  document.getElementsByName("over").forEach(function(everyitem){
 
-  let output = document.getElementById('output');
-let buttons = document.getElementsByClassName('tool--btn');
-for (let btn of buttons) {
-	btn.addEventListener('click', () => {
-		let cmd = btn.dataset['command'];
-		if(cmd === 'createlink') {
-			let url = prompt("Enter the link here: ", "http:\/\/");
-			document.execCommand(cmd, false, url);
-		} else {
-			document.execCommand(cmd, false, null);
-		}
-	})
-}
+everyitem.addEventListener('mouseover', function(e){
 
+  everyitem.className += " border border-white rounded";
 
-
-    $(document).ready(function(){
-  $('#title').focus();
-    $('#text').autosize();
 });
 
-var textarea = document.querySelector('text');
+everyitem.addEventListener('mouseleave', function(e){
 
-textarea.addEventListener('keydown', autosize);
-             
-function autosize(){
-  var el = this;
-  setTimeout(function(){
-    el.style.cssText = 'height:auto; padding:0';
-    // for box-sizing other than "content-box" use:
-    // el.style.cssText = '-moz-box-sizing:content-box';
-    el.style.cssText = 'height:' + el.scrollHeight + 'px';
-  },0);
+  everyitem.className = "nav-link active";
+
+
+})
+
+
+});
+</script>
+
+<script>
+
+  function text_size_counter(){
+    document.getElementById("charcount").innerText = document.getElementById("text").innerText.length + " characters";
+  }
+
+  var area = document.getElementById("text");
+if (area.addEventListener) {
+  area.addEventListener('input', function() {
+    text_size_counter();
+  }, false);
+} else if (area.attachEvent) {
+  area.attachEvent('onpropertychange', function() {
+    // IE-specific event handling code
+  });
 }
 
-
+  window.onload = text_size_counter();
 </script>
 </html>

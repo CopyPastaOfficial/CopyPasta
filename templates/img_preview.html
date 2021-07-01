@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CopyPasta</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
 </head>
 <body>
@@ -14,13 +16,13 @@
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="/process/[DOWNLOAD IMG]?path={{img_path}}">Télécharger l'image</a>
+            <a class="nav-link active" name="over" href="/process/[DOWNLOAD IMG]?path={{img_path}}">Télécharger l'image</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/process/[COPY IMG]?path={{img_path}}">Copier l'image</a>
+            <a class="nav-link active" name="over" href="/process/[COPY IMG]?path={{img_path}}">Copier l'image</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/process/[HOME]">Menu principal</a>
+            <a class="nav-link active" name="over" href="/process/[HOME]">Menu principal</a>
           </li>
         </ul>
       </div>
@@ -32,6 +34,7 @@
 </body>
 
 <style>
+
 .center {
   display: block;
   margin-left: auto;
@@ -40,6 +43,31 @@
   width: 50%;
 }
 </style>
+
+
+<script>
+  document.getElementsByName("over").forEach(function(everyitem){
+
+everyitem.addEventListener('mouseover', function(e){
+
+  everyitem.className += " border border-white rounded";
+
+});
+
+everyitem.addEventListener('mouseleave', function(e){
+
+  everyitem.className = "nav-link active";
+
+
+})
+
+
+});
+</script>
+
+
+
+
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
