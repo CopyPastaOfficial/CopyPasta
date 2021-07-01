@@ -11,8 +11,6 @@ from multiprocessing import Process
 from webbrowser import open as open_tab
 
 
-
-
 def get_private_ip():
     """
     get all the private ips linked to your machine and return the one linked to your context
@@ -68,7 +66,11 @@ def emergency_redownload():
     
 
 def download_templates():
-    locale = getlocale()[0][:2]
+
+    try:
+        locale = getlocale()[0][:2]
+    except:
+        locale = "en"
 
     #get supported languages list
     r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/supported_languages.Blue",allow_redirects=True).text
@@ -81,15 +83,15 @@ def download_templates():
 
 
     #get the templates
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/index.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
     with open("templates/index.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/scan_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
     with open("templates/scan_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/{locale}/img_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/img_preview.html",allow_redirects=True)
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
 
@@ -164,8 +166,13 @@ def delete_history_file_by_id(id):
 
     init_history_file()
 
+    tree = ElementTree.parse("static/history.xml")
+    root = tree.getroot()
     for file in history:
-        store_to_history(file)
+       
+        new_ele = ElementTree.SubElement(root,"file")
+        new_ele.text = escape(file)
+        tree.write("static/history.xml")
 
 
 def append_to_scan_file(text):

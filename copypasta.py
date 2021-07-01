@@ -14,17 +14,20 @@ from multiprocessing import Process, freeze_support
 from werkzeug.utils import secure_filename
 from datetime import date
 from pyautogui import write as send_keystrokes
+from flask_cors import CORS, cross_origin
 
 
 #init flask app and secret key
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+#app.config['CORS_HEADERS'] = 'Content-Type'
+#CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
+
 app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
 
 APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
 
 
-#store_to_history({ "file_type" : "file_type", "date" : "time","text" : "file_content"})
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
     emergency_redownload()
@@ -53,6 +56,7 @@ def add_header(response):
 
 #home
 @app.route("/")
+#@cross_origin(origin='127.0.0.1',headers=['Content- Type','Authorization'])
 def home():
 
     if request.remote_addr == "127.0.0.1":
@@ -248,6 +252,14 @@ def process(process_id):
             Process(target=startfile,args=("{}{}".format(APP_PATH,request.args.get("file_path")),)).start()
 
             return redirect("/")
+
+
+        if process_id == "[COPY WIFI PW]":
+
+            copy(get_history_file_by_id(int(request.args.get("scan_id"))['password']))
+
+            return redirect("/")
+        
     else:
         return abort(403)
 
@@ -280,12 +292,15 @@ def upload():
 
         if r != None:
 
-            file_type = r['type']
-            r = r['content']
+            try:
+                file_type = r['type']
+                r = r['content']
+            except:
+                return jsonify({"upload_status" : "false","error":"malformed json"}), 400
 
-            if file_type == "text_scan":
+            if file_type == "text":
                 
-                file_content = r['text']
+                file_content = r
 
                 append_to_scan_file(file_content)
 
@@ -302,6 +317,8 @@ def upload():
                 return jsonify({"upload_status" : "true"})
 
             elif file_type == "keystrokes":
+
+
                 keystrokes = r['text']
                 send_keystrokes(keystrokes)
 
@@ -320,21 +337,33 @@ def upload():
 
             elif file_type == "isbn":
 
-                isbn = r['isbn']
+                isbn = r
                 
-                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" : f"{time}"})
+                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}"})
                 
                 return jsonify({"upload_status" : "true"})
 
+
+            elif file_type == "email":
+
+                store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}"})
+
+                return jsonify({"upload_status" : "true"})
+
+
             else:
 
-                return jsonify({"upload_status" : "true","error" : "unknown type"})
+                return jsonify({"upload_status" : "false","error" : "unknown type"}), 400
 
+
+        #multipart request (files)
         else:
 
 
             files = request.files.getlist("files")
 
+
+            #go and store each files
             for file in files :
                 # If the user does not select a file, the browser submits an
                 # empty file without a filename.
@@ -343,6 +372,7 @@ def upload():
                     flash('No selected file')
                     return jsonify({"upload_status" : "false"})
 
+                #store file to static/files_hist and metadata to history
                 elif file :
                     filename = secure_filename(file.filename)
                     file_type = filename.split(".")[-1]
@@ -354,7 +384,8 @@ def upload():
                     
             return jsonify({"upload_status" : "true"})
 
-
+    else:
+        return abort(403)
 
 
 
