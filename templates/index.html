@@ -10,6 +10,11 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </head>
 
 <body>
@@ -25,9 +30,6 @@
               </div>
         </div>
     </nav>
-    <div class="alert alert-success" role="alert" id="notification" style="display: none;">
-        This is a success alert
-    </div>
     
     <div class="container mt-3">
         <div class="row">
@@ -61,8 +63,19 @@
                 </div>
 
             </div>
+
             
             <div class="col-md">
+                <div class="toast align-items-center text-white bg-primary" role="alert" aria-live="assertive" aria-atomic="true" name="notification" data-delay="2500" style="position: absolute; top: 10%; right: 0;">
+                    <div class="d-flex">
+                      <div class="toast-body" id="notification_text">
+                      Hello, world! This is a toast message.
+                     </div>
+                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+
+
                 <h1>Derniers fichiers et données envoyées :</h1>
                 <hr/>
                 <a class="btn btn-primary mb-3" onclick="request_and_notify('Historique des scans supprimé !','/process/[DEL HISTORY]')">Supprimer tout l'historique</a>
@@ -206,9 +219,9 @@
                 }
 
                 if(document.getElementById("history_table_body").innerHTML != all){
-                    console.log("ALL = "+all)
-                    notify("Nouvel élément reçu !");
-                    console.log("OLD = "+document.getElementById("history_table_body").innerHTML)
+                    if(document.getElementById("history_table_body").innerHTML < all){
+                        notify("Nouvel élément reçu !");
+                    }
                     document.getElementById("history_table_body").innerHTML = all;
                 }
                 
@@ -233,34 +246,22 @@
     
 
     function notify(text){
-        if (document.getElementById("notification").style.display == "none"){
-            document.getElementById("notification").innerText = text;
-            document.getElementById("notification").style.display = "block";
-        }else{
-            document.getElementById("notification").style.display = "none";
-        }
+        document.getElementById("notification_text").innerText = text;
         
-        setTimeout(delete_notification,3000);
+        $('.toast').toast('show');
     }
 
-    function delete_notification(){
-        document.getElementById("notification").style.display = "none";
-
-    }
 
     function request_and_notify(text,url){
-        if (document.getElementById("notification").style.display == "none"){
-            document.getElementById("notification").innerText = text;
-            document.getElementById("notification").style.display = "block";
-        }else{
-            document.getElementById("notification").style.display = "none";
-        }
+
+        document.getElementById("notification_text").innerText = text;
+        
+        $('.toast').toast('show');
 
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", url, false ); // false for synchronous request
         xmlHttp.send( null );
         
-        setTimeout(delete_notification,3000);
     }
 
 
