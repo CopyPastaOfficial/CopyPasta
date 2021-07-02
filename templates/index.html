@@ -20,7 +20,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand">CopyPasta</a>
+            <a class="navbar-brand" href="/">CopyPasta</a>
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item active">
@@ -158,27 +158,33 @@
                     
                     //images
                     if(images_ext.includes(obj.file_type)){
-                        tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td>"+delete_file_icon+"</td>"+"</tr>";
+                        tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td><button type=\"button\" class=\"btn btn-primary\" onclick=\"window.open('http://127.0.0.1:21987/image_preview?path="+obj.path+"','_blank')\">Ouvrir l'image</button>"+delete_file_icon+"</td></tr>";
                     
                     //videos
                     }else if(videos_ext.includes(obj.file_type)){
                         
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" href=\"/process/[OPEN FILE]?file_path="+obj.path+"\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Ouverture de la vidéo...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
-                        tab_element = "<tr><td><div class=\"fs-2 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
+                        tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
                     //audio
                     }else if(audios_ext.includes(obj.file_type)){
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" href=\"/process/[OPEN FILE]?file_path="+obj.path+"\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Ouverture de l'audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
-                        tab_element = "<tr><td><div class=\"fs-2 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
+                        tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
 
                     }else{
                         //text scans
                                                 
                         if(obj.file_type == "text"){
-                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+obj.text.substring(0,12)+"...</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>"+delete_scan_icon+"</td></tr>";
+                            if(obj.text.length > 12){
+                                var text = obj.text.substring(0,12) + "...";
+
+                            }else{
+                                var text = boj.text;
+                            }
+                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
                         }else if(obj.file_type == "wifi"){
                             
@@ -195,6 +201,12 @@
 
                             tab_element = "<tr><td>"+obj.addr+"</td><td>subject:"+obj.subject+"</td><td><a href=\"mailto:"+obj.addr+"?subject="+obj.subject+"&amp;body="+obj.content+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Envoyer</a>"+delete_scan_icon+"</td></tr>";
                         
+                        }else if(obj.file_type == "url"){
+
+                            search_icon = "<button type=\"button\" onclick=\"window.open('"+obj.url+"','_blank')\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
+
+
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-globe2\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.url+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+delete_scan_icon+"</div></td></tr>";
 
                         //random file
                         }else{
@@ -219,7 +231,7 @@
                 }
 
                 if(document.getElementById("history_table_body").innerHTML != all){
-                    if(document.getElementById("history_table_body").innerHTML < all){
+                    if(document.getElementById("history_table_body").innerHTML.length < all.length){
                         notify("Nouvel élément reçu !");
                     }
                     document.getElementById("history_table_body").innerHTML = all;
