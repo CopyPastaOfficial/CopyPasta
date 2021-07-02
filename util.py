@@ -4,11 +4,14 @@ from random import randint
 from json import *
 from requests import get
 from locale import getlocale
-from os import mkdir, path
+from os import mkdir, path, remove, rename
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
 from multiprocessing import Process
 from webbrowser import open as open_tab
+from ast import literal_eval
+import requests
+from subprocess import Popen
 
 
 def get_private_ip():
@@ -20,7 +23,6 @@ def get_private_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
-
 
 
 def make_qr_url():
@@ -62,7 +64,14 @@ def emergency_redownload():
     download_templates()
 
 
+def is_server_already_running():
+    try:
+        response = requests.get("http://127.0.0.1:21987/api/ping").text
+        
+    except:
+        response = "not pong lol"
 
+    return True if response == "pong" else False
     
 
 def download_templates():
@@ -111,6 +120,18 @@ def download_templates():
         f.write("1")
 
 
+
+def update_main_executable():
+
+    if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == "1.2":
+        
+
+        with open("copypasta.exe(1)","wb") as f:
+            f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/copypasta.exe").content)
+            f.close()
+
+        Popen("copypasta(1).exe")
+        remove("copypasta.exe")
 
 def store_to_history(json_data):
     json_data = dumps(json_data)

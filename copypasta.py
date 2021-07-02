@@ -37,6 +37,11 @@ if not path.exists("static/"):
     emergency_redownload()
 
 
+def check_exe_name():
+    print(path.basename(__file__))
+    if path.basename(__file__) != "copypasta.exe":
+        rename(path.basename(__file__),"copypasta.exe")
+
 
 #specify the folder where the scan are uploaded
 app.config['UPLOAD_FOLDER'] = "static/"
@@ -275,6 +280,10 @@ def api(api_req):
         if api_req == "get_history":
 
             return get_history()
+
+        if api_req == "ping":
+
+            return "pong"
     else:
         return abort(403)
 
@@ -351,6 +360,26 @@ def upload():
                 return jsonify({"upload_status" : "true"})
 
 
+            elif file_type == "url":
+
+                store_to_history({"file_type" : "url","url" : f"{r}"})
+
+                return jsonify({"upload_status" : "true"})
+
+            elif file_type == "phone":
+
+                store_to_history({"file_type" : "phone","phone_number" : f"{r}"})
+
+                return jsonify({"upload_status" : "true"})
+
+            elif file_type == "sms":
+
+                store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}"})
+
+                return jsonify({"upload_status" : "true"})
+
+
+
             else:
 
                 return jsonify({"upload_status" : "false","error" : "unknown type"}), 400
@@ -392,28 +421,33 @@ def upload():
 if __name__ == "__main__":
 
     freeze_support()
-    
-    #make sure we are in the right path
+
     chdir(APP_PATH)
 
-    #create a qr code containing the ip with google chart api
-    r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
-    
-
-    #write it
-    with open("static/qr.jpeg","wb") as f:
-        f.write(r.content)
+    #update_main_executable()
+    #check_exe_name()
+    #make sure we are in the right path
 
 
-    #check if the templates are up-to-date
-    check_updates()
+    if not is_server_already_running():
+        #create a qr code containing the ip with google chart api
+        r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
+
+
+        #write it
+        with open("static/qr.jpeg","wb") as f:
+            f.write(r.content)
+
+
+        #check if the templates are up-to-date
+        check_updates()
 
     #open tab in web browser
     Process(target=open_link_process, args=("http://127.0.0.1:21987",)).start()
 
-
-    #run flask web server
-    app.run(host="0.0.0.0",port=21987)
+    if not is_server_already_running():
+        #run flask web server
+        app.run(host="0.0.0.0",port=21987)
 
 
 
