@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CopyPasta</title>
+    <title  translate="no">CopyPasta</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
@@ -14,13 +14,13 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">CopyPasta</a>
+            <a class="navbar-brand" href="/" translate="no">CopyPasta</a>
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item active">
@@ -39,8 +39,9 @@
                         Configuration
                     </div>
                     <div class="card-body">
-                        <h5>Bienvenue dans CopyPasta</h5>
-                        <h6>Scannez ce QR Code dans l'application :</h6>
+                        <h5>Welcome to CopyPasta</h5>
+                        <div id="google_translate_element"></div>
+                        <h6>Scan this QR Code with the app :</h6>
                         <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
                         <h6>Nom : {{hostname}}</h6>
                         <h6>IP : {{ip}}</h6>
@@ -48,12 +49,12 @@
                         <h6>
                             {%if tab!=True%}
                             <div class="form-check form-switch">                                
-                                <label class="form-check-label" for="flexSwitchCheckDefault">Ouvrir un nouvel onglet quand quand un scan arrive</label>
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Open a new tab when a scan is received</label>
                                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="change_tab_settings()"/>
                             </div>
                             {%else%}
                                 <div class="form-check form-switch">
-                                    <label class="form-check-label" for="flexSwitchCheckChecked">Ouvrir un nouvel onglet quand quand un scan arrive</label>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked">Open a new tab when a scan is received</label>
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onclick="change_tab_settings()" checked/>
                                 </div>
                             {%endif%}
@@ -76,15 +77,15 @@
                 </div>
 
 
-                <h1>Derniers fichiers et données envoyées :</h1>
+                <h1>Last files/data sent :</h1>
                 <hr/>
-                <a class="btn btn-primary mb-3" onclick="request_and_notify('Historique des scans supprimé !','/process/[DEL HISTORY]')">Supprimer tout l'historique</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Scan history deleted !','/process/[DEL HISTORY]')">Delete all history</a>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
                             <th scope="col">Date/Optionnal data</th>
-                            <th scope="col">Content/file name</th>
+                            <th scope="col">Content/File name</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -117,7 +118,14 @@
         
         body {
             background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+            top: 0px !important; 
+
         }
+
+        .goog-te-banner-frame.skiptranslate {
+        display: none !important;
+        } 
+
 
         
 
@@ -125,6 +133,7 @@
     
     <script>
 
+        var n_elements = 0;
 
         function fill_history_tab(){
 
@@ -147,29 +156,29 @@
                     var images_ext = ["jpeg","jpg","png","ico","gif"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
                     var audios_ext = ["m4a","flac","mp3"]
-                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('Fichier supprimé !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-x-square-fill\"></i></button>";
-                    var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('Fichier supprimé !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-x-square-fill\"></i></button>";
+                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var copy_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-clipboard\"></i></button>";
                     var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
                     var open_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
-                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Ouverture du dossier...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
+                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
                     var search_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
 
                     
                     //images
                     if(images_ext.includes(obj.file_type)){
-                        tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td><button type=\"button\" class=\"btn btn-primary\" onclick=\"window.open('http://127.0.0.1:21987/image_preview?path="+obj.path+"','_blank')\">Ouvrir l'image</button>"+delete_file_icon+"</td></tr>";
+                        tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td><button type=\"button\" class=\"btn btn-primary\" onclick=\"window.open('http://127.0.0.1:21987/image_preview?path="+obj.path+"','_blank')\">Image options</button>"+delete_file_icon+"</td></tr>";
                     
                     //videos
                     }else if(videos_ext.includes(obj.file_type)){
                         
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Ouverture de la vidéo...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
                     //audio
                     }else if(audios_ext.includes(obj.file_type)){
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Ouverture de l'audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
@@ -184,11 +193,11 @@
                             }else{
                                 var text = boj.text;
                             }
-                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copié !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copier</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Ouvrir</a>"+delete_scan_icon+"</td></tr>";
+                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Open the text</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
                         }else if(obj.file_type == "wifi"){
                             
-                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request_and_notify('Mot de passe wifi copié !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copier le mot de passe</a>"+delete_scan_icon+"</div></td></tr>";
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request_and_notify('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
                         
                         //barcode type
                         }else if(obj.file_type == "isbn"){
@@ -199,7 +208,7 @@
                         
                         }else if(obj.file_type == "email"){
 
-                            tab_element = "<tr><td>"+obj.addr+"</td><td>subject:"+obj.subject+"</td><td><a href=\"mailto:"+obj.addr+"?subject="+obj.subject+"&amp;body="+obj.content+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Envoyer</a>"+delete_scan_icon+"</td></tr>";
+                            tab_element = "<tr><td>"+obj.addr+"</td><td>subject:"+obj.subject+"</td><td><a href=\"mailto:"+obj.addr+"?subject="+obj.subject+"&amp;body="+obj.content+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Send</a>"+delete_scan_icon+"</td></tr>";
                         
                         }else if(obj.file_type == "url"){
 
@@ -210,7 +219,7 @@
 
                         //random file
                         }else{
-                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Ouverture du fichier...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
+                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
 
                             tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td>"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</td></tr>";
                         }
@@ -231,10 +240,14 @@
                 }
 
                 if(document.getElementById("history_table_body").innerHTML != all){
-                    if(document.getElementById("history_table_body").innerHTML.length < all.length){
-                        notify("Nouvel élément reçu !");
+                    console.log("all : "+ all)
+                    console.log("old : "+document.getElementById("history_table_body").innerHTML)
+                    if(document.getElementById("history_table_body").innerHTML.length < all.length && n_elements != json.length){
+                        notify("New element received !");
+                        n_elements = json.length;                    
+                        document.getElementById("history_table_body").innerHTML = all;
+
                     }
-                    document.getElementById("history_table_body").innerHTML = all;
                 }
                 
 
@@ -283,6 +296,14 @@
 
 
 </script>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+    }
+</script>
+
+
     
     
 </body>
