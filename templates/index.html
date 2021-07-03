@@ -239,15 +239,16 @@
                     all = all + elements[i];
                 }
 
-                if(document.getElementById("history_table_body").innerHTML != all){
-                    console.log("all : "+ all)
-                    console.log("old : "+document.getElementById("history_table_body").innerHTML)
-                    if(document.getElementById("history_table_body").innerHTML.length < all.length && n_elements != json.length){
-                        notify("New element received !");
-                        n_elements = json.length;                    
-                        document.getElementById("history_table_body").innerHTML = all;
+                var ele_l = elements.length;
+                
+                console.log("n : "+n_elements);
+                console.log("e : "+elements.length);
+                console.log(n_elements < ele_l);
 
-                    }
+                if(n_elements< ele_l || n_elements > ele_l){
+                        notify("New element received !");
+                        document.getElementById("history_table_body").innerHTML = all;
+                        n_elements = elements.length;
                 }
                 
 
