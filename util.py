@@ -4,7 +4,7 @@ from random import randint
 from json import *
 from requests import get
 from locale import getlocale
-from os import mkdir, path, remove, rename
+from os import mkdir, path, remove, removedirs, rename
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
 from multiprocessing import Process
@@ -76,21 +76,6 @@ def is_server_already_running():
 
 def download_templates():
 
-    try:
-        locale = getlocale()[0][:2]
-    except:
-        locale = "en"
-
-    #get supported languages list
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/supported_languages.Blue",allow_redirects=True).text
-    r = r.replace("\n","").split("/")
-
-    #check if the computer default language is supported
-    if locale not in r:
-        #if not, set to english
-        locale = "en"
-
-
     #get the templates
     r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
     with open("templates/index.html","wb") as f:
@@ -126,12 +111,16 @@ def update_main_executable():
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == "1.2":
         
 
-        with open("copypasta.exe(1)","wb") as f:
+        with open("copypasta(1).exe","wb") as f:
             f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/copypasta.exe").content)
             f.close()
 
         Popen("copypasta(1).exe")
+        
         remove("copypasta.exe")
+
+        exit(1)
+
 
 def store_to_history(json_data):
     json_data = dumps(json_data)

@@ -28,6 +28,12 @@ app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#E
 APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
 
 
+
+
+
+
+
+
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
     emergency_redownload()
@@ -67,7 +73,7 @@ def home():
     if request.remote_addr == "127.0.0.1":
 
         #render the html with the history
-        return render_template("index.html",hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"),)
+        return render_template("index.html",hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
 
     else:
         return abort(403)
@@ -424,8 +430,8 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    #update_main_executable()
-    #check_exe_name()
+    check_exe_name()
+    update_main_executable()
     #make sure we are in the right path
 
 
