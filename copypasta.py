@@ -333,16 +333,16 @@ def upload():
                 
                 #detect urls in text scan
                 regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-                urls = findall(regex,file_content)	
+                urls = findall(regex,str(file_content))	
                 
                 rest = str(file_content)
                 
                 for url in urls:
                     store_to_history({"file_type" : "url","url" : f"{url[0]}", "date" : f"{time}"})
-                    rest.replace(url[0],"",1)
-                
+                    rest = rest.replace(url[0],"",1)
+
+
                 #after url detection, store the whole text as scan
-                
                 if rest != "":
                     with open(f"{app.config['UPLOAD_FOLDER']}/scan.Blue","w") as f:
                         f.write(file_content)

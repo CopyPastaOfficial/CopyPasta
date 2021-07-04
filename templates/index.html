@@ -79,7 +79,7 @@
 
                 <h1>Last files/data sent :</h1>
                 <hr/>
-                <a class="btn btn-primary mb-3" onclick="request_and_notify('Scan history deleted !','/process/[DEL HISTORY]')">Delete all history</a>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('History deleted !','/process/[DEL HISTORY]')">Delete all history</a>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
@@ -156,7 +156,7 @@
                     var images_ext = ["jpeg","jpg","png","ico","gif"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
                     var audios_ext = ["m4a","flac","mp3"]
-                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\" style=\"margin-top:10px;\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
                     var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
@@ -215,10 +215,10 @@
                         //urls
                         }else if(obj.file_type == "url"){
 
-                            search_icon = "<button type=\"button\" onclick=\"window.open('"+obj.url+"','_blank')\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
+                            search_icon = "<button type=\"button\" onclick=\"window.open('"+obj.url+"','_blank')\" class=\"btn btn-primary\" style=\"margin-right:10px;\"><i class=\"bi bi-search\"></i></button>";
                             var copy_url_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"copy_text('"+obj.url+"')\"><i class=\"bi bi-clipboard\"></i></button>";
-
-                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-globe2\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.url+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+copy_url_icon+delete_scan_icon+"</div></td></tr>";
+                            var b_url = obj.url.replace(/(.{25})/g, "$1<br>");
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-globe2\"></i></div></td><td><div style=\"margin-top:15px;\">"+b_url+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+copy_url_icon+delete_scan_icon+"</div></td></tr>";
 
                         //random file
                         }else{
