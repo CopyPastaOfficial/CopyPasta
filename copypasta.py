@@ -411,9 +411,16 @@ def upload():
                 elif file :
                     filename = secure_filename(file.filename)
                     file_type = filename.split(".")[-1]
-                    file.save(path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename))
-                    file_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename).replace("\\","/")
-                    store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{file_path}"})
+                    full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename)
+                    
+                    #rename file if one has already its name
+                    i = 0
+                    while(path.exists(full_path)):
+                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", str(filename.split(".")[:-1])[2:][:2]+str(i)+"."+filename.split(".")[-1])
+                        print(full_path)
+
+                    file.save(full_path)
+                    store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
 
                     open_browser_if_settings_okay(f"http://127.0.0.1:21987/image_preview?path={path}")
                     
@@ -430,8 +437,8 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    check_exe_name()
-    update_main_executable()
+    """check_exe_name()
+    update_main_executable()"""
     #make sure we are in the right path
 
 
