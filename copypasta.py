@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 from datetime import date
 from pyautogui import write as send_keystrokes
 from flask_cors import CORS, cross_origin
-
+from re import findall
 
 #init flask app and secret key
 app = Flask(__name__)
@@ -224,8 +224,6 @@ def process(process_id):
                 win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
                 win32clipboard.CloseClipboard()
 
-                flash("Image copied to clipboard :D")
-
                 return redirect(f"/image_preview?path={img_path}")
 
             except ImportError:
@@ -267,12 +265,23 @@ def process(process_id):
 
         if process_id == "[COPY WIFI PW]":
 
-            copy(get_history_file_by_id(int(request.args.get("scan_id"))['password']))
+            copy(get_history_file_by_id(int(request.args.get("scan_id")))['password'])
 
             return redirect("/")
+
+
+        if process_id == "[COPY CONTENT]":
+            
+            copy(get_history_file_by_id(int(request.args.get("scan_id")))['content'])
+
         
     else:
         return abort(403)
+
+
+
+
+
 
 
 #api url(s)
@@ -292,6 +301,10 @@ def api(api_req):
             return "pong"
     else:
         return abort(403)
+
+
+
+
 
 
 
@@ -316,17 +329,28 @@ def upload():
             if file_type == "text":
                 
                 file_content = r
+        
+                
+                #detect urls in text scan
+                regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+                urls = findall(regex,file_content)	
+                
+                rest = str(file_content)
+                
+                for url in urls:
+                    store_to_history({"file_type" : "url","url" : f"{url[0]}", "date" : f"{time}"})
+                    rest.replace(url[0],"",1)
+                
+                #after url detection, store the whole text as scan
+                
+                if rest != "":
+                    with open(f"{app.config['UPLOAD_FOLDER']}/scan.Blue","w") as f:
+                        f.write(file_content)
+                        f.close()
 
-                append_to_scan_file(file_content)
+                    store_to_history({ "file_type" : f"{file_type}", "date" : f"{time}","text" : f"{file_content}"})
 
-
-                with open(f"{app.config['UPLOAD_FOLDER']}/scan.txt","w") as f:
-                    f.write(file_content)
-                    f.close()
-
-                store_to_history({ "file_type" : f"{file_type}", "date" : f"{time}","text" : f"{file_content}"})
-
-                open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
+                    open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
                 
 
                 return jsonify({"upload_status" : "true"})
