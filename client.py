@@ -30,9 +30,15 @@ def send_email(dest_addr,subject,content):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "email", "content" : {"address" : f"{dest_addr}", "subject" : f"{subject}", "content" : f"{content}"}})
     print(r.text) 
 
+def send_url(url):
+    r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "url", "content" : f"{url}"})
+    print(r.text) 
+
 
 #send_email("unrealsoft.dev@gmail.com","test","prout prout la vapeur")
-send_barcode("test")
-#send_file("qr.png")
+#send_barcode("test")
+send_file("qr.png")
 #send_text_scan("test of text scan")
 #send_wifi("ssid","wpa","password")
+#send_url("https://www.google.com")
+
