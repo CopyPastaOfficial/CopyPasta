@@ -345,7 +345,7 @@ def upload():
                 enctype = r['encryption']
                 password = r['key']
 
-                store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}"})
+                store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
@@ -361,29 +361,38 @@ def upload():
 
             elif file_type == "email":
 
-                store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}"})
+                store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
 
             elif file_type == "url":
 
-                store_to_history({"file_type" : "url","url" : f"{r}"})
+                store_to_history({"file_type" : "url","url" : f"{r}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
             elif file_type == "phone":
 
-                store_to_history({"file_type" : "phone","phone_number" : f"{r}"})
+                store_to_history({"file_type" : "phone","phone_number" : f"{r}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
             elif file_type == "sms":
 
-                store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}"})
+                store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
+            elif file_type == "location":
+                lat = r['lattitude']
+                long = r['longitude']
+
+                store_to_history({"file_type" : "location", "lat" : f"{lat}", "long" : f"{long}", "date" : f"{time}"})            
+            
+            elif file_type == "contact":
+                
+                store_to_history({"file_type" : "contact", "first_name" : f"{r['firstName']}", "name" : f"{r['name']}", "organization" : f"{r['organization']}", "job" : f"{r['title']}"})
 
 
             else:
