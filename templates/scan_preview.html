@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+  <script>
+    var messages = {{ messages | safe }};
+      alert(messages[messages.length-1]);
+  </script>
+{% endif %}
+{% endwith %}
+
+    <title translate="no">CopyPasta</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+
+    <div class="container-fluid">
+    <a class="navbar-brand" href="/" translate="no">CopyPasta</a>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link active" name="over" href="/process/[CLEAR SCAN]">Empty scan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" name="over" href="/process/[COPY SCAN]">Copy scan</a>
+          </li>
+          <li class="nav-item">
+            <a type="submit" class="nav-link active" name="over" onclick="document.getElementById('paper').submit();">Télécharger le scan</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" name="over" href="/process/[HOME]">Main menu</a>
+          </li>
+          <li>
+            <div id="google_translate_element"></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </nav>
+  
+    <br>
+    <br>
+    <div id="wrapper">
+
+      <form id="paper" method="POST" action=""  class="center">
+        <div class="col-2">          
+          <label for="title">File name :</label>
+          <input id="title" type="text" name="title" value="MyTextScan" class="form-control">
+        </div>
+        <div class="col-10">
+          <div id="text" name="text" contenteditable="true" class="form-control" style="min-height: 20px; margin-top: 10px;">{{scan}}</div>
+          <small id="charcount" class="form-text text-muted" style="float: left;">0 characters</small>
+        </div>
+      </form>
+            
+    </div>
+
+
+    
+</body>
+
+
+<style>
+
+
+.sep_left{
+  border-left: 1px solid #ffffff;
+  margin-left: 10px;
+}
+
+body {
+  overflow: hidden;
+}
+
+.center {
+  margin: 0 auto;
+  margin-left: 7%;
+  width: 100%;
+}
+
+
+body {
+	background:#333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+	      
+}
+
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+} 
+
+
+
+</style>
+
+<script>
+  document.getElementsByName("over").forEach(function(everyitem){
+
+everyitem.addEventListener('mouseover', function(e){
+
+  everyitem.className += " border border-white rounded";
+
+});
+
+everyitem.addEventListener('mouseleave', function(e){
+
+  everyitem.className = "nav-link active";
+
+
+})
+
+
+});
+</script>
+
+<script>
+
+  function text_size_counter(){
+    document.getElementById("charcount").innerText = document.getElementById("text").innerText.length + " characters";
+  }
+
+  var area = document.getElementById("text");
+if (area.addEventListener) {
+  area.addEventListener('input', function() {
+    text_size_counter();
+  }, false);
+} else if (area.attachEvent) {
+  area.attachEvent('onpropertychange', function() {
+    // IE-specific event handling code
+  });
+}
+
+  window.onload = text_size_counter();
+</script>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+    document.getElementsByTagName("body")[0].style = "";
+
+  }
+</script>
+
+</html>

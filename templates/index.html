@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title  translate="no">CopyPasta</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/" translate="no">CopyPasta</a>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    
+                </li>
+                </ul>
+              </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-header">
+                        Configuration
+                    </div>
+                    <div class="card-body">
+                        <h5>Welcome to CopyPasta</h5>
+                        <div id="google_translate_element"></div>
+                        <h6>Scan this QR Code with the app :</h6>
+                        <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
+                        <h6>Nom : {{hostname}}</h6>
+                        <h6>IP : {{ip}}</h6>
+                        <hr>
+                        <h6>
+                            {%if tab!=True%}
+                            <div class="form-check form-switch">                                
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Open a new tab when a scan is received</label>
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="change_tab_settings()"/>
+                            </div>
+                            {%else%}
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label" for="flexSwitchCheckChecked">Open a new tab when a scan is received</label>
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onclick="change_tab_settings()" checked/>
+                                </div>
+                            {%endif%}
+                                                    
+                        </h6>
+                    </div>
+                </div>
+
+            </div>
+
+            
+            <div class="col-md">
+                <div class="toast align-items-center text-white bg-primary" role="alert" aria-live="assertive" aria-atomic="true" name="notification" data-delay="2500" style="position: absolute; top: 10%; right: 0;">
+                    <div class="d-flex">
+                      <div class="toast-body" id="notification_text">
+                      Hello, world! This is a toast message.
+                     </div>
+                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+
+
+                <h1>Last files/data sent :</h1>
+                <hr/>
+                <a class="btn btn-primary mb-3" onclick="request_and_notify('Scan history deleted !','/process/[DEL HISTORY]')">Delete all history</a>
+
+                <table class="table table-striped text-center" id="history_table">
+                    <thead>
+                        <tr class="bg-primary" style="color: white;">
+                            <th scope="col">Date/Optionnal data</th>
+                            <th scope="col">Content/File name</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history_table_body">
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.min.js') }}"></script>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <script>
+        var messages = {
+            {
+                messages | safe
+            }
+        };
+        alert(messages[messages.length - 1]);
+    </script>
+    {% endif %} {% endwith %}
+
+    <style>
+        .btn-primary {
+            color: white;
+        }
+        
+        body {
+            background: #333 url(https://wallpaperaccess.com/full/1236480.jpg) repeat;
+            top: 0px !important; 
+
+        }
+
+        .goog-te-banner-frame.skiptranslate {
+        display: none !important;
+        } 
+
+
+        
+
+    </style>
+    
+    <script>
+
+        var n_elements = 0;
+
+        function fill_history_tab(){
+
+            var xmlHttp = new XMLHttpRequest();
+
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_history", false ); // false for synchronous request
+            xmlHttp.send( null );
+            var r = xmlHttp.responseText;
+            if(r == "{\"history\" : []}"){
+                document.getElementById("history_table_body").innerHTML = "";
+            }else{
+                var json = JSON.parse(r).history;
+            
+                var elements = [];
+
+                for (let i = 0; i < json.length; i++) {
+                    var obj = json[i];
+                    var tab_element = "";
+
+                    var images_ext = ["jpeg","jpg","png","ico","gif"];
+                    var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
+                    var audios_ext = ["m4a","flac","mp3"]
+                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var copy_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-clipboard\"></i></button>";
+                    var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
+                    var open_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
+                    var search_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
+
+                    
+                    //images
+                    if(images_ext.includes(obj.file_type)){
+                        tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td><button type=\"button\" class=\"btn btn-primary\" onclick=\"window.open('http://127.0.0.1:21987/image_preview?path="+obj.path+"','_blank')\">Image options</button>"+delete_file_icon+"</td></tr>";
+                    
+                    //videos
+                    }else if(videos_ext.includes(obj.file_type)){
+                        
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+
+                        tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
+                    
+                    //audio
+                    }else if(audios_ext.includes(obj.file_type)){
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+
+                        tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
+                    
+
+                    }else{
+                        //text scans
+                                                
+                        if(obj.file_type == "text"){
+                            if(obj.text.length > 12){
+                                var text = obj.text.substring(0,12) + "...";
+
+                            }else{
+                                var text = boj.text;
+                            }
+                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Open the text</a>"+delete_scan_icon+"</td></tr>";
+                        //wifi type
+                        }else if(obj.file_type == "wifi"){
+                            
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request_and_notify('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
+                        
+                        //barcode type
+                        }else if(obj.file_type == "isbn"){
+
+                            search_icon = "<button type=\"button\" onclick=\"window.open('http://google.com?q="+obj.content+"','_blank')\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
+
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-upc-scan\"></i></div></td><td><div style=\"margin-top:15px;\">isbn:"+obj.content+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+delete_scan_icon+"</div></td></tr>";
+                        
+                        }else if(obj.file_type == "email"){
+
+                            tab_element = "<tr><td>"+obj.addr+"</td><td>subject:"+obj.subject+"</td><td><a href=\"mailto:"+obj.addr+"?subject="+obj.subject+"&amp;body="+obj.content+"\" class=\"btn btn-primary\" style=\"margin-top:10px;\">Send</a>"+delete_scan_icon+"</td></tr>";
+                        
+                        }else if(obj.file_type == "url"){
+
+                            search_icon = "<button type=\"button\" onclick=\"window.open('"+obj.url+"','_blank')\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
+
+
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-globe2\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.url+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+delete_scan_icon+"</div></td></tr>";
+
+                        //random file
+                        }else{
+                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
+
+                            tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td>"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</td></tr>";
+                        }
+                    }
+
+                
+
+
+                    elements.push(tab_element);
+
+
+                }
+                var all = "";
+
+
+                for(let i = 0;i<elements.length;i++){
+                    all = all + elements[i];
+                }
+
+                var ele_l = elements.length;
+                
+                console.log("n : "+n_elements);
+                console.log("e : "+elements.length);
+                console.log(n_elements < ele_l);
+
+                if(n_elements< ele_l || n_elements > ele_l){
+                        notify("New element received !");
+                        document.getElementById("history_table_body").innerHTML = all;
+                        n_elements = elements.length;
+                }
+                
+
+
+            }
+
+
+            setTimeout(fill_history_tab,1500);
+        }
+
+
+
+
+
+    function change_tab_settings(){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
+        xmlHttp.send( null );
+        console.log("tab settings changed")
+    }
+    
+
+    function notify(text){
+        document.getElementById("notification_text").innerText = text;
+        
+        $('.toast').toast('show');
+    }
+
+
+    function request_and_notify(text,url){
+
+        document.getElementById("notification_text").innerText = text;
+        
+        $('.toast').toast('show');
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false ); // false for synchronous request
+        xmlHttp.send( null );
+        
+    }
+
+
+
+
+    window.onload = fill_history_tab();
+
+
+</script>
+
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+    }
+</script>
+
+
+    
+    
+</body>
+
+</html>
