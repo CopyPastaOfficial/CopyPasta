@@ -109,9 +109,14 @@ def img_preview():
     if request.remote_addr == "127.0.0.1":
 
 
-        img_path = request.args.get("path")
+        img_id = request.args.get("image_id")
 
-        return render_template("img_preview.html",img_path=img_path)
+        try:
+            img_path = get_history_file_by_id(int(img_id))['path']
+
+            return render_template("img_preview.html",img_path=img_path)
+        except:
+            return jsonify({"error" : "This image id doesn't exist"})
     else:
         return abort(403)
 
@@ -313,6 +318,8 @@ def api(api_req):
 def upload():
 
     if request.method == "POST":
+        
+        notify_desktop()
 
         r = request.get_json()
 
@@ -333,13 +340,22 @@ def upload():
                 
                 #detect urls in text scan
                 regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-                urls = findall(regex,str(file_content))	
+                urls = findall(regex,str(file_content))
+
+                #detect email in text scan
+                emails =  findall(r'[\w\.-]+@[\w\.-]+', file_content)
                 
                 rest = str(file_content)
                 
                 for url in urls:
                     store_to_history({"file_type" : "url","url" : f"{url[0]}", "date" : f"{time}"})
                     rest = rest.replace(url[0],"",1)
+
+                for email in emails:
+
+                    store_to_history({"file_type" : "email","addr" : f"{email}", "subject" : f"", "content" : f"", "date" : f"{time}"})
+
+
 
 
                 #after url detection, store the whole text as scan

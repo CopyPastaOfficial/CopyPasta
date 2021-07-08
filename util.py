@@ -12,6 +12,23 @@ from webbrowser import open as open_tab
 from ast import literal_eval
 import requests
 from subprocess import Popen
+from functools import partial
+from win10toast_click import ToastNotifier
+
+def notify_desktop():
+    # initialize 
+    toaster = ToastNotifier()
+
+    # showcase
+    toaster.show_toast(
+        "New scan Incoming !", # title
+        "Click to open CopyPasta", # message 
+        icon_path=None, # 'icon_path' 
+        duration=5, # for how many seconds toast should be visible; None = leave notification in Notification Center
+        threaded=True, # True = run other code in parallel; False = code execution will wait till notification disappears 
+        callback_on_click=partial(open_tab,"http://127.0.0.1:21987") # click notification to run function 
+        )
+
 
 
 def get_private_ip():
