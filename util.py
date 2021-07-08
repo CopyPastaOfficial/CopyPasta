@@ -15,14 +15,14 @@ from subprocess import Popen
 from functools import partial
 from win10toast_click import ToastNotifier
 
-def notify_desktop():
+def notify_desktop(title,text):
     # initialize 
     toaster = ToastNotifier()
 
     # showcase
     toaster.show_toast(
-        "New scan Incoming !", # title
-        "Click to open CopyPasta", # message 
+        title, # title
+        text, # message 
         icon_path=None, # 'icon_path' 
         duration=5, # for how many seconds toast should be visible; None = leave notification in Notification Center
         threaded=True, # True = run other code in parallel; False = code execution will wait till notification disappears 

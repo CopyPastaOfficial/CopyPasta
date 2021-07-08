@@ -301,9 +301,23 @@ def api(api_req):
 
             return get_history()
 
-        if api_req == "ping":
+        elif api_req == "ping":
 
             return "pong"
+
+        elif api_req == "update_ip":
+            #create a qr code containing the ip with google chart api
+            r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
+
+            #write it
+            with open("static/qr.jpeg","wb") as f:
+                f.write(r.content)
+
+            notify_desktop("Network change detected !","Updating you qr code, you need to rescan it ;)")
+            return jsonify({"success" : "updating qr code and private ip"})
+        
+        else:
+            return jsonify({"error" : "wrong api call"})
     else:
         return abort(403)
 
@@ -319,7 +333,7 @@ def upload():
 
     if request.method == "POST":
         
-        notify_desktop()
+        notify_desktop("New scan Incoming !", "Click to open CopyPasta")
 
         r = request.get_json()
 

@@ -44,8 +44,8 @@
                         <div id="google_translate_element"></div>
                         <h6>Scan this QR Code with the app :</h6>
                         <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
-                        <h6>Nom : {{hostname}}</h6>
-                        <h6>IP : {{ip}}</h6>
+                        <h6><b>Nom :</b> {{hostname}}</h6>
+                        <h6><b>IP :</b> {{ip}}</h6>
                         <hr>
                         <h6>
                             {%if tab!=True%}
@@ -80,7 +80,7 @@
 
                 <h1>Last files/data sent :</h1>
                 <hr/>
-                <a class="btn btn-primary mb-3" onclick="request_and_notify('History deleted !','/process/[DEL HISTORY]')">Delete all history</a>
+                <a class="btn btn-primary mb-3" onclick="request('History deleted !','/process/[DEL HISTORY]')">Delete all history</a>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
@@ -135,6 +135,7 @@
     <script>
 
         var n_elements = 0;
+        var is_online = true;
 
         function fill_history_tab(){
 
@@ -157,12 +158,12 @@
                     var images_ext = ["jpeg","jpg","png","ico","gif"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
                     var audios_ext = ["m4a","flac","mp3"]
-                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\" style=\"margin-top:10px;\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
+                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\" style=\"margin-top:10px;\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
                     var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
                     var open_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
-                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
+                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
                     var search_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
 
                     
@@ -173,13 +174,13 @@
                     //videos
                     }else if(videos_ext.includes(obj.file_type)){
                         
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
                     //audio
                     }else if(audios_ext.includes(obj.file_type)){
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
@@ -194,11 +195,11 @@
                             }else{
                                 var text = boj.text;
                             }
-                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Open the text</a>"+delete_scan_icon+"</td></tr>";
+                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Open the text</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
                         }else if(obj.file_type == "wifi"){
                             
-                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request_and_notify('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
                         
                         //barcode type
                         }else if(obj.file_type == "isbn"){
@@ -223,7 +224,7 @@
 
                         //random file
                         }else{
-                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
+                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
 
                             tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td>"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</td></tr>";
                         }
@@ -244,15 +245,22 @@
                 }
 
                 var ele_l = elements.length;
-                
-                console.log("n : "+n_elements);
-                console.log("e : "+elements.length);
-                console.log(n_elements < ele_l);
 
                 if(n_elements< ele_l || n_elements > ele_l){
                         notify("New element received !");
                         document.getElementById("history_table_body").innerHTML = all;
                         n_elements = elements.length;
+                }
+
+                if(!navigator.onLine && is_online){
+                    is_online = false;
+                }
+                
+                if(navigator.onLine && !is_online){
+                    request("","http://127.0.0.1:21987/api/update_ip");
+                    console.log("updating ip");
+                    is_online = true;
+                    document.location.reload();
                 }
                 
 
@@ -260,12 +268,8 @@
             }
 
 
-            setTimeout(fill_history_tab,1500);
+            setTimeout(fill_history_tab,1000);
         }
-
-    /*document.addEventListenner('online', () => {
-    // todo
-    });*/
 
 
 
@@ -282,12 +286,14 @@
     }
 
 
-    function request_and_notify(text,url){
+    function request(text,url){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open( "GET", url, false ); // false for synchronous request
         xmlHttp.send( null );
         
     }
+
+
 
     function copy_text(text) {
         navigator.permissions.query({name: "clipboard-write"}).then(result => {
