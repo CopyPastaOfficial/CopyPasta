@@ -240,23 +240,23 @@
                         document.getElementById("history_table_body").innerHTML = all;
                         n_elements = elements.length;
                 }
-
-                if(!navigator.onLine && is_online){
-                    is_online = false;
-                }
-                
-                if(navigator.onLine && !is_online){
-                    request("","http://127.0.0.1:21987/api/update_ip");
-                    console.log("updating ip");
-                    is_online = true;
-                    document.location.reload();
-                }
-                
+               
 
 
             }
 
-
+                if(!navigator.onLine && is_online){
+                        console.log("nework change detected")
+                        is_online = false;
+                }
+                    
+                if(navigator.onLine && !is_online){
+                        request("","http://127.0.0.1:21987/api/update_ip");
+                        console.log("updating ip");
+                        is_online = true;
+                        document.location.reload();
+                }
+                    
             setTimeout(fill_history_tab,1000);
         }
 
