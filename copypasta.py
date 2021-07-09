@@ -208,7 +208,7 @@ def process(process_id):
                 copy(f.read())
                 f.close()
 
-            flash("scan copied to clipboard :D")
+            notify_desktop("CopyPasta","scan copied to clipboard :D")
             #redirect to the usual scan preview
             return redirect("/scan_preview")
 

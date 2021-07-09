@@ -147,8 +147,8 @@
                     var images_ext = ["jpeg","jpg","png","ico","gif"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
                     var audios_ext = ["m4a","flac","mp3"]
-                    var delete_scan_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\" style=\"margin-top:10px;\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var delete_file_icon = "<button class=\"btn btn-danger\" style=\"margin-left:10px;\" onclick=\"request('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
                     var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
                     var open_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
@@ -184,7 +184,7 @@
                             }else{
                                 var text = boj.text;
                             }
-                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary\" onclick=\"request('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\">Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary\">Open the text</a>"+delete_scan_icon+"</td></tr>";
+                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary me-2\" onclick=\"request('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\" >Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary me\">Open the text</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
                         }else if(obj.file_type == "wifi"){
                             
