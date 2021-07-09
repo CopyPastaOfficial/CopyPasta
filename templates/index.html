@@ -24,9 +24,7 @@
               </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                  <li class="nav-item active">
-                    
-                </li>
+                  <li class="nav-item active"> <a class="nav-link active fs-5" href="https://copypastaofficial.github.io"><i class="bi bi-info-square"></i></a></li>
                 </ul>
               </div>
         </div>
@@ -68,24 +66,15 @@
 
             
             <div class="col-md">
-                <div class="toast align-items-center text-white bg-primary" role="alert" aria-live="assertive" aria-atomic="true" name="notification" data-delay="2500" style="position: absolute; top: 10%; right: 0;">
-                    <div class="d-flex">
-                      <div class="toast-body" id="notification_text">
-                      Hello, world! This is a toast message.
-                     </div>
-                      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-
 
                 <h1>Last files/data sent :</h1>
                 <hr/>
-                <a class="btn btn-primary mb-3" onclick="request('History deleted !','/process/[DEL HISTORY]')">Delete all history</a>
+                <button class="btn btn-danger mb-3" onclick="request('History deleted !','/process/[DEL HISTORY]')">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
                         <tr class="bg-primary" style="color: white;">
-                            <th scope="col">Date/Optionnal data</th>
+                            <th scope="col">Optionnal data</th>
                             <th scope="col">Content/File name</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -282,7 +271,6 @@
     
 
     function notify(text){
-
     }
 
 
