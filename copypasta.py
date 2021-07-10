@@ -309,7 +309,7 @@ def api(api_req):
             #create a qr code containing the ip with google chart api
             r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
 
-            remove("statuc/qr.jpeg")
+            remove("static/qr.jpeg")
             #write it
             with open("static/qr.jpeg","wb") as f:
                 f.write(r.content)
@@ -501,8 +501,8 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    """check_exe_name()
-    update_main_executable()"""
+    check_exe_name()
+    update_main_executable("1.2")
     #make sure we are in the right path
 
 
@@ -514,7 +514,7 @@ if __name__ == "__main__":
         #write it
         with open("static/qr.jpeg","wb") as f:
             f.write(r.content)
-
+            f.close()
 
         #check if the templates are up-to-date
         check_updates()

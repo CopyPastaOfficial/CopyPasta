@@ -1,5 +1,6 @@
 import requests
-import functools
+from ast import literal_eval
+
 
 def send_text_scan(text):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "text", "content" : f"{text}"})
@@ -34,10 +35,9 @@ def send_url(url):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "url", "content" : f"{url}"})
     print(r.text) 
 
-send_email("unrealsoft.dev@gmail.com","test","test of email body")
-send_barcode("test")
-send_file("static/qr.jpeg")
-send_text_scan("test of text scan")
-send_wifi("This_is_a_wifi_name","wpa","password")
-send_url("https://www.google.com")
-
+#send_email("unrealsoft.dev@gmail.com","test","test of email body")
+#send_barcode("test")
+#send_file("static/qr.jpeg")
+#send_text_scan("test of text scan")
+#send_wifi("This_is_a_wifi_name","wpa","password")
+#send_url("https://www.google.com")
