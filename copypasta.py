@@ -1,7 +1,7 @@
 import socket
 from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir,remove, startfile
+from os import path, chdir,remove, startfile, rename
 import PIL.Image as Image
 from io import BytesIO
 try:
