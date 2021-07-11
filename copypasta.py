@@ -44,9 +44,8 @@ if not path.exists("static/"):
 
 
 def check_exe_name():
-    print(path.basename(__file__))
-    if path.basename(__file__) != "copypasta.exe":
-        rename(path.basename(__file__),"copypasta.exe")
+    if path.basename(__file__).replace(".py",".exe") != "copypasta.exe":
+        rename(path.basename(__file__).replace(".py",".exe"),"copypasta.exe")
 
 
 #specify the folder where the scan are uploaded
@@ -501,8 +500,8 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    check_exe_name()
-    update_main_executable("1.2")
+    """check_exe_name()
+    update_main_executable("1.2")"""
     #make sure we are in the right path
 
 
