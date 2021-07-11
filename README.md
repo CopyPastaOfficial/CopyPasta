@@ -1,3 +1,24 @@
 # CopyPasta
 
-CopyPasta is a software linked to an android app to scan text from camera or images in your gallery and send it to your computer (or just copy the text on your phone's clipboard). You can also send images from camera or gallery.
+## CopyPasta is a software linked to an android app that can basically double your productivity !
+
+## main features :
+
+- scan text from camera or pictures and send it directly to your computer
+- save the text detected to your phone's clipboard
+- send pictures,videos,pdf... and all kind of files to your computer
+- Email addresses and URLs are automatically detected from the text sent and displayed on your computer in a way that you can directly check the website or send the mail with your favorite mail client.
+- share wifi IDs to your computer so you just have to click on copy password and go !
+- scan QR codes and barcodes
+- send text that will directly fill the input field where your cursor is focused on. (like address, password, text, URLs, large serial numbers etc...)
+
+## Installation :
+- download "copypasta_installer.exe" from the releases section
+- start the file once downloaded
+- Download the phone app from the google playstore (same name as the desktop app : CopyPasta)
+
+## Usage :
+- start copypasta on your desktop from one of the shortcuts (startup menu, desktop...)
+- once the web page is displayed on your navigator, scan the QR code with the phone CopyPasta app or select your computer's name if you already scanned it once and are in the same wifi network.
+- Complete the computer registration from the app is the first time you scan your computer on this particular network
+- Once it's done, select the type of action you want to do and enjoy the productivity boost ! ;)
