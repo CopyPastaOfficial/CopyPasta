@@ -182,7 +182,7 @@
                                 var text = obj.text.substring(0,12) + "...";
 
                             }else{
-                                var text = boj.text;
+                                var text = obj.text;
                             }
                             tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary me-2\" onclick=\"request('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\" >Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary me\">Open the text</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
