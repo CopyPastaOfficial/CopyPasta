@@ -1,6 +1,18 @@
-## compile start_copypasta.cpp :
+## compile launcher.py with nuitka or pyinstaller :
+- pyinstaller :
+    - one file mode
+    - copypasta icon
 
-- g++ .\start_copypasta.cpp -o start_copypasta.exe -static-libgcc -static-libstdc++
+- nuitka :
+    - python -m nuitka .\copypasta.py --follow-imports --plugin-enable=multiprocessing --onefile --windows-disable-console
+
+## compile copypasta with pyinstaller :
+
+- folder mode
+
+- icon of copypasta
+
+
 
 ## make sfx archive :
 
@@ -19,7 +31,7 @@
 
 - put icon to sfx archive in "icon and text" tab 
 
-- put start_copypasta.exe at command to run after extraction
+- put launcher.exe at command to run after extraction
 
 
-## don't forget to add a copy of copypasta.exe in release files
+## don't forget to add a copy of copypasta_files.zip in release files
