@@ -16,8 +16,9 @@ def update_main_executable(version):
         #remove copypasta folder berfore downloading new version
         try:
             rmtree("copypasta")
-        except Exception as e:
-            print(e)
+        except:
+            #not really an error if the folder have been deleted
+            pass
 
         #download zip file
         with open("copypasta.zip","wb") as f:
@@ -26,7 +27,7 @@ def update_main_executable(version):
 
         #unzip file
         with ZipFile("copypasta.zip","r") as zip_ref:
-            zip_ref.extractall("copypasta")
+            zip_ref.extractall()
 
         #delete zipped file
         remove("copypasta.zip")
