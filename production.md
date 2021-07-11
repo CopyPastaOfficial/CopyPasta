@@ -19,11 +19,11 @@
 - License agreements with license
 
 - shortcuts :
-    - D, copypasta.exe, copypasta, "Start CopyPasta", CopyPasta, C:\Users\thaao\google_drive_sync\dev\projects\CopyPasta\static\favicon.ico
+    - D, launcher.exe, , "Start CopyPasta", CopyPasta, C:\Users\thaao\google_drive_sync\dev\projects\CopyPasta\static\favicon.ico
     
-    - P, copypasta.exe, copypasta, "Start CopyPasta", CopyPasta, C:\Users\thaao\google_drive_sync\dev\projects\CopyPasta\static\favicon.ico
+    - P, launcher.exe, , "Start CopyPasta", CopyPasta, C:\Users\thaao\google_drive_sync\dev\projects\CopyPasta\static\favicon.ico
     
-    - T, copypasta.exe, copypasta, "Start CopyPasta", CopyPasta, C:\Users\thaao\google_drive_sync\dev\projects\CopyPasta\static\favicon.ico
+    - T, launcher.exe, , "Start CopyPasta", CopyPasta, C:\Users\thaao\google_drive_sync\dev\projects\CopyPasta\static\favicon.ico
 
 - icon is same as favicon.ico
 
