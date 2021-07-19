@@ -304,22 +304,35 @@ def api(api_req):
 
             return "pong"
 
+        elif api_req == "get_private_ip":
+
+            return get_private_ip()
+
         elif api_req == "update_ip":
             #create a qr code containing the ip with google chart api
             r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
-
-            remove("static/qr.jpeg")
+            try:
+                remove("static/qr.jpeg")
+            except:
+                pass
             #write it
             with open("static/qr.jpeg","wb") as f:
                 f.write(r.content)
+                f.close()
 
             notify_desktop("Network change detected !","Updating you qr code, you need to rescan it ;)")
-            return jsonify({"success" : "updating qr code and private ip"})
+            return jsonify({"new_ip" : "updating qr code and private ip"})
         
         else:
             return jsonify({"error" : "wrong api call"})
     else:
-        return abort(403)
+
+        if api_req == "ping":
+
+            return "pong"
+
+        else:
+            return abort(403)
 
 
 
@@ -479,8 +492,10 @@ def upload():
                     #rename file if one has already its name
                     i = 0
                     while(path.exists(full_path)):
-                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", str(filename.split(".")[:-1])[2:][:2]+str(i)+"."+filename.split(".")[-1])
-                        print(full_path)
+                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", path.splitext(filename)[0]+str(i)+"."+filename.split(".")[-1])
+                        i += 1
+                    
+                    print(full_path)
 
                     file.save(full_path)
                     store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
@@ -500,15 +515,13 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    """check_exe_name()
-    update_main_executable("1.2")"""
     #make sure we are in the right path
 
 
     if not is_server_already_running():
         #create a qr code containing the ip with google chart api
         r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
-
+        
 
         #write it
         with open("static/qr.jpeg","wb") as f:
