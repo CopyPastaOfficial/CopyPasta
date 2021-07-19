@@ -123,6 +123,24 @@
     
     <script>
 
+
+        function isOnline(){
+
+            try {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open( "GET", "http://www.google.com", false ); // false for synchronous request
+                xmlHttp.send( null );
+                return true;
+            } catch (error) {
+                console.log(error);
+                return false;
+            }
+
+            
+        }
+
+
+
         var n_elements = 0;
         var is_online = true;
 
@@ -245,12 +263,12 @@
 
             }
 
-                if(!navigator.onLine && is_online){
-                        console.log("nework change detected")
+                if(!isOnline() && is_online){
+                        console.log("network change detected")
                         is_online = false;
                 }
                     
-                if(navigator.onLine && !is_online){
+                if(isOnline() && !is_online){
                         request("","http://127.0.0.1:21987/api/update_ip");
                         console.log("updating ip");
                         is_online = true;
@@ -259,6 +277,8 @@
                     
             setTimeout(fill_history_tab,1000);
         }
+
+
 
 
 
