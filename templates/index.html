@@ -124,19 +124,33 @@
     <script>
 
 
+        function get_private_ip(){
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_private_ip", false ); // false for synchronous request
+            xmlHttp.send( null );
+            return xmlHttp.responseText;
+        }
+
+        var private_ip = get_private_ip();
+
         function isOnline(){
 
-            /*try {
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open( "GET", "http://www.google.com", false ); // false for synchronous request
-                xmlHttp.send( null );
-                return true;
+            try {
+
+                var new_ip = get_private_ip(); 
+
+                if(private_ip == new_ip){
+                    return true;
+                }else{
+                    private_ip = new_ip;
+                    return false;
+                }
+                
+                
             } catch (error) {
                 console.log(error);
                 return false;
-            }*/
-
-            return navigator.onLine
+            }
 
             
         }
