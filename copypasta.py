@@ -1,7 +1,7 @@
 import socket
 from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir,remove, startfile
+from os import path, chdir,remove, startfile, rename
 import PIL.Image as Image
 from io import BytesIO
 try:
@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 from datetime import date
 from pyautogui import write as send_keystrokes
 from flask_cors import CORS, cross_origin
-
+from re import findall
 
 #init flask app and secret key
 app = Flask(__name__)
@@ -44,9 +44,8 @@ if not path.exists("static/"):
 
 
 def check_exe_name():
-    print(path.basename(__file__))
-    if path.basename(__file__) != "copypasta.exe":
-        rename(path.basename(__file__),"copypasta.exe")
+    if path.basename(__file__).replace(".py",".exe") != "copypasta.exe":
+        rename(path.basename(__file__).replace(".py",".exe"),"copypasta.exe")
 
 
 #specify the folder where the scan are uploaded
@@ -109,9 +108,14 @@ def img_preview():
     if request.remote_addr == "127.0.0.1":
 
 
-        img_path = request.args.get("path")
+        img_id = request.args.get("image_id")
 
-        return render_template("img_preview.html",img_path=img_path)
+        try:
+            img_path = get_history_file_by_id(int(img_id))['path']
+
+            return render_template("img_preview.html",img_path=img_path)
+        except:
+            return jsonify({"error" : "This image id doesn't exist"})
     else:
         return abort(403)
 
@@ -203,7 +207,7 @@ def process(process_id):
                 copy(f.read())
                 f.close()
 
-            flash("scan copied to clipboard :D")
+            notify_desktop("CopyPasta","scan copied to clipboard :D")
             #redirect to the usual scan preview
             return redirect("/scan_preview")
 
@@ -223,8 +227,6 @@ def process(process_id):
                 win32clipboard.EmptyClipboard()
                 win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
                 win32clipboard.CloseClipboard()
-
-                flash("Image copied to clipboard :D")
 
                 return redirect(f"/image_preview?path={img_path}")
 
@@ -267,12 +269,23 @@ def process(process_id):
 
         if process_id == "[COPY WIFI PW]":
 
-            copy(get_history_file_by_id(int(request.args.get("scan_id"))['password']))
+            copy(get_history_file_by_id(int(request.args.get("scan_id")))['password'])
 
             return redirect("/")
+
+
+        if process_id == "[COPY CONTENT]":
+            
+            copy(get_history_file_by_id(int(request.args.get("scan_id")))['content'])
+
         
     else:
         return abort(403)
+
+
+
+
+
 
 
 #api url(s)
@@ -287,11 +300,43 @@ def api(api_req):
 
             return get_history()
 
+        elif api_req == "ping":
+
+            return "pong"
+
+        elif api_req == "get_private_ip":
+
+            return get_private_ip()
+
+        elif api_req == "update_ip":
+            #create a qr code containing the ip with google chart api
+            r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
+            try:
+                remove("static/qr.jpeg")
+            except:
+                pass
+            #write it
+            with open("static/qr.jpeg","wb") as f:
+                f.write(r.content)
+                f.close()
+
+            notify_desktop("Network change detected !","Updating you qr code, you need to rescan it ;)")
+            return jsonify({"new_ip" : "updating qr code and private ip"})
+        
+        else:
+            return jsonify({"error" : "wrong api call"})
+    else:
+
         if api_req == "ping":
 
             return "pong"
-    else:
-        return abort(403)
+
+        else:
+            return abort(403)
+
+
+
+
 
 
 
@@ -300,6 +345,8 @@ def api(api_req):
 def upload():
 
     if request.method == "POST":
+        
+        notify_desktop("New scan Incoming !", "Click to open CopyPasta")
 
         r = request.get_json()
 
@@ -316,17 +363,37 @@ def upload():
             if file_type == "text":
                 
                 file_content = r
+        
+                
+                #detect urls in text scan
+                regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+                urls = findall(regex,str(file_content))
 
-                append_to_scan_file(file_content)
+                #detect email in text scan
+                emails =  findall(r'[\w\.-]+@[\w\.-]+', file_content)
+                
+                rest = str(file_content)
+                
+                for url in urls:
+                    store_to_history({"file_type" : "url","url" : f"{url[0]}", "date" : f"{time}"})
+                    rest = rest.replace(url[0],"",1)
+
+                for email in emails:
+
+                    store_to_history({"file_type" : "email","addr" : f"{email}", "subject" : f"", "content" : f"", "date" : f"{time}"})
 
 
-                with open(f"{app.config['UPLOAD_FOLDER']}/scan.txt","w") as f:
-                    f.write(file_content)
-                    f.close()
 
-                store_to_history({ "file_type" : f"{file_type}", "date" : f"{time}","text" : f"{file_content}"})
 
-                open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
+                #after url detection, store the whole text as scan
+                if rest != "":
+                    with open(f"{app.config['UPLOAD_FOLDER']}/scan.Blue","w") as f:
+                        f.write(file_content)
+                        f.close()
+
+                    store_to_history({ "file_type" : f"{file_type}", "date" : f"{time}","text" : f"{file_content}"})
+
+                    open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
                 
 
                 return jsonify({"upload_status" : "true"})
@@ -345,7 +412,7 @@ def upload():
                 enctype = r['encryption']
                 password = r['key']
 
-                store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}"})
+                store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
@@ -361,29 +428,38 @@ def upload():
 
             elif file_type == "email":
 
-                store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}"})
+                store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
 
             elif file_type == "url":
 
-                store_to_history({"file_type" : "url","url" : f"{r}"})
+                store_to_history({"file_type" : "url","url" : f"{r}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
             elif file_type == "phone":
 
-                store_to_history({"file_type" : "phone","phone_number" : f"{r}"})
+                store_to_history({"file_type" : "phone","phone_number" : f"{r}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
             elif file_type == "sms":
 
-                store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}"})
+                store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}", "date" : f"{time}"})
 
                 return jsonify({"upload_status" : "true"})
 
+            elif file_type == "location":
+                lat = r['lattitude']
+                long = r['longitude']
+
+                store_to_history({"file_type" : "location", "lat" : f"{lat}", "long" : f"{long}", "date" : f"{time}"})            
+            
+            elif file_type == "contact":
+                
+                store_to_history({"file_type" : "contact", "first_name" : f"{r['firstName']}", "name" : f"{r['name']}", "organization" : f"{r['organization']}", "job" : f"{r['title']}"})
 
 
             else:
@@ -411,9 +487,18 @@ def upload():
                 elif file :
                     filename = secure_filename(file.filename)
                     file_type = filename.split(".")[-1]
-                    file.save(path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename))
-                    file_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename).replace("\\","/")
-                    store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{file_path}"})
+                    full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename)
+                    
+                    #rename file if one has already its name
+                    i = 0
+                    while(path.exists(full_path)):
+                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", path.splitext(filename)[0]+str(i)+"."+filename.split(".")[-1])
+                        i += 1
+                    
+                    print(full_path)
+
+                    file.save(full_path)
+                    store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
 
                     open_browser_if_settings_okay(f"http://127.0.0.1:21987/image_preview?path={path}")
                     
@@ -430,20 +515,18 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    check_exe_name()
-    update_main_executable()
     #make sure we are in the right path
 
 
     if not is_server_already_running():
         #create a qr code containing the ip with google chart api
         r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
-
+        
 
         #write it
         with open("static/qr.jpeg","wb") as f:
             f.write(r.content)
-
+            f.close()
 
         #check if the templates are up-to-date
         check_updates()

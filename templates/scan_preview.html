@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -16,17 +18,20 @@
 {% endif %}
 {% endwith %}
 
-    <title translate="no">CopyPasta</title>
+    <title><span translate="no">CopyPasta</span>/scan preview</title>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 
     <div class="container-fluid">
     <a class="navbar-brand" href="/" translate="no">CopyPasta</a>
-      <div class="collapse navbar-collapse" id="navbarText">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link active" name="over" href="/process/[CLEAR SCAN]">Empty scan</a>
+            <a class="nav-link active" name="over" href="/process/[CLEAR SCAN]">Clear the text</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" name="over" href="/process/[COPY SCAN]">Copy scan</a>
@@ -114,7 +119,7 @@ everyitem.addEventListener('mouseleave', function(e){
   everyitem.className = "nav-link active";
 
 
-})
+});
 
 
 });

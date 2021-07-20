@@ -123,40 +123,6 @@
     
     <script>
 
-
-        function get_private_ip(){
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_private_ip", false ); // false for synchronous request
-            xmlHttp.send( null );
-            return xmlHttp.responseText;
-        }
-
-        var private_ip = get_private_ip();
-
-        function isOnline(){
-
-            try {
-
-                var new_ip = get_private_ip(); 
-
-                if(private_ip == new_ip){
-                    return true;
-                }else{
-                    private_ip = new_ip;
-                    return false;
-                }
-                
-                
-            } catch (error) {
-                console.log(error);
-                return false;
-            }
-
-            
-        }
-
-
-
         var n_elements = 0;
         var is_online = true;
 
@@ -279,22 +245,20 @@
 
             }
 
-            if(!isOnline() && is_online){
-                    console.log("network change detected")
-                    is_online = false;
-            }
-                
-            if(isOnline() && !is_online){
-                    request("","http://127.0.0.1:21987/api/update_ip");
-                    console.log("updating ip");
-                    is_online = true;
-                    window.location.reload(true);
-            }
+                if(!navigator.onLine && is_online){
+                        console.log("nework change detected")
+                        is_online = false;
+                }
                     
-            setTimeout(fill_history_tab,200);
+                if(navigator.onLine && !is_online){
+                        request("","http://127.0.0.1:21987/api/update_ip");
+                        console.log("updating ip");
+                        is_online = true;
+                        window.location.reload(true);
+                }
+                    
+            setTimeout(fill_history_tab,1000);
         }
-
-
 
 
 

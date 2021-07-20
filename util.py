@@ -4,7 +4,7 @@ from random import randint
 from json import *
 from requests import get
 from locale import getlocale
-from os import mkdir, path, remove, removedirs, rename
+from os import mkdir, path, remove
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
 from multiprocessing import Process
@@ -12,6 +12,26 @@ from webbrowser import open as open_tab
 from ast import literal_eval
 import requests
 from subprocess import Popen
+from functools import partial
+from win10toast_click import ToastNotifier
+import six
+import appdirs
+import packaging.requirements
+
+def notify_desktop(title,text):
+    # initialize 
+    toaster = ToastNotifier()
+
+    # showcase
+    toaster.show_toast(
+        title, # title
+        text, # message 
+        icon_path="static/favicon.ico", # 'icon_path' 
+        duration=5, # for how many seconds toast should be visible; None = leave notification in Notification Center
+        threaded=True, # True = run other code in parallel; False = code execution will wait till notification disappears 
+        callback_on_click=partial(open_tab,"http://127.0.0.1:21987") # click notification to run function 
+        )
+
 
 
 def get_private_ip():
@@ -47,10 +67,16 @@ def emergency_redownload():
 
     if not path.exists("static/"):
         mkdir("static")
-        open("static/favicon.ico","w")
+        
+        f = open("static/favicon.ico","w")
+        f.close()
+
+        f = open("static/qr.jpeg","w")
+        f.close()
 
         with open("static/update.Blue","w") as f:
             f.write("1")
+            f.close()
 
         mkdir("static/dist")
         mkdir("static/dist/css")
@@ -106,9 +132,9 @@ def download_templates():
 
 
 
-def update_main_executable():
+def update_main_executable(version):
 
-    if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == "1.2":
+    if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
 
         with open("copypasta(1).exe","wb") as f:

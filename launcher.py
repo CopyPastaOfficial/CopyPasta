@@ -8,7 +8,7 @@ from os import path, chdir, remove
 APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","").replace("launcher.exe","").replace("launcher.py","")
 
 
-def update_main_executable(version):
+def update_main_executable(version: str) -> None:
 
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
@@ -33,10 +33,22 @@ def update_main_executable(version):
         remove("copypasta.zip")
 
 
-def is_installed():
+def is_installed() -> None:
     return path.exists("copypasta")
 
-        
+
+def get_current_version_and_check_update() -> None:
+
+    try:
+
+        with open("copypasta/version","r") as f:
+            version = f.read()
+            f.close()
+            update_main_executable(version)
+    except:
+        update_main_executable("0")
+
+
 if __name__ == "__main__":
 
     #make sure we work in the right directory
@@ -44,8 +56,9 @@ if __name__ == "__main__":
     
     #install copypasta like if it is not installed by the same process as updating
     if not is_installed():
-        #is still 1.2 the lastest version ?
-        update_main_executable("1.2")
+        #is still the lastest version ?
+        get_current_version_and_check_update()
     
     #now that we have the lastest, we can start the app :D
     Popen("copypasta/copypasta.exe")
+    

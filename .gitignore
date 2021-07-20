@@ -1,1 +1,6 @@
-__pycache__
+__pycache__/
+static/
+.vscode/
+copypasta.build
+copypasta.exe
+copypasta.cmd
