@@ -61,3 +61,4 @@ if __name__ == "__main__":
     
     #now that we have the lastest, we can start the app :D
     Popen("copypasta/copypasta.exe")
+    
