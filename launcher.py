@@ -4,15 +4,19 @@ from subprocess import Popen
 from shutil import rmtree
 from zipfile import  ZipFile
 from os import path, chdir, remove
+import sys
 
-APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","").replace("launcher.exe","").replace("launcher.py","")
+if getattr(sys, 'frozen', False):
+    APP_PATH = path.dirname(sys.executable)
+elif __file__:
+    APP_PATH = path.dirname(__file__)
 
 
 def update_main_executable(version: str) -> None:
 
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
-
+        print("NOT UP TO DATE")
         #remove copypasta folder berfore downloading new version
         try:
             rmtree("copypasta")
@@ -43,8 +47,10 @@ def get_current_version_and_check_update() -> None:
 
         with open("copypasta/version","r") as f:
             version = f.read()
+            print(version)
             f.close()
-            update_main_executable(version)
+            
+        update_main_executable(version)
     except:
         update_main_executable("0")
 
@@ -53,12 +59,13 @@ if __name__ == "__main__":
 
     #make sure we work in the right directory
     chdir(APP_PATH)
+    print(APP_PATH)
     
     #install copypasta like if it is not installed by the same process as updating
     if not is_installed():
         #is still the lastest version ?
         get_current_version_and_check_update()
-    
+
+    print("starting copypasta...")
     #now that we have the lastest, we can start the app :D
     Popen("copypasta/copypasta.exe")
-    

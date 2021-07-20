@@ -16,6 +16,7 @@ from datetime import date
 from pyautogui import write as send_keystrokes
 from flask_cors import CORS, cross_origin
 from re import findall
+import sys
 
 #init flask app and secret key
 app = Flask(__name__)
@@ -25,8 +26,10 @@ CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0
 
 app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
 
-APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
-
+if getattr(sys, 'frozen', False):
+    APP_PATH = path.dirname(sys.executable)
+elif __file__:
+    APP_PATH = path.dirname(__file__)
 
 
 
