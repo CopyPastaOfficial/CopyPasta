@@ -1,7 +1,8 @@
+import sys
 import socket
 from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir,remove, startfile, rename
+from os import path,remove, startfile, rename,chdir
 import PIL.Image as Image
 from io import BytesIO
 try:
@@ -16,7 +17,10 @@ from datetime import date
 from pyautogui import write as send_keystrokes
 from flask_cors import CORS, cross_origin
 from re import findall
-import sys
+
+# to generate app secret key
+from random import choice
+from string import printable
 
 #init flask app and secret key
 app = Flask(__name__)
@@ -24,7 +28,9 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
 
-app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
+app.secret_key = "".join([choice(printable) for _ in range(256)])
+
+
 
 if getattr(sys, 'frozen', False):
     APP_PATH = path.dirname(sys.executable)
@@ -32,10 +38,7 @@ elif __file__:
     APP_PATH = path.dirname(__file__)
 
 
-
-
-
-
+chdir(APP_PATH)
 
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
@@ -166,7 +169,14 @@ def process(process_id):
 
         #open an image preview from image history table
         if "[OPEN_IMAGE_SCAN_FROM_HIST]" in process_id:
+            
             img_path = request.args.get("path")
+            
+            
+            # try to secure the image path
+            # if suspicious path, just go home
+            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+                return redirect("/")
 
             return redirect(f"/image_preview?path={img_path}")
 
@@ -191,9 +201,14 @@ def process(process_id):
         if "[DOWNLOAD IMG]" in process_id:
 
             img_path = request.args.get("path")
+            
+            # try to secure the image path
+            # if suspicious path, just go home
+            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+                return redirect("/")
 
             return send_file(img_path,
-            attachment_filename=img_path.replace("static/files_hist/",""),
+            attachment_filename=secure_filename(img_path.replace("static/files_hist/","")),
             as_attachment=True)
 
         #empty the scan temporary file
@@ -219,6 +234,10 @@ def process(process_id):
 
             img_path = request.args.get("path")
 
+            # try to secure the image path
+            # if suspicious path, just go home
+            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+                return redirect("/")
 
             try:
                 output = BytesIO()
@@ -540,11 +559,3 @@ if __name__ == "__main__":
     if not is_server_already_running():
         #run flask web server
         app.run(host="0.0.0.0",port=21987)
-
-
-
-
-
-    
-    
-

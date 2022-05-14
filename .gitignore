@@ -2,5 +2,6 @@ __pycache__/
 static/
 .vscode/
 copypasta.build
+output
+output/*
 copypasta.exe
-copypasta.cmd

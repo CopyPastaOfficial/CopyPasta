@@ -14,9 +14,8 @@ import requests
 from subprocess import Popen
 from functools import partial
 from win10toast_click import ToastNotifier
-import six
-import appdirs
-import packaging.requirements
+from win32com.client import Dispatch
+
 
 def notify_desktop(title,text):
     # initialize 
@@ -61,6 +60,9 @@ def check_updates():
 
 
 def emergency_redownload():
+    
+    
+    notify_desktop("CopyPasta update","CopyPasta is downloading its files, it can take some time...")
     
     if not path.exists("templates/"):
         mkdir("templates")
@@ -164,9 +166,11 @@ def init_history_file():
     initialize the history xml file
 
     """
-    with open("static/history.xml","w") as f:
-        f.write("<history>\n</history>")
-        f.close()
+    
+    if not path.exists("static/history.xml"):
+        with open("static/history.xml","w") as f:
+            f.write("<history>\n</history>")
+            f.close()
 
 
 def get_history():
@@ -228,3 +232,17 @@ def open_browser_if_settings_okay(url):
     
     if path.exists("static/tab"):
         Process(target=open_link_process,args=(url,)).start()
+        
+        
+        
+def create_shortcut(path, target='', wDir='', icon=''):    
+ 
+    shell = Dispatch('WScript.Shell')
+    shortcut = shell.CreateShortCut(path)
+    shortcut.Targetpath = target
+    shortcut.WorkingDirectory = wDir
+    if icon == '':
+        pass
+    else:
+        shortcut.IconLocation = icon
+    shortcut.save()

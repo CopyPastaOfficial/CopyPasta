@@ -34,4 +34,4 @@
 - put launcher.exe at command to run after extraction
 
 
-## don't forget to add a copy of copypasta_files.zip in release files
+#### don't forget to add a copy of copypasta_files.zip in release files and put version file in it
