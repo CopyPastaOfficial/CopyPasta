@@ -22,6 +22,7 @@ elif __file__:
 APP_PATH = "C:/Program Files/CopyPasta/copypasta"
 
 
+
 def update_main_executable(version: str) -> None:
 
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
@@ -37,7 +38,6 @@ def update_main_executable(version: str) -> None:
             mkdir("C:/Program Files/Copypasta")
         except:
             #not really an error if the folder have been deleted or folder already exists
-            pass
 
         #download zip file
         with open("copypasta.zip","wb") as f:
@@ -61,19 +61,18 @@ def is_installed() -> None:
     return path.exists(APP_PATH)
 
 
+
 def get_current_version_and_check_update() -> None:
 
     try:
 
         with open("version","r") as f:
+
             version = f.read()
             print(version)
             f.close()
             
         update_main_executable(version)
-        
-        
-        
     except:
         update_main_executable("0")
 
@@ -123,3 +122,4 @@ if __name__ == "__main__":
 
     #now that we have the lastest, we can start the app :D
     Popen(f"{APP_PATH}/copypasta/copypasta.exe")
+
