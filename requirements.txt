@@ -1,2 +1,6 @@
 flask
 pyperclip
+win10toast-click
+flask_cors
+pyautogui
+pillow

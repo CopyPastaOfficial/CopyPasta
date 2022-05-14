@@ -1,7 +1,8 @@
+import sys
 import socket
 from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
 from requests import get
-from os import path, chdir,remove, startfile
+from os import path,remove, startfile, rename,chdir
 import PIL.Image as Image
 from io import BytesIO
 try:
@@ -17,22 +18,27 @@ from pyautogui import write as send_keystrokes
 from flask_cors import CORS, cross_origin
 from re import findall
 
+# to generate app secret key
+from random import choice
+from string import printable
+
 #init flask app and secret key
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
 
-app.secret_key = "CF3gNqD#%#MpSs=7J!VmM2KxWCWhGwjSP%pc*4G?XuUU4s6CC=2KcUba4WPA#EhhZ52gyU57_nF6cDM*_B9X7FpPH%^-c+c8naZSx2$atBwS?V"
-
-APP_PATH = path.abspath(__file__).replace("main.py","").replace("main.exe","").replace("copypasta.exe","").replace("copypasta.py","")
+app.secret_key = "".join([choice(printable) for _ in range(256)])
 
 
 
+if getattr(sys, 'frozen', False):
+    APP_PATH = path.dirname(sys.executable)
+elif __file__:
+    APP_PATH = path.dirname(__file__)
 
 
-
-
+chdir(APP_PATH)
 
 #check if the necesarry files exists, if not download and/or create them.
 if not path.exists("templates/"):
@@ -44,9 +50,8 @@ if not path.exists("static/"):
 
 
 def check_exe_name():
-    print(path.basename(__file__))
-    if path.basename(__file__) != "copypasta.exe":
-        rename(path.basename(__file__),"copypasta.exe")
+    if path.basename(__file__).replace(".py",".exe") != "copypasta.exe":
+        rename(path.basename(__file__).replace(".py",".exe"),"copypasta.exe")
 
 
 #specify the folder where the scan are uploaded
@@ -164,7 +169,14 @@ def process(process_id):
 
         #open an image preview from image history table
         if "[OPEN_IMAGE_SCAN_FROM_HIST]" in process_id:
+            
             img_path = request.args.get("path")
+            
+            
+            # try to secure the image path
+            # if suspicious path, just go home
+            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+                return redirect("/")
 
             return redirect(f"/image_preview?path={img_path}")
 
@@ -189,9 +201,14 @@ def process(process_id):
         if "[DOWNLOAD IMG]" in process_id:
 
             img_path = request.args.get("path")
+            
+            # try to secure the image path
+            # if suspicious path, just go home
+            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+                return redirect("/")
 
             return send_file(img_path,
-            attachment_filename=img_path.replace("static/files_hist/",""),
+            attachment_filename=secure_filename(img_path.replace("static/files_hist/","")),
             as_attachment=True)
 
         #empty the scan temporary file
@@ -217,6 +234,10 @@ def process(process_id):
 
             img_path = request.args.get("path")
 
+            # try to secure the image path
+            # if suspicious path, just go home
+            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+                return redirect("/")
 
             try:
                 output = BytesIO()
@@ -305,22 +326,35 @@ def api(api_req):
 
             return "pong"
 
+        elif api_req == "get_private_ip":
+
+            return get_private_ip()
+
         elif api_req == "update_ip":
             #create a qr code containing the ip with google chart api
             r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
-
-            remove("statuc/qr.jpeg")
+            try:
+                remove("static/qr.jpeg")
+            except:
+                pass
             #write it
             with open("static/qr.jpeg","wb") as f:
                 f.write(r.content)
+                f.close()
 
             notify_desktop("Network change detected !","Updating you qr code, you need to rescan it ;)")
-            return jsonify({"success" : "updating qr code and private ip"})
+            return jsonify({"new_ip" : "updating qr code and private ip"})
         
         else:
             return jsonify({"error" : "wrong api call"})
     else:
-        return abort(403)
+
+        if api_req == "ping":
+
+            return "pong"
+
+        else:
+            return abort(403)
 
 
 
@@ -480,8 +514,10 @@ def upload():
                     #rename file if one has already its name
                     i = 0
                     while(path.exists(full_path)):
-                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", str(filename.split(".")[:-1])[2:][:2]+str(i)+"."+filename.split(".")[-1])
-                        print(full_path)
+                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", path.splitext(filename)[0]+str(i)+"."+filename.split(".")[-1])
+                        i += 1
+                    
+                    print(full_path)
 
                     file.save(full_path)
                     store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
@@ -501,20 +537,18 @@ if __name__ == "__main__":
 
     chdir(APP_PATH)
 
-    """check_exe_name()
-    update_main_executable()"""
     #make sure we are in the right path
 
 
     if not is_server_already_running():
         #create a qr code containing the ip with google chart api
         r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
-
+        
 
         #write it
         with open("static/qr.jpeg","wb") as f:
             f.write(r.content)
-
+            f.close()
 
         #check if the templates are up-to-date
         check_updates()

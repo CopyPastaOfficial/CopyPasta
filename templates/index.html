@@ -123,6 +123,40 @@
     
     <script>
 
+
+        function get_private_ip(){
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_private_ip", false ); // false for synchronous request
+            xmlHttp.send( null );
+            return xmlHttp.responseText;
+        }
+
+        var private_ip = get_private_ip();
+
+        function isOnline(){
+
+            try {
+
+                var new_ip = get_private_ip(); 
+
+                if(private_ip == new_ip){
+                    return true;
+                }else{
+                    private_ip = new_ip;
+                    return false;
+                }
+                
+                
+            } catch (error) {
+                console.log(error);
+                return false;
+            }
+
+            
+        }
+
+
+
         var n_elements = 0;
         var is_online = true;
 
@@ -182,7 +216,7 @@
                                 var text = obj.text.substring(0,12) + "...";
 
                             }else{
-                                var text = boj.text;
+                                var text = obj.text;
                             }
                             tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary me-2\" onclick=\"request('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\" >Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary me\">Open the text</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
@@ -240,25 +274,27 @@
                         document.getElementById("history_table_body").innerHTML = all;
                         n_elements = elements.length;
                 }
-
-                if(!navigator.onLine && is_online){
-                    is_online = false;
-                }
-                
-                if(navigator.onLine && !is_online){
-                    request("","http://127.0.0.1:21987/api/update_ip");
-                    console.log("updating ip");
-                    is_online = true;
-                    document.location.reload();
-                }
-                
+               
 
 
             }
 
-
-            setTimeout(fill_history_tab,1000);
+            if(!isOnline() && is_online){
+                    console.log("network change detected")
+                    is_online = false;
+            }
+                
+            if(isOnline() && !is_online){
+                    request("","http://127.0.0.1:21987/api/update_ip");
+                    console.log("updating ip");
+                    is_online = true;
+                    window.location.reload(true);
+            }
+                    
+            setTimeout(fill_history_tab,200);
         }
+
+
 
 
 
