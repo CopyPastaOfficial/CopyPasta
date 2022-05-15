@@ -559,11 +559,3 @@ if __name__ == "__main__":
     if not is_server_already_running():
         #run flask web server
         app.run(host="0.0.0.0",port=21987)
-
-
-
-
-
-    
-    
-
