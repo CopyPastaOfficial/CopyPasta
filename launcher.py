@@ -37,11 +37,11 @@ def update_main_executable(version: str) -> None:
             rmtree(APP_PATH)
         except:
             #not really an error if the folder have been deleted or folder already exists
-
-        try:
-            mkdir("C:/Program Files/Copypasta")
-        except:
             pass
+        
+        # create copypasta folder if not exists
+        if not path.exists("C:/Program Files/CopyPasta"):
+            mkdir("C:/Program Files/CopyPasta")
         
         
         #download zip file
