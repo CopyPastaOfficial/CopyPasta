@@ -27,9 +27,7 @@ def update_main_executable(version: str) -> None:
 
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
-        notify_desktop("CopyPasta Installer","Donwloading CopyPasta components...")
-        print("MAJJJJ")
-        
+        notify_desktop("CopyPasta Installer","Donwloading CopyPasta components...")        
         
         
         #remove copypasta folder berfore downloading new version
