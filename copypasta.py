@@ -21,6 +21,7 @@ from re import findall
 #waitress wsgi server
 
 from waitress import serve
+from webtest.http import StopableWSGIServer
 
 # to generate app secret key
 from random import choice
@@ -29,10 +30,17 @@ from string import printable
 #init flask app and secret key
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
 
 app.secret_key = "".join([choice(printable) for _ in range(256)])
+
+
+
+
+# init waitress wsgi server
+webserv = StopableWSGIServer(app)
 
 
 
@@ -318,7 +326,7 @@ def process(process_id):
 
 @app.route("/api/<api_req>")
 def api(api_req):
-
+    
     if request.remote_addr == "127.0.0.1":
 
 
@@ -349,13 +357,10 @@ def api(api_req):
             notify_desktop("Network change detected !","Updating you qr code, you need to rescan it ;)")
             return jsonify({"new_ip" : "updating qr code and private ip"})
         
-        elif api_req == "stop_server":
-            # get werkzeug.server method and call it
-            request.environ.get('werkzeug.server.shutdown')()
-            
-            # depracted, use waitress ?
-            
-            return render_template("shutdown.html")
+        elif api_req == "shutdown_server":
+            webserv.shutdown()
+                      
+            return jsonify({"success":"shutting down CopyPasta server..."})
         
         else:
             return jsonify({"error" : "wrong api call"})
@@ -571,5 +576,8 @@ if __name__ == "__main__":
     Process(target=open_link_process, args=("http://127.0.0.1:21987",)).start()
 
     if not is_server_already_running():
+        
         #run waitress web server
-        serve(app,host="0.0.0.0",port=21987)
+        webserv.create(app,host="0.0.0.0",port=21987)
+        webserv.run()
+        

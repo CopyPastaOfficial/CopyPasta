@@ -29,6 +29,7 @@
     </nav>
     
     <div class="container mt-3">
+        <div id="alert_container"></div>
         <div class="row">
             <div class="col-md-3">
                 <div class="card text-center">
@@ -58,7 +59,7 @@
                                                     
                         </h6>
                         <hr>
-                        <a href="/api/stop_server"><h6>Shutdown server  <a class="bi bi-power" href="/api/stop_server"></a></h6></a>
+                        <a href="javascript:shutdown_server();"><h6>Shutdown server  <a class="bi bi-power" href="/api/stop_server"></a></h6></a>
                     </div>
                 </div>
 
@@ -103,6 +104,12 @@
 
     <style>
         .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited, .btn-outline-primary {
+            background-color: #009c74 !important;
+            border-color: #009c74;
+            color: white;
+        }
+
+        .alert-primary{
             background-color: #009c74 !important;
             border-color: #009c74;
             color: white;
@@ -288,13 +295,12 @@
             }
 
             if(!isOnline() && is_online){
-                    console.log("network change detected")
+                    notify("network change detected !")
                     is_online = false;
             }
                 
             if(isOnline() && !is_online){
-                    request("","http://127.0.0.1:21987/api/update_ip");
-                    console.log("updating ip");
+                    request("http://127.0.0.1:21987/api/update_ip");
                     is_online = true;
                     window.location.reload(true);
             }
@@ -314,15 +320,24 @@
     }
     
 
+
+    function close_alert(){
+        document.getElementById("alert_container").innerHTML = "";
+    }
     function notify(text){
+        document.getElementById("alert_container").innerHTML = "<div class=\"alert alert-primary alert-dismissible fade show\" role=\"alert\">"+text+
+            "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"+
+            "</div>"
+
+        setTimeout(close_alert,10000);
     }
 
 
-    function request(text,url){
+    function request(url){
+
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", url, false ); // false for synchronous request
-        xmlHttp.send( null );
-        
+        xmlHttp.open( "GET", url, true ); // false for synchronous request
+        xmlHttp.send( null ); 
     }
 
 
@@ -348,6 +363,12 @@
 
     window.onload = fill_history_tab();
 
+
+
+    function shutdown_server(){
+        request("http://127.0.0.1:21987/api/shutdown_server");
+        notify("CopyPasta server is now off. You may close this tab.");
+    }
 
 </script>
 
