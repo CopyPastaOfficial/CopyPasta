@@ -24,6 +24,9 @@ APP_PATH = "C:/Program Files/CopyPasta/copypasta"
 
 
 def update_main_executable(version: str) -> None:
+    
+    # makes sure we go back to launcher's root
+    chdir(EXE_PATH)
 
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
@@ -103,9 +106,8 @@ def move_launcher():
 if __name__ == "__main__":
 
     #make sure we work in the right directory
-    chdir(EXE_PATH)
-    
-    
+    chdir(APP_PATH)
+
     #is still the lastest version ?
     get_current_version_and_check_update()
 
