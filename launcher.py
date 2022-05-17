@@ -111,8 +111,6 @@ if __name__ == "__main__":
 
     #install copypasta like if it is not installed by the same process as updating
     if not is_installed():
-
-        chdir(f"{APP_PATH}/copypasta")
         
         chdir(APP_PATH)
         
