@@ -72,7 +72,7 @@ def get_current_version_and_check_update() -> None:
 
     try:
 
-        with open("version","r") as f:
+        with open("copypasta/version","r") as f:
 
             version = f.read()
             print(version)
