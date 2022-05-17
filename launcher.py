@@ -28,7 +28,7 @@ def update_main_executable(version: str) -> None:
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
         notify_desktop("CopyPasta Installer","Donwloading CopyPasta components...")
-        
+        print("MAJJJJ")
         
         
         
@@ -106,11 +106,13 @@ if __name__ == "__main__":
 
     #make sure we work in the right directory
     chdir(EXE_PATH)
+    
+    
+    #is still the lastest version ?
+    get_current_version_and_check_update()
 
     #install copypasta like if it is not installed by the same process as updating
     if not is_installed():
-        #is still the lastest version ?
-        get_current_version_and_check_update()
 
         chdir(f"{APP_PATH}/copypasta")
         
