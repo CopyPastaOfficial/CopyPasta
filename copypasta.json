@@ -68,6 +68,10 @@
   {
    "optionDest": "argv_emulation",
    "value": false
+  },
+  {
+   "optionDest": "datas",
+   "value": "G:/Mon Drive/dev/projects/CopyPasta/version;."
   }
  ],
  "nonPyinstallerOptions": {
