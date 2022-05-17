@@ -15,8 +15,8 @@
 - If you have closed the browser window, you can reopen it by clicking on the shortcut like if you wanted to start copypasta or even just send your things and click on the notification toast ;D 
 
 ## Installation :
-- download "copypasta_installer.exe" from the releases section
-- start the file once downloaded
+- download "launcher.exe" from the releases section
+- start the file once downloaded (let it make its things, it takes some time to download everything :D )
 - Download the phone app from the google playstore (same name as the desktop app : CopyPasta)
 
 ## Usage :
