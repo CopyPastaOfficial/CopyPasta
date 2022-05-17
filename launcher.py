@@ -114,9 +114,6 @@ if __name__ == "__main__":
 
         chdir(f"{APP_PATH}/copypasta")
         
-        # re-download all static files
-        emergency_redownload()
-        
         chdir(APP_PATH)
         
         move_launcher()
