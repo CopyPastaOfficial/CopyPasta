@@ -105,14 +105,20 @@ def move_launcher():
 
 if __name__ == "__main__":
 
-    #make sure we work in the right directory
-    chdir(APP_PATH)
 
-    #is still the lastest version ?
-    get_current_version_and_check_update()
 
-    #install copypasta like if it is not installed by the same process as updating
-    if not is_installed():
+
+    if is_installed():
+        #make sure we work in the right directory
+        chdir(APP_PATH)
+
+
+
+    #install copypasta like if it is already installed by the same process as updating
+    else:
+        
+        # download lastest version
+        get_current_version_and_check_update()
         
         chdir(APP_PATH)
         
