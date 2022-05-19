@@ -1,4 +1,5 @@
 from ast import literal_eval
+from getpass import getuser
 from requests import get
 from subprocess import Popen
 from shutil import rmtree
@@ -88,7 +89,7 @@ def move_launcher():
     """
     - put launcher.exe in C:/Program Files/CopyPasta
     - create shortcut to launcher on Desktop and StartMenu
-    - remove itself ?
+    - create shortcut on start menu
     """
     
     # 1
@@ -100,7 +101,8 @@ def move_launcher():
     # 2
     create_shortcut(path="C:\\Users\\Public\\Desktop\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")       
        
-    #3 ?         
+    #3
+    create_shortcut(path=f"C:\\Users\\{getuser()}\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")
     
 
 if __name__ == "__main__":
@@ -124,9 +126,6 @@ if __name__ == "__main__":
         
         move_launcher()
         
-        
-    #now, we can be sure to work in the copypasta app directory
-    chdir(APP_PATH)
 
     #now that we have the lastest, we can start the app :D
     Popen(f"{APP_PATH}/copypasta/copypasta.exe")
