@@ -303,7 +303,8 @@
                 notify("network change detected !")
                 request("http://127.0.0.1:21987/api/update_ip");
                 is_online = true;
-                window.location.reload(true);
+
+                setTimeout(function() {window.location.reload(true);},2000);
             }
                     
             setTimeout(fill_history_tab,200);
