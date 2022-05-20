@@ -295,14 +295,15 @@
             }
 
             if(!isOnline() && is_online){
-                    notify("network change detected !")
-                    is_online = false;
+                notify("network change detected !")
+                is_online = false;
             }
                 
             if(isOnline() && !is_online){
-                    request("http://127.0.0.1:21987/api/update_ip");
-                    is_online = true;
-                    window.location.reload(true);
+                notify("network change detected !")
+                request("http://127.0.0.1:21987/api/update_ip");
+                is_online = true;
+                window.location.reload(true);
             }
                     
             setTimeout(fill_history_tab,200);

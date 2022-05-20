@@ -1,12 +1,13 @@
 from ast import literal_eval
 from getpass import getuser
+from importlib.util import find_spec
 from requests import get
 from subprocess import Popen
 from shutil import rmtree
 from zipfile import  ZipFile
-from os import path, chdir, remove,mkdir
+from os import path, chdir, remove,mkdir,environ
 import sys
-from util import create_shortcut, emergency_redownload, notify_desktop
+from util import create_shortcut, notify_desktop
 
 
 # to fix pyinstaller error
@@ -15,6 +16,25 @@ import win32api
 
 
 
+
+
+        
+#pyinstaller splash screen gestion
+
+
+def update_splash_text():
+    pass
+
+def close_splash():
+    pass
+
+if '_PYIBoot_SPLASH' in environ and find_spec("pyi_splash"):
+    from pyi_splash import update_text, close
+    update_splash_text = update_text
+    close_splash = close
+    
+
+# get all the pathes needed
 if getattr(sys, 'frozen', False):
     EXE_PATH = path.dirname(sys.executable)
 elif __file__:
@@ -118,6 +138,7 @@ if __name__ == "__main__":
 
     #install copypasta like if it is already installed by the same process as updating
     else:
+        update_splash_text("CopyPasta is downloading its files, please wait...")
         
         # download lastest version
         get_current_version_and_check_update()
@@ -125,8 +146,9 @@ if __name__ == "__main__":
         chdir(APP_PATH)
         
         move_launcher()
-        
 
     #now that we have the lastest, we can start the app :D
     Popen(f"{APP_PATH}/copypasta/copypasta.exe")
+    
+    close_splash()
 

@@ -343,8 +343,15 @@ def api(api_req):
             return get_private_ip()
 
         elif api_req == "update_ip":
+            
+            
+            if not is_online():
+                return jsonify({"error","you are currently offline"})
+            
             #create a qr code containing the ip with google chart api
             r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
+                
+            
             try:
                 remove("static/qr.jpeg")
             except:
@@ -357,7 +364,7 @@ def api(api_req):
             notify_desktop("Network change detected !","Updating you qr code, you need to rescan it ;)")
             return jsonify({"new_ip" : "updating qr code and private ip"})
         
-        elif api_req == "shutdown_server":
+        elif api_req == "shutdown_server": 
             webserv.shutdown()
                       
             return jsonify({"success":"shutting down CopyPasta server..."})
@@ -560,17 +567,19 @@ if __name__ == "__main__":
 
 
     if not is_server_already_running():
-        #create a qr code containing the ip with google chart api
-        r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
         
+        if is_online():
+            #create a qr code containing the ip with google chart api
+            r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
+            
 
-        #write it
-        with open("static/qr.jpeg","wb") as f:
-            f.write(r.content)
-            f.close()
+            #write it
+            with open("static/qr.jpeg","wb") as f:
+                f.write(r.content)
+                f.close()
 
-        #check if the templates are up-to-date
-        check_updates()
+            #check if the templates are up-to-date
+            check_templates_update()
 
     #open tab in web browser
     Process(target=open_link_process, args=("http://127.0.0.1:21987",)).start()
