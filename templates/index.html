@@ -193,9 +193,9 @@
                     var obj = json[i];
                     var tab_element = "";
 
-                    var images_ext = ["jpeg","jpg","png","ico","gif"];
+                    var images_ext = ["jpeg","jpg","png","ico","gif","apng","avif","gif","jfif","pjpeg","pjp","svg","webp"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
-                    var audios_ext = ["m4a","flac","mp3"]
+                    var audios_ext = ["m4a","flac","mp3","wav","aiff","pcm","alac","wma","ogg","aac"]
                     var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
@@ -306,7 +306,6 @@
 
                 setTimeout(function() {window.location.reload(true);},2000);
             }
-                    
             setTimeout(fill_history_tab,200);
         }
 
