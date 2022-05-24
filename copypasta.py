@@ -346,7 +346,7 @@ def api(api_req):
             
             
             if not is_online():
-                return jsonify({"error","you are currently offline"})
+                return "You are offline :/"
             
             #create a qr code containing the ip with google chart api
             r = get("https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl="+make_qr_url(),allow_redirects=True)
@@ -543,8 +543,6 @@ def upload():
                         full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", path.splitext(filename)[0]+str(i)+"."+filename.split(".")[-1])
                         i += 1
                     
-                    print(full_path)
-
                     file.save(full_path)
                     store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
 
@@ -567,6 +565,7 @@ if __name__ == "__main__":
 
 
     if not is_server_already_running():
+        
         
         if is_online():
             #create a qr code containing the ip with google chart api

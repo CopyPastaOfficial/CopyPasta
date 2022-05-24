@@ -175,7 +175,7 @@
         var n_elements = 0;
         var is_online = true;
 
-        function fill_history_tab(){
+        function fill_history_tab(init=false){
 
             var xmlHttp = new XMLHttpRequest();
 
@@ -283,11 +283,14 @@
                 }
 
                 var ele_l = elements.length;
-
                 if(n_elements< ele_l || n_elements > ele_l){
+                    
+                    //don't notify user at app startup as it's only already sent content
+                    if(!init){
                         notify("New element received !");
-                        document.getElementById("history_table_body").innerHTML = all;
-                        n_elements = elements.length;
+                    }
+                    document.getElementById("history_table_body").innerHTML = all;
+                    n_elements = elements.length;
                 }
                
 
@@ -296,6 +299,7 @@
 
             if(!isOnline() && is_online){
                 notify("network change detected !")
+                request("http://127.0.0.1:21987/api/update_ip");
                 is_online = false;
             }
                 
@@ -362,7 +366,7 @@
 
 
 
-    window.onload = fill_history_tab();
+    window.onload = fill_history_tab(init=true);
 
 
 
