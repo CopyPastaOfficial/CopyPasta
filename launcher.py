@@ -133,19 +133,18 @@ if __name__ == "__main__":
     if is_installed():
         #make sure we work in the right directory
         chdir(APP_PATH)
-
-
-
-    #install copypasta like if it is already installed by the same process as updating
-    else:
-        update_splash_text("CopyPasta is downloading its files, please wait...")
-        
         # download lastest version
         get_current_version_and_check_update()
         
-        chdir(APP_PATH)
-        
+    else:
+        # download lastest version like updates
+        get_current_version_and_check_update()
+        # create shortcuts and move launcher.exe to C:/Programs Files/CopyPasta/copypasta
         move_launcher()
+    
+   
+    
+    chdir(APP_PATH)
 
     #now that we have the lastest, we can start the app :D
     Popen(f"{APP_PATH}/copypasta/copypasta.exe")
