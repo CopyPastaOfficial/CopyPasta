@@ -39,9 +39,17 @@ def get_private_ip():
     :return: a string containing the private ip used on your machine
 
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    
+    
+    # check if online before, because some things I don't fully understand made
+    # this request return the last private IP address sometimes when onffline
+    if is_online():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    
+    else:
+        return "You are offline :/"
 
 
 def make_qr_url():
@@ -49,7 +57,7 @@ def make_qr_url():
     return dumps(url,indent=4)
 
 
-def check_updates():
+def check_templates_update():
     with open("static/update.Blue","r") as f:
         n = int(f.read())
         if n == 10:
@@ -246,3 +254,13 @@ def create_shortcut(path, target='', wDir='', icon=''):
     else:
         shortcut.IconLocation = icon
     shortcut.save()
+
+
+
+def is_online():
+    try:
+        socket.create_connection(("8.8.8.8",53))
+        return True
+    except OSError:
+        return False
+        

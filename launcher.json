@@ -72,6 +72,10 @@
   {
    "optionDest": "argv_emulation",
    "value": false
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "pyi_splash"
   }
  ],
  "nonPyinstallerOptions": {

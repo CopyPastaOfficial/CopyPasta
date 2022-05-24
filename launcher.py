@@ -1,11 +1,13 @@
 from ast import literal_eval
+from getpass import getuser
+from importlib.util import find_spec
 from requests import get
 from subprocess import Popen
 from shutil import rmtree
 from zipfile import  ZipFile
-from os import path, chdir, remove,mkdir
+from os import path, chdir, remove,mkdir,environ
 import sys
-from util import create_shortcut, emergency_redownload, notify_desktop
+from util import create_shortcut, notify_desktop
 
 
 # to fix pyinstaller error
@@ -14,6 +16,25 @@ import win32api
 
 
 
+
+
+        
+#pyinstaller splash screen gestion
+
+
+def update_splash_text():
+    pass
+
+def close_splash():
+    pass
+
+if '_PYIBoot_SPLASH' in environ and find_spec("pyi_splash"):
+    from pyi_splash import update_text, close
+    update_splash_text = update_text
+    close_splash = close
+    
+
+# get all the pathes needed
 if getattr(sys, 'frozen', False):
     EXE_PATH = path.dirname(sys.executable)
 elif __file__:
@@ -24,12 +45,13 @@ APP_PATH = "C:/Program Files/CopyPasta/copypasta"
 
 
 def update_main_executable(version: str) -> None:
+    
+    # makes sure we go back to launcher's root
+    chdir(EXE_PATH)
 
     if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
-        notify_desktop("CopyPasta Installer","Donwloading CopyPasta components...")
-        
-        
+        notify_desktop("CopyPasta Installer","Donwloading CopyPasta components...")        
         
         
         #remove copypasta folder berfore downloading new version
@@ -71,7 +93,7 @@ def get_current_version_and_check_update() -> None:
 
     try:
 
-        with open("version","r") as f:
+        with open("copypasta/version","r") as f:
 
             version = f.read()
             print(version)
@@ -87,7 +109,7 @@ def move_launcher():
     """
     - put launcher.exe in C:/Program Files/CopyPasta
     - create shortcut to launcher on Desktop and StartMenu
-    - remove itself ?
+    - create shortcut on start menu
     """
     
     # 1
@@ -99,32 +121,34 @@ def move_launcher():
     # 2
     create_shortcut(path="C:\\Users\\Public\\Desktop\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")       
        
-    #3 ?         
+    #3
+    create_shortcut(path=f"C:\\Users\\{getuser()}\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")
     
 
 if __name__ == "__main__":
 
-    #make sure we work in the right directory
-    chdir(EXE_PATH)
 
-    #install copypasta like if it is not installed by the same process as updating
-    if not is_installed():
-        #is still the lastest version ?
-        get_current_version_and_check_update()
 
-        chdir(f"{APP_PATH}/copypasta")
+
+    if is_installed():
+        #make sure we work in the right directory
+        chdir(APP_PATH)
+
+
+
+    #install copypasta like if it is already installed by the same process as updating
+    else:
+        update_splash_text("CopyPasta is downloading its files, please wait...")
         
-        # re-download all static files
-        emergency_redownload()
+        # download lastest version
+        get_current_version_and_check_update()
         
         chdir(APP_PATH)
         
         move_launcher()
-        
-        
-    #now, we can be sure to work in the copypasta app directory
-    chdir(APP_PATH)
 
     #now that we have the lastest, we can start the app :D
     Popen(f"{APP_PATH}/copypasta/copypasta.exe")
+    
+    close_splash()
 

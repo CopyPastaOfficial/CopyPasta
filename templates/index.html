@@ -41,7 +41,7 @@
                         <div id="google_translate_element"></div>
                         <h6>Scan this QR Code with the app :</h6>
                         <img class="mb-3" src="../static/qr.jpeg" width="125px" height="auto" />
-                        <h6><b>Nom :</b> {{hostname}}</h6>
+                        <h6><b>NAME :</b> {{hostname}}</h6>
                         <h6><b>IP :</b> {{ip}}</h6>
                         <hr>
                         <h6>
@@ -59,7 +59,7 @@
                                                     
                         </h6>
                         <hr>
-                        <a href="javascript:shutdown_server();"><h6>Shutdown server  <a class="bi bi-power" href="javascript:shutdown_server();"></a></h6></a>
+                        <a href="javascript:shutdown_server();"><h6>Server shutdown  <a class="bi bi-power" href="javascript:shutdown_server();"></a></h6></a>
                     </div>
                 </div>
 
@@ -175,7 +175,7 @@
         var n_elements = 0;
         var is_online = true;
 
-        function fill_history_tab(){
+        function fill_history_tab(init=false){
 
             var xmlHttp = new XMLHttpRequest();
 
@@ -193,9 +193,9 @@
                     var obj = json[i];
                     var tab_element = "";
 
-                    var images_ext = ["jpeg","jpg","png","ico","gif"];
+                    var images_ext = ["jpeg","jpg","png","ico","gif","apng","avif","gif","jfif","pjpeg","pjp","svg","webp"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
-                    var audios_ext = ["m4a","flac","mp3"]
+                    var audios_ext = ["m4a","flac","mp3","wav","aiff","pcm","alac","wma","ogg","aac"]
                     var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
                     var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
@@ -283,11 +283,14 @@
                 }
 
                 var ele_l = elements.length;
-
                 if(n_elements< ele_l || n_elements > ele_l){
+                    
+                    //don't notify user at app startup as it's only already sent content
+                    if(!init){
                         notify("New element received !");
-                        document.getElementById("history_table_body").innerHTML = all;
-                        n_elements = elements.length;
+                    }
+                    document.getElementById("history_table_body").innerHTML = all;
+                    n_elements = elements.length;
                 }
                
 
@@ -295,16 +298,18 @@
             }
 
             if(!isOnline() && is_online){
-                    notify("network change detected !")
-                    is_online = false;
+                notify("network change detected !")
+                request("http://127.0.0.1:21987/api/update_ip");
+                is_online = false;
             }
                 
             if(isOnline() && !is_online){
-                    request("http://127.0.0.1:21987/api/update_ip");
-                    is_online = true;
-                    window.location.reload(true);
+                notify("network change detected !")
+                request("http://127.0.0.1:21987/api/update_ip");
+                is_online = true;
+
+                setTimeout(function() {window.location.reload(true);},2000);
             }
-                    
             setTimeout(fill_history_tab,200);
         }
 
@@ -361,7 +366,7 @@
 
 
 
-    window.onload = fill_history_tab();
+    window.onload = fill_history_tab(init=true);
 
 
 
