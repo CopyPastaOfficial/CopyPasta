@@ -40,7 +40,7 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     EXE_PATH = path.dirname(__file__)
 
-APP_PATH = "C:/Program Files/CopyPasta/copypasta"
+APP_PATH = "C:/Program Files/CopyPasta"
 
 
 
@@ -62,8 +62,8 @@ def update_main_executable(version: str) -> None:
             pass
         
         # create copypasta folder if not exists
-        if not path.exists("C:/Program Files/CopyPasta"):
-            mkdir("C:/Program Files/CopyPasta")
+        if not path.exists(APP_PATH):
+            mkdir(APP_PATH)
         
         
         #download zip file
@@ -93,10 +93,9 @@ def get_current_version_and_check_update() -> None:
 
     try:
 
-        with open("copypasta/version","r") as f:
+        with open(f"{APP_PATH}/copypasta/version","r") as f:
 
             version = f.read()
-            print(version)
             f.close()
             
         update_main_executable(version)
@@ -113,10 +112,10 @@ def move_launcher():
     """
     
     # 1
-    if not path.exists("C:/Program Files/CopyPasta/launcher.exe"):
-        with open("launcher.exe","wb") as f:
-                f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/launcher.exe").content)
-                f.close()
+    if not path.exists(f"{APP_PATH}/launcher.exe"):
+        with open(f"{APP_PATH}/launcher.exe","wb") as f:
+            f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/launcher.exe").content)
+            f.close()
     
     # 2
     create_shortcut(path="C:\\Users\\Public\\Desktop\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")       
@@ -126,8 +125,6 @@ def move_launcher():
     
 
 if __name__ == "__main__":
-
-
 
 
     if is_installed():
@@ -148,6 +145,3 @@ if __name__ == "__main__":
 
     #now that we have the lastest, we can start the app :D
     Popen(f"{APP_PATH}/copypasta/copypasta.exe")
-    
-    close_splash()
-
