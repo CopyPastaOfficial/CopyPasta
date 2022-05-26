@@ -1,6 +1,7 @@
 import sys
 import socket
 from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
+from itsdangerous import json
 from requests import get
 from os import path,remove, startfile, rename,chdir
 import PIL.Image as Image
@@ -89,6 +90,12 @@ def home():
 
     if request.remote_addr == "127.0.0.1":
 
+
+        if not path.exists("static/history.xml"):
+            
+            init_history_file()
+            
+            
         #render the html with the history
         return render_template("index.html",hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
 
@@ -125,15 +132,21 @@ def history(i):
 def img_preview():
     if request.remote_addr == "127.0.0.1":
 
-
-        img_id = request.args.get("image_id")
-
         try:
-            img_path = get_history_file_by_id(int(img_id))['path']
-
-            return render_template("img_preview.html",img_path=img_path)
+            image_id = request.args.get("image_id",type=int)
         except:
-            return jsonify({"error" : "This image id doesn't exist"})
+            return jsonify({"error":"wrong image_id argument type/no argument passed"})
+
+        image_path = get_history_file_by_id(image_id)
+        
+        
+        if not image_path:
+            return jsonify({"error":"this id does not belongs to any file"})
+        else:
+            image_path = image_path["path"]
+
+        return render_template("img_preview.html",image_path=image_path,image_id=image_id)
+    
     else:
         return abort(403)
 
@@ -149,7 +162,7 @@ def scan_preview():
             #get the file title
             title = request.form.get("title")
             #send file
-            return send_file('static/scan.Blue',attachment_filename=title+".txt",as_attachment=True)        
+            return send_file('static/scan.Blue',download_name=title+".txt",as_attachment=True)        
         else:
             #read scan temp file, split it by lines and return it to the template
             with open("static/scan.Blue","r") as f:
@@ -171,9 +184,18 @@ def process(process_id):
         #delete a particular image from history table
         if "[DELETE_FILE_FROM_HIST]" in process_id:
 
-            file_id = int(request.args.get("file_id"))
+            try:
+                file_id = request.args.get("file_id",type=int)
+            except:
+                return jsonify({"error":"wrong file_id argument type/no argument passed"})
+            
+            file_path = get_history_file_by_id(file_id)
+            
+            if not file_path:
+                
+                return jsonify({"error":"this id does not belongs to any file"})
 
-            remove(get_history_file_by_id(file_id)['path'])
+            remove(file_path['path'])
 
             delete_history_file_by_id(file_id)
 
@@ -182,45 +204,83 @@ def process(process_id):
         #open an image preview from image history table
         if "[OPEN_IMAGE_SCAN_FROM_HIST]" in process_id:
             
-            img_path = request.args.get("path")
+            try:
+                image_id = request.args.get("image_id",type=int)
+            except:
+                return jsonify({"error":"wrong image_id argument type/no argument passed"})
             
+            image_path = get_history_file_by_id(image_id)
+        
+            if not image_path:
+                return jsonify({"error":"this id does not belongs to any file"})
+            
+            else:
+                
+                image_path = image_path["path"]
             
             # try to secure the image path
             # if suspicious path, just go home
-            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist\\")) or (".." in image_path):
                 return redirect("/")
 
-            return redirect(f"/image_preview?path={img_path}")
+            return redirect(f"/image_preview?path={image_path}")
 
         #copy scan from history page
         if "[COPY_SCAN_FROM_HIST]" in process_id:
             
-            id = request.args.get("scan_id")
+            try:
+                scan_id = request.args.get("scan_id",type=int)
+            except:
+                return jsonify({"error":"wrong scan_id argument type/no argument passed"})
 
-            text = get_history_file_by_id(int(id))['text']
+            text = get_history_file_by_id(scan_id)
+            
+            if not text:
+                return jsonify({"error":"this id does not belongs to any sacn"})
+            
+            text = text["text"]
 
             copy(text)
 
             return redirect("/")
 
         if "[DELETE_SCAN_FROM_HIST]" in process_id:
-            id = request.args.get("scan_id")
-            delete_history_file_by_id(int(id))
+            
+            try:
+                scan_id = request.args.get("scan_id",type=int)
+            except:
+                return jsonify({"error":"wrong scan_id argument type/no argument passed"})
+            
+            delete_history_file_by_id(scan_id)
 
             return redirect("/")
 
         #download the image received
         if "[DOWNLOAD IMG]" in process_id:
 
-            img_path = request.args.get("path")
+
+            try:
+                image_id = request.args.get("image_id",type=int)
+            except:
+                return jsonify({"error":"wrong image_id argument type/no argument passed"})
+            
+            image_path = get_history_file_by_id(image_id)
+            
+            
+            if not image_path:
+                return jsonify({"error":"this id does not belongs to any file"})
+            
+            else:
+                
+                image_path = image_path["path"]
             
             # try to secure the image path
             # if suspicious path, just go home
-            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist\\")) or (".." in image_path):
                 return redirect("/")
 
-            return send_file(img_path,
-            attachment_filename=secure_filename(img_path.replace("static/files_hist/","")),
+            return send_file(image_path,
+            download_filename=secure_filename(image_path.replace("static/files_hist/","")),
             as_attachment=True)
 
         #empty the scan temporary file
@@ -244,16 +304,29 @@ def process(process_id):
         #copy an image to the clipboard with a win32 api
         if "[COPY IMG]" in process_id:
 
-            img_path = request.args.get("path")
+            try:
+                image_id = request.args.get("image_id",type=int)
+            except:
+                return jsonify({"error":"wrong image_id argument type/no argument passed"})
+            
+            image_path = get_history_file_by_id(image_id)
+            
+            if not image_path:
+                return jsonify({"error":"this id does not belongs to any file"})
+            
+            else:
+                
+                image_path = image_path["path"]
+            
 
             # try to secure the image path
             # if suspicious path, just go home
-            if (not path.exists(img_path)) or (not img_path.startswith("static/files_hist\\")) or (".." in img_path):
+            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist\\")) or (".." in image_path):
                 return redirect("/")
 
             try:
                 output = BytesIO()
-                image = Image.open(img_path)
+                image = Image.open(image_path)
                 image.convert('RGB').save(output, 'BMP')
                 data = output.getvalue()[14:]
                 output.close()
@@ -262,10 +335,10 @@ def process(process_id):
                 win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
                 win32clipboard.CloseClipboard()
 
-                return redirect(f"/image_preview?path={img_path}")
+                return redirect(f"/image_preview?image_id={image_id}")
 
             except ImportError:
-                return redirect(f"/image_preview?path={img_path}")
+                return redirect(f"/image_preview?image_id={image_id}")
 
 
 
