@@ -206,8 +206,6 @@ def delete_history_file_by_id(file_id):
 
     history.pop(file_id)
     
-    print(history)
-
     init_history_file(force=True)
 
     tree = ElementTree.parse("static/history.xml")

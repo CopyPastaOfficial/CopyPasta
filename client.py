@@ -38,6 +38,6 @@ def send_url(url):
 #send_email("unrealsoft.dev@gmail.com","test","test of email body")
 #send_barcode("test")
 #send_file("static/qr.jpeg")
-send_text_scan("test of text scan")
+#send_text_scan("test of text scan")
 #send_wifi("This_is_a_wifi_name","wpa","password")
 #send_url("https://www.google.com")
