@@ -70,7 +70,7 @@
 
                 <h1>Last files/data sent :</h1>
                 <hr/>
-                <button class="btn btn-danger mb-3" onclick="request('History deleted !','/process/[DEL HISTORY]')">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
+                <button class="btn btn-danger mb-3" onclick="request_and_notify('History deleted !','/process/[DEL HISTORY]')">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
@@ -182,6 +182,8 @@
             xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_history", false ); // false for synchronous request
             xmlHttp.send( null );
             var r = xmlHttp.responseText;
+
+            
             if(r == "{\"history\" : []}"){
                 document.getElementById("history_table_body").innerHTML = "";
             }else{
@@ -196,12 +198,12 @@
                     var images_ext = ["jpeg","jpg","png","ico","gif","apng","avif","gif","jfif","pjpeg","pjp","svg","webp"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
                     var audios_ext = ["m4a","flac","mp3","wav","aiff","pcm","alac","wma","ogg","aac"]
-                    var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
+                    var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
                     var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
                     var open_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
-                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
+                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
                     var search_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
 
                     
@@ -212,13 +214,13 @@
                     //videos
                     }else if(videos_ext.includes(obj.file_type)){
                         
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
                     //audio
                     }else if(audios_ext.includes(obj.file_type)){
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
@@ -233,11 +235,11 @@
                             }else{
                                 var text = obj.text;
                             }
-                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary me-2\" onclick=\"request('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\" >Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary me\">Open the text</a>"+delete_scan_icon+"</td></tr>";
+                            tab_element = "<tr><td>"+obj.date+"</td>    <td>"+text+"</td>    <td>        <a class=\"btn btn-primary me-2\" onclick=\"request_and_notify('Scan copied !','/process/[COPY_SCAN_FROM_HIST]?scan_id="+i+"')\" >Copy</a>        <a href=\"/hist/"+i+"\" class=\"btn btn-primary me\">Open the text</a>"+delete_scan_icon+"</td></tr>";
                         //wifi type
                         }else if(obj.file_type == "wifi"){
                             
-                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request_and_notify('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
                         
                         //barcode type
                         }else if(obj.file_type == "isbn"){
@@ -262,7 +264,7 @@
 
                         //random file
                         }else{
-                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
+                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
 
                             tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td>"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</td></tr>";
                         }
@@ -345,6 +347,14 @@
         xmlHttp.send( null ); 
     }
 
+
+    function request_and_notify(notif_text,url){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, true ); // false for synchronous request
+        xmlHttp.send( null ); 
+
+        notify(notif_text);
+    }
 
 
     function copy_text(text) {

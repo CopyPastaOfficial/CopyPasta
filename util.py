@@ -87,10 +87,8 @@ def emergency_redownload():
         with open("static/update.Blue","w") as f:
             f.write("1")
             f.close()
-
-        mkdir("static/dist")
-        mkdir("static/dist/css")
-        mkdir("static/dist/js")
+            
+            
         mkdir("static/files_hist")
 
         init_history_file()
@@ -129,14 +127,6 @@ def download_templates():
     with open("static/favicon.ico","wb") as f:
         f.write(r.content)
 
-    r = get("https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/bootstrap/dist/css/bootstrap.min.css")
-    with open("static/dist/css/bootstrap.min.css","wb") as f:
-        f.write(r.content)
-
-    r = get("https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/bootstrap/dist/js/bootstrap.bundle.min.js")
-    with open("static/dist/js/bootstrap.bundle.min.js","wb") as f:
-        f.write(r.content)
-
     with open("static/update.Blue","w") as f:
         f.write("1")
 
@@ -168,14 +158,14 @@ def store_to_history(json_data):
     tree.write("static/history.xml")
 
 
-def init_history_file():
+def init_history_file(force=False):
 
     """
     initialize the history xml file
 
     """
     
-    if not path.exists("static/history.xml"):
+    if (not path.exists("static/history.xml")) or (force):
         with open("static/history.xml","w") as f:
             f.write("<history>\n</history>")
             f.close()
@@ -193,31 +183,34 @@ def get_history():
     return history
 
 
-def get_history_file_by_id(id):
+def get_history_file_by_id(file_id):
+
+    history = []
+
+
+    if file_id < len(ElementTree.parse("static/history.xml").getroot()):
+
+        return loads(ElementTree.parse("static/history.xml").getroot()[file_id].text)
+
+
+    else: # a file with this id does not exists
+        return False
+    
+
+def delete_history_file_by_id(file_id):
 
     history = []
 
     for element in ElementTree.parse("static/history.xml").getroot():
         history.append(element.text)
 
-
-    return loads(history[id])
-
-def delete_history_file_by_id(id):
-
-    history = []
-
-    for element in ElementTree.parse("static/history.xml").getroot():
-        history.append(element.text)
-
-    history.pop(id)
-
-    init_history_file()
+    history.pop(file_id)
+    
+    init_history_file(force=True)
 
     tree = ElementTree.parse("static/history.xml")
     root = tree.getroot()
     for file in history:
-       
         new_ele = ElementTree.SubElement(root,"file")
         new_ele.text = escape(file)
         tree.write("static/history.xml")
