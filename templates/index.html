@@ -182,6 +182,8 @@
             xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_history", false ); // false for synchronous request
             xmlHttp.send( null );
             var r = xmlHttp.responseText;
+
+            
             if(r == "{\"history\" : []}"){
                 document.getElementById("history_table_body").innerHTML = "";
             }else{

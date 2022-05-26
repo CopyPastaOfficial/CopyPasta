@@ -344,7 +344,7 @@ def process(process_id):
 
         #empty the history files
         if process_id == "[DEL HISTORY]":
-            init_history_file()
+            init_history_file(force=True)
             return redirect("/")
 
 
