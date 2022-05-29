@@ -280,7 +280,7 @@ def process(process_id):
                 return redirect("/")
 
             return send_file(image_path,
-            download_filename=secure_filename(image_path.replace("static/files_hist/","")),
+            download_name=secure_filename(image_path.replace("static/files_hist/","")),
             as_attachment=True)
 
         #empty the scan temporary file
