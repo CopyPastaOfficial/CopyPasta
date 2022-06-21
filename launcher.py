@@ -3,7 +3,7 @@ from getpass import getuser
 from importlib.util import find_spec
 from requests import get
 from subprocess import Popen
-from shutil import rmtree
+from shutil import move, rmtree
 from zipfile import  ZipFile
 from os import path, chdir, remove,mkdir,environ
 import sys
@@ -54,11 +54,19 @@ def update_main_executable(version: str) -> None:
         notify_desktop("CopyPasta Installer","Donwloading CopyPasta components...")        
         
         
+        try:
+            # move static folder to keep history
+            move(f"{APP_PATH}/copypasta/static",f"{EXE_PATH}/static")
+        except:
+            # just that the folder does not exists (installation case)
+            pass
+        
+        
         #remove copypasta folder berfore downloading new version
         try:
             rmtree(APP_PATH)
         except:
-            #not really an error if the folder have been deleted or folder already exists
+            #not really an error if the folder have been deleted
             pass
         
         # create copypasta folder if not exists
@@ -82,6 +90,14 @@ def update_main_executable(version: str) -> None:
 
         #delete zipped file
         remove("copypasta.zip")
+        
+        
+        # re-put static folder in copypasta
+        try:
+            move(f"{EXE_PATH}/static",f"{APP_PATH}/copypasta/static")
+        except:
+            # folder does not exists 
+            pass
 
 
 def is_installed() -> None:
