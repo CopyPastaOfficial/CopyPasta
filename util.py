@@ -3,7 +3,6 @@ from getpass import getuser
 from random import randint
 from json import *
 from requests import get
-from locale import getlocale
 from os import mkdir, path, remove
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
@@ -15,6 +14,7 @@ from subprocess import Popen
 from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
+from platform import system
 
 
 def notify_desktop(title,text):
@@ -256,4 +256,25 @@ def is_online():
         return True
     except OSError:
         return False
+    
+    
+def is_hosts_file_modified():
+    
+    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
+    
+    with open(hosts_file_path,"r") as f:
+        
+        return True if "copypasta" in f.read() else False
+    
+    
+def add_copypasta_to_hosts_file():
+    
+    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
+    
+    with open(hosts_file_path,"a") as f:
+        
+        f.write("\n127.0.0.1:21987\tcopypasta")
+        
+        f.close()
+        
         
