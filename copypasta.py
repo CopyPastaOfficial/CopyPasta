@@ -220,10 +220,10 @@ def process(process_id):
             
             # try to secure the image path
             # if suspicious path, just go home
-            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist\\")) or (".." in image_path):
+            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist/")) or (".." in image_path):
                 return redirect("/")
 
-            return redirect(f"/image_preview?path={image_path}")
+            return redirect(f"/image_preview?image_id={image_id}")
 
         #copy scan from history page
         if "[COPY_SCAN_FROM_HIST]" in process_id:
@@ -276,7 +276,7 @@ def process(process_id):
             
             # try to secure the image path
             # if suspicious path, just go home
-            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist\\")) or (".." in image_path):
+            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist/")) or (".." in image_path):
                 return redirect("/")
 
             return send_file(image_path,
@@ -321,7 +321,7 @@ def process(process_id):
 
             # try to secure the image path
             # if suspicious path, just go home
-            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist\\")) or (".." in image_path):
+            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist/")) or (".." in image_path):
                 return redirect("/")
 
             try:
@@ -364,12 +364,12 @@ def process(process_id):
 
         if process_id == "[OPEN FILES EXPLORER]":
 
-            Process(target=startfile,args=(f"{APP_PATH}static/files_hist",)).start()
+            Process(target=startfile,args=(f"{APP_PATH}/static/files_hist",)).start()
             return redirect("/")
 
         if process_id == "[OPEN FILE]":
             
-            Process(target=startfile,args=("{}{}".format(APP_PATH,request.args.get("file_path")),)).start()
+            Process(target=startfile,args=("{}/{}".format(APP_PATH,request.args.get("file_path")),)).start()
 
             return redirect("/")
 
@@ -608,12 +608,12 @@ def upload():
                 elif file :
                     filename = secure_filename(file.filename)
                     file_type = filename.split(".")[-1]
-                    full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", filename)
+                    full_path = "{}{}/{}".format(app.config['UPLOAD_FOLDER'],"files_hist",filename)
                     
                     #rename file if one has already its name
                     i = 0
                     while(path.exists(full_path)):
-                        full_path = path.join(app.config['UPLOAD_FOLDER'],"files_hist", path.splitext(filename)[0]+str(i)+"."+filename.split(".")[-1])
+                        full_path = "{}{}/{}".format(app.config['UPLOAD_FOLDER'],"files_hist", path.splitext(filename)[0]+str(i)+"."+filename.split(".")[-1])
                         i += 1
                     
                     file.save(full_path)
