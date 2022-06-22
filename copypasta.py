@@ -667,7 +667,7 @@ if __name__ == "__main__":
     
     # NEEDS TO REPLACE WITH COPYPAST CUSTOM URL WHEN TESTS ARE DONE ON ADDING TO HOSTS FILE PROCESS
     #
-    Process(target=open_link_process, args=("copypasta.me",)).start()
+    Process(target=open_link_process, args=(COPYPASTA_URL,)).start()
 
     if not is_server_already_running():
         
