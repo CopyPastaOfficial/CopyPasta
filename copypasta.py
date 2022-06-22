@@ -97,7 +97,7 @@ def home():
             
             
         #render the html with the history
-        return render_template("index.html",hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
+        return render_template("index.html",server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
 
     else:
         return abort(403)
@@ -654,6 +654,10 @@ if __name__ == "__main__":
             check_templates_update()
 
     #open tab in web browser
+    
+    
+    # NEEDS TO REPLACE WITH COPYPAST CUSTOM URL WHEN TESTS ARE DONE ON ADDING TO HOSTS FILE PROCESS
+    #
     Process(target=open_link_process, args=("http://127.0.0.1:21987",)).start()
 
     if not is_server_already_running():

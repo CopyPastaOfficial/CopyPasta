@@ -276,5 +276,14 @@ def add_copypasta_to_hosts_file():
         f.write("\n127.0.0.1:21987\tcopypasta")
         
         f.close()
-        
+
+
+def get_server_version():
+    
+    
+    if not path.exists("version"):
+        return "version file not found :/"
+    
+    with open("version","r") as f:
+        return f.read()
         
