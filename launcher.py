@@ -7,7 +7,7 @@ from shutil import move, rmtree
 from zipfile import  ZipFile
 from os import path, chdir, remove,mkdir,environ
 import sys
-from util import add_copypasta_to_hosts_file, create_shortcut, is_hosts_file_modified, notify_desktop
+from util import add_copypasta_port_redirect, add_copypasta_to_hosts_file, create_shortcut, is_hosts_file_modified, notify_desktop
 
 # to fix pyinstaller error
 import pywintypes
@@ -164,6 +164,7 @@ if __name__ == "__main__":
         move_launcher()
     
     
+    add_copypasta_port_redirect()
     
     chdir(APP_PATH)
 

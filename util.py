@@ -282,9 +282,7 @@ def add_copypasta_to_hosts_file():
         # flush dns cache
         run("ipconfig /flushdns",shell=True)
         
-        # add port redirect from 127.0.0.1:80 to 127.0.0.1:21987
-        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
-
+        add_copypasta_port_redirect()
 
 def get_server_version():
     
