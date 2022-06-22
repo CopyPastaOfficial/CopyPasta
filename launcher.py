@@ -163,7 +163,7 @@ if __name__ == "__main__":
         # create shortcuts and move launcher.exe to C:/Programs Files/CopyPasta/copypasta
         move_launcher()
     
-   
+    
     
     chdir(APP_PATH)
 

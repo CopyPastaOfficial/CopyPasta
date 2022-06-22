@@ -294,14 +294,22 @@ def get_server_version():
     
     with open("version","r") as f:
         return f.read()
-    
+
+
+
+
+def add_copypasta_port_redirect():
+            
+    if system() == "Windows":
+        
+        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
+        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
+
+        
     
 def remove_copypasta_port_redirect():
             
     if system() == "Windows":
-        
-        # flush dns cache
-        run("ipconfig /flushdns",shell=True)
         
         # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
         run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
