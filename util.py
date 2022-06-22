@@ -10,7 +10,7 @@ from multiprocessing import Process
 from webbrowser import open as open_tab
 from ast import literal_eval
 import requests
-from subprocess import Popen
+from subprocess import Popen, run
 from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
@@ -276,6 +276,14 @@ def add_copypasta_to_hosts_file():
         f.write("\n127.0.0.1:21987\tcopypasta")
         
         f.close()
+        
+    if system() == "Windows":
+        
+        # flush dns cache
+        run("ipconfig /flushdns",shell=True)
+        
+        # add port redirect from 127.0.0.1:80 to 127.0.0.1:21987
+        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
 
 
 def get_server_version():
@@ -286,4 +294,16 @@ def get_server_version():
     
     with open("version","r") as f:
         return f.read()
+    
+    
+def remove_copypasta_port_redirect():
+            
+    if system() == "Windows":
+        
+        # flush dns cache
+        run("ipconfig /flushdns",shell=True)
+        
+        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
+        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
+
         

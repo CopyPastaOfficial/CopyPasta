@@ -39,7 +39,6 @@ app.secret_key = "".join([choice(printable) for _ in range(256)])
 
 
 
-
 # init waitress wsgi server
 webserv = StopableWSGIServer(app)
 
@@ -71,6 +70,14 @@ def check_exe_name():
 app.config['UPLOAD_FOLDER'] = "static/"
 
 
+
+# copypasta url
+
+if system() == "Windows":
+    COPYPASTA_URL = "copypasta.me"
+    
+else:
+    COPYPASTA_URL = "copypasta.me:21987"
 
 #necessary to update images (stack overflow)
 @app.after_request
@@ -439,6 +446,8 @@ def api(api_req):
         
         elif api_req == "shutdown_server": 
             webserv.shutdown()
+            
+            remove_copypasta_port_redirect()
                       
             return jsonify({"success":"shutting down CopyPasta server..."})
         
@@ -658,7 +667,7 @@ if __name__ == "__main__":
     
     # NEEDS TO REPLACE WITH COPYPAST CUSTOM URL WHEN TESTS ARE DONE ON ADDING TO HOSTS FILE PROCESS
     #
-    Process(target=open_link_process, args=("http://127.0.0.1:21987",)).start()
+    Process(target=open_link_process, args=("copypasta.me",)).start()
 
     if not is_server_already_running():
         
