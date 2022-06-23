@@ -3,7 +3,6 @@ from getpass import getuser
 from random import randint
 from json import *
 from requests import get
-from locale import getlocale
 from os import mkdir, path, remove
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
@@ -11,10 +10,11 @@ from multiprocessing import Process
 from webbrowser import open as open_tab
 from ast import literal_eval
 import requests
-from subprocess import Popen
+from subprocess import Popen, run
 from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
+from platform import system
 
 
 def notify_desktop(title,text):
@@ -111,19 +111,19 @@ def is_server_already_running():
 def download_templates():
 
     #get the templates
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/index.html",allow_redirects=True)
     with open("templates/index.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/scan_preview.html",allow_redirects=True)
     with open("templates/scan_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/img_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/img_preview.html",allow_redirects=True)
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/favicon.ico",allow_redirects=True)
     with open("static/favicon.ico","wb") as f:
         f.write(r.content)
 
@@ -256,4 +256,60 @@ def is_online():
         return True
     except OSError:
         return False
+    
+    
+def is_hosts_file_modified():
+    
+    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
+    
+    with open(hosts_file_path,"r") as f:
+        
+        return True if "copypasta.me" in f.read() else False
+    
+    
+def add_copypasta_to_hosts_file():
+    
+    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
+    
+    with open(hosts_file_path,"a") as f:
+        
+        f.write("\n127.0.0.1:21987\tcopypasta")
+        
+        f.close()
+        
+    if system() == "Windows":
+        
+        # flush dns cache
+        run("ipconfig /flushdns",shell=True)
+        
+        add_copypasta_port_redirect()
+
+def get_server_version():
+    
+    
+    if not path.exists("version"):
+        return "version file not found :/"
+    
+    with open("version","r") as f:
+        return f.read()
+
+
+
+
+def add_copypasta_port_redirect():
+            
+    if system() == "Windows":
+        
+        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
+        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
+
+        
+    
+def remove_copypasta_port_redirect():
+            
+    if system() == "Windows":
+        
+        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
+        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
+
         

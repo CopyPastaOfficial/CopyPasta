@@ -33,10 +33,9 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
-CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
+CORS(app, support_credentials=True, resources={r"/": {"origins": ["http://127.0.0.1:21987","http://copypasta.me"]}})
 
 app.secret_key = "".join([choice(printable) for _ in range(256)])
-
 
 
 
@@ -72,6 +71,16 @@ app.config['UPLOAD_FOLDER'] = "static/"
 
 
 
+# copypasta url
+
+if is_hosts_file_modified():
+    
+    COPYPASTA_URL = "copypasta.me" if system() == "Windows" else "copypasta.me:21987"
+    
+else:
+    
+    COPYPASTA_URL = "127.0.0.1:21987"
+
 #necessary to update images (stack overflow)
 @app.after_request
 def add_header(response):
@@ -85,7 +94,7 @@ def add_header(response):
 
 #home
 @app.route("/")
-@cross_origin(origin='127.0.0.1',headers=['Content- Type','Authorization'])
+@cross_origin()
 def home():
 
     if request.remote_addr == "127.0.0.1":
@@ -97,7 +106,7 @@ def home():
             
             
         #render the html with the history
-        return render_template("index.html",hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
+        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
 
     else:
         return abort(403)
@@ -398,6 +407,7 @@ def process(process_id):
 #api url(s)
 
 @app.route("/api/<api_req>")
+@cross_origin()
 def api(api_req):
     
     if request.remote_addr == "127.0.0.1":
@@ -439,6 +449,8 @@ def api(api_req):
         
         elif api_req == "shutdown_server": 
             webserv.shutdown()
+            
+            remove_copypasta_port_redirect()
                       
             return jsonify({"success":"shutting down CopyPasta server..."})
         
@@ -654,7 +666,9 @@ if __name__ == "__main__":
             check_templates_update()
 
     #open tab in web browser
-    Process(target=open_link_process, args=("http://127.0.0.1:21987",)).start()
+    
+    
+    Process(target=open_link_process, args=(COPYPASTA_URL,)).start()
 
     if not is_server_already_running():
         
