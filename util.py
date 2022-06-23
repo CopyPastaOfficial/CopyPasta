@@ -111,19 +111,19 @@ def is_server_already_running():
 def download_templates():
 
     #get the templates
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/index.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/index.html",allow_redirects=True)
     with open("templates/index.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/scan_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/scan_preview.html",allow_redirects=True)
     with open("templates/scan_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/img_preview.html",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/img_preview.html",allow_redirects=True)
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
 
-    r = get(f"https://raw.githubusercontent.com/thaaoblues/copypasta/master/templates/favicon.ico",allow_redirects=True)
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/favicon.ico",allow_redirects=True)
     with open("static/favicon.ico","wb") as f:
         f.write(r.content)
 
