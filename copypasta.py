@@ -33,7 +33,7 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
-CORS(app, support_credentials=True, resources={r"/": {"origins": "http://127.0.0.1:21987"}})
+CORS(app, support_credentials=True, resources={r"/": {"origins": ["http://127.0.0.1:21987","http://copypasta.me"]}})
 
 app.secret_key = "".join([choice(printable) for _ in range(256)])
 
@@ -92,7 +92,7 @@ def add_header(response):
 
 #home
 @app.route("/")
-@cross_origin(origin='127.0.0.1',headers=['Content- Type','Authorization'])
+@cross_origin()
 def home():
 
     if request.remote_addr == "127.0.0.1":
@@ -405,6 +405,7 @@ def process(process_id):
 #api url(s)
 
 @app.route("/api/<api_req>")
+@cross_origin()
 def api(api_req):
     
     if request.remote_addr == "127.0.0.1":
