@@ -264,7 +264,7 @@ def is_hosts_file_modified():
     
     with open(hosts_file_path,"r") as f:
         
-        return True if "copypasta" in f.read() else False
+        return True if "copypasta.me" in f.read() else False
     
     
 def add_copypasta_to_hosts_file():

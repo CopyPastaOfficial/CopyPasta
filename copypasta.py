@@ -73,11 +73,13 @@ app.config['UPLOAD_FOLDER'] = "static/"
 
 # copypasta url
 
-if system() == "Windows":
-    COPYPASTA_URL = "copypasta.me"
+if is_hosts_file_modified():
+    
+    COPYPASTA_URL = "copypasta.me" if system() == "Windows" else "copypasta.me:21987"
     
 else:
-    COPYPASTA_URL = "copypasta.me:21987"
+    
+    COPYPASTA_URL = "127.0.0.1:21987"
 
 #necessary to update images (stack overflow)
 @app.after_request
@@ -104,7 +106,7 @@ def home():
             
             
         #render the html with the history
-        return render_template("index.html",server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
+        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
 
     else:
         return abort(403)
