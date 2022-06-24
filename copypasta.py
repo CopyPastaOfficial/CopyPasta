@@ -631,7 +631,8 @@ def upload():
                     file.save(full_path)
                     store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
 
-                    open_browser_if_settings_okay(f"http://127.0.0.1:21987/image_preview?path={path}")
+                    
+                    open_browser_if_settings_okay(f"{COPYPASTA_URL}/image_preview?image_id={get_history_file_last_id()}")
                     
             return jsonify({"upload_status" : "true"})
 
