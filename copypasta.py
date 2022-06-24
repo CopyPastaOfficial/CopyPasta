@@ -75,11 +75,11 @@ app.config['UPLOAD_FOLDER'] = "static/"
 
 if is_hosts_file_modified():
     
-    COPYPASTA_URL = "copypasta.me" if system() == "Windows" else "copypasta.me:21987"
+    COPYPASTA_URL = "http://copypasta.me" if system() == "Windows" else "http://copypasta.me:21987"
     
 else:
     
-    COPYPASTA_URL = "127.0.0.1:21987"
+    COPYPASTA_URL = "http://127.0.0.1:21987"
 
 #necessary to update images (stack overflow)
 @app.after_request
