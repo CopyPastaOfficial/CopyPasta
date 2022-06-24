@@ -182,11 +182,13 @@ def get_history():
 
     return history
 
-
+def get_history_file_last_id():
+    return len(ElementTree.parse("static/history.xml").getroot()) -1
+    
+    
 def get_history_file_by_id(file_id):
 
     history = []
-
 
     if file_id < len(ElementTree.parse("static/history.xml").getroot()):
 

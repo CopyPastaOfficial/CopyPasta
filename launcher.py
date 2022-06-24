@@ -142,10 +142,10 @@ def move_launcher():
             f.close()
     
     # 2
-    create_shortcut(path="C:\\Users\\Public\\Desktop\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")       
+    create_shortcut(path="C:\\Users\\Public\\Desktop\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")       
        
     #3
-    create_shortcut(path=f"C:\\Users\\{getuser()}\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\copypasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")
+    create_shortcut(path=f"C:\\Users\\{getuser()}\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")
     
 
 if __name__ == "__main__":
