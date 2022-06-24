@@ -297,12 +297,15 @@ def get_server_version():
 
 
 def add_copypasta_port_redirect():
-            
+    
     if system() == "Windows":
         
-        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
-        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
-
+        # put port redirect from 127.0.0.1:21987 to 127.0.0.1:80
+        try:
+            run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
+        except:
+            # feature that may crash sometimes, not essential
+            pass
         
     
 def remove_copypasta_port_redirect():
@@ -310,6 +313,8 @@ def remove_copypasta_port_redirect():
     if system() == "Windows":
         
         # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
-        run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
-
-        
+        try:
+            run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
+        except:
+            # feature that may crash sometimes, not essential
+            pass

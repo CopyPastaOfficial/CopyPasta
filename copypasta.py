@@ -73,9 +73,9 @@ app.config['UPLOAD_FOLDER'] = "static/"
 
 # copypasta url
 
-if not is_hosts_file_modified():
+if is_hosts_file_modified():
     
-    COPYPASTA_URL = "copypasta.me" if system() == "Windows" else "copypasta.me:21987"
+    COPYPASTA_URL = "http://copypasta.me" if system() == "Windows" else "http://copypasta.me:21987"
     
 else:
     
