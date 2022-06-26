@@ -17,6 +17,10 @@ from win32com.client import Dispatch
 from platform import system
 
 
+
+TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html"]
+
+
 def notify_desktop(title,text):
     # initialize 
     toaster = ToastNotifier()
@@ -58,6 +62,15 @@ def make_qr_url():
 
 
 def check_templates_update():
+    
+    # check templates integrity
+    for ele in TEMPLATES_FILES:
+        if not path.exists(f"templates/{ele}"):
+            download_templates()
+            return
+    
+    
+    # check 10 startup rule
     with open("static/update.Blue","r") as f:
         n = int(f.read())
         if n == 10:
@@ -111,25 +124,11 @@ def is_server_already_running():
 def download_templates():
 
     #get the templates
-    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/index.html",allow_redirects=True)
-    with open("templates/index.html","wb") as f:
-        f.write(r.content)
-
-    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/scan_preview.html",allow_redirects=True)
-    with open("templates/scan_preview.html","wb") as f:
-        f.write(r.content)
-
-    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/img_preview.html",allow_redirects=True)
-    with open("templates/img_preview.html","wb") as f:
-        f.write(r.content)
+    for ele in TEMPLATES_FILES:
         
-    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/video_preview.html",allow_redirects=True)
-    with open("templates/img_preview.html","wb") as f:
-        f.write(r.content)
-
-    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/favicon.ico",allow_redirects=True)
-    with open("static/favicon.ico","wb") as f:
-        f.write(r.content)
+        r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/{ele}",allow_redirects=True)
+        with open(f"templates/{ele}","wb") as f:
+            f.write(r.content)
 
     with open("static/update.Blue","w") as f:
         f.write("1")
