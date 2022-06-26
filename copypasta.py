@@ -395,6 +395,11 @@ def process(process_id):
             copy(get_history_file_by_id(int(request.args.get("scan_id")))['content'])
 
         
+        if process_id == "[OPEN VIDEO]":
+               
+            ret = f"<head><title>CopyPasta/Video</title><head><body>"+f"<link rel=\"icon\" href=\"/static/favicon.ico\" type=\"image/x-icon\"/>"+f"<video controls> <source src=\"/{request.args.get('file_path')}\"></video></body>"
+            
+            return ret
     else:
         return abort(403)
 
@@ -526,6 +531,7 @@ def upload():
 
                     store_to_history({ "file_type" : f"{file_type}", "date" : f"{time}","text" : f"{file_content}"})
 
+
                     open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
                 
 
@@ -631,9 +637,9 @@ def upload():
                     file.save(full_path)
                     store_to_history({"file_name" : f"{file.filename}","file_type" : f"{file_type}","date" : f"{time}","path" : f"{full_path}"})
 
-                    
-                    open_browser_if_settings_okay(f"{COPYPASTA_URL}/image_preview?image_id={get_history_file_last_id()}")
-                    
+                    if is_image(file_type):
+                        open_browser_if_settings_okay(f"{COPYPASTA_URL}/image_preview?image_id={get_history_file_last_id()}")
+                        
             return jsonify({"upload_status" : "true"})
 
     else:

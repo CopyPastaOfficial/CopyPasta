@@ -320,3 +320,8 @@ def remove_copypasta_port_redirect():
         except:
             # feature that may crash sometimes, not essential
             pass
+        
+        
+def is_image(file_type:str):
+    
+    return file_type in ["jpeg","jpg","png","ico","gif","apng","avif","gif","jfif","pjpeg","pjp","svg","webp"]
