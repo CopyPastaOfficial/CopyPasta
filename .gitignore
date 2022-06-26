@@ -5,3 +5,5 @@ copypasta.build
 output
 output/*
 copypasta.exe
+*.build
+*.dist
