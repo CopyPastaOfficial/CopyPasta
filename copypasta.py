@@ -396,10 +396,16 @@ def process(process_id):
 
         
         if process_id == "[OPEN VIDEO]":
-               
-            ret = f"<head><title>CopyPasta/Video</title><head><body>"+f"<link rel=\"icon\" href=\"/static/favicon.ico\" type=\"image/x-icon\"/>"+f"<video controls> <source src=\"/{request.args.get('file_path')}\"></video></body>"
+            file_path = request.args.get('file_path')
             
-            return ret
+            
+            # try to secure the file path
+            # if suspicious path, just go home
+            if (not path.exists(file_path)) or (not file_path.startswith("static/files_hist/")) or (".." in file_path):
+                return redirect("/")
+            
+            
+            return render_template("video_preview.html",file_path=file_path)
     else:
         return abort(403)
 

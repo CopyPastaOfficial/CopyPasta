@@ -122,6 +122,10 @@ def download_templates():
     r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/img_preview.html",allow_redirects=True)
     with open("templates/img_preview.html","wb") as f:
         f.write(r.content)
+        
+    r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/video_preview.html",allow_redirects=True)
+    with open("templates/img_preview.html","wb") as f:
+        f.write(r.content)
 
     r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/favicon.ico",allow_redirects=True)
     with open("static/favicon.ico","wb") as f:
