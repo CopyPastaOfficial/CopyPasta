@@ -246,9 +246,9 @@
                         //barcode type
                         }else if(obj.file_type == "isbn"){
 
-                            search_icon = "<button type=\"button\" onclick=\"window.open('http://google.com?q="+obj.content+"','_blank')\" class=\"btn btn-primary me-2\"><i class=\"bi bi-search\"></i></button>";
+                            search_icon = "<button type=\"button\" onclick=\"window.open('"+obj.isbn_lookup.url+"','_blank')\" class=\"btn btn-primary me-2\"><i class=\"bi bi-search\"></i></button>";
 
-                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-upc-scan\"></i></div></td><td><div style=\"margin-top:15px;\">isbn:"+obj.content+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+copy_content_icon+delete_scan_icon+"</div></td></tr>";
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-upc-scan\"></i></div></td><td><div style=\"margin-top:15px;\">isbn: "+obj.content+" | name: "+obj.isbn_lookup.name+"</div></td><td><div style=\"margin-top:15px;\">"+search_icon+copy_content_icon+delete_scan_icon+"</div></td></tr>";
                         
                         //emails
                         }else if(obj.file_type == "email"){

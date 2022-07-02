@@ -566,7 +566,7 @@ def upload():
 
                 isbn = r
                 
-                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}"})
+                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}","isbn_lookup":identify_product(isbn)})
                 
                 return jsonify({"upload_status" : "true"})
 

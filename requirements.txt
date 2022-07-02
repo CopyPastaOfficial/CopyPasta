@@ -6,3 +6,4 @@ pyautogui
 pillow
 waitress
 webtest
+beautifulsoup4
