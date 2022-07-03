@@ -177,22 +177,27 @@ def init_history_file(force=False):
 
 def get_history():
 
-    history = "{\"history\" : ["
+    # using lists and join() to speed up
+    history = ["{\"history\" : ["]
 
     for element in ElementTree.parse("static/history.xml").getroot():
-        history += element.text + ","
+        history.append(element.text)
+        history.append(",")
 
-    history = history[:-1] + "]}" if history != "{\"history\" : [" else history +"]}"
 
-    return history
+    if len(history) > 1:
+        history.pop()
+        history.append("]}")
+    else:
+        history +"]}"
+
+    return "".join(history)
 
 def get_history_file_last_id():
     return len(ElementTree.parse("static/history.xml").getroot()) -1
     
     
 def get_history_file_by_id(file_id):
-
-    history = []
 
     if file_id < len(ElementTree.parse("static/history.xml").getroot()):
 
