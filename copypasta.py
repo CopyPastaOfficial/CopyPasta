@@ -1,3 +1,4 @@
+from readline import get_current_history_length, get_history_length
 import sys
 import socket
 from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
@@ -270,7 +271,7 @@ def process(process_id):
 
             try:
                 image_id = request.args.get("image_id",type=int)
-            except:
+            except ValueError:
                 return jsonify({"error":"wrong image_id argument type/no argument passed"})
             
             image_path = get_history_file_by_id(image_id)
@@ -378,31 +379,78 @@ def process(process_id):
 
         if process_id == "[OPEN FILE]":
             
-            Process(target=startfile,args=("{}/{}".format(APP_PATH,request.args.get("file_path")),)).start()
+            try:
+                file_id = request.args.get("file_id",type=int)
+            except ValueError:
+                return jsonify({"error":"invalid url argument"})
+            
+
+            json_dict = get_history_file_by_id(file_id)
+            
+            if not json_dict: # id does not exists
+                return jsonify({"error":"invalid url argument"})
+            
+            Process(target=startfile,args=("{}/{}".format(APP_PATH,json_dict["path"]),)).start()
 
             return redirect("/")
 
 
         if process_id == "[COPY WIFI PW]":
+            
+            try:
+                scan_id = request.args.get("scan_id",type=int)
+            except ValueError:
+                return jsonify({"error":"invalid url argument"})
+            
 
-            copy(get_history_file_by_id(int(request.args.get("scan_id")))['password'])
+            json_dict = get_history_file_by_id(scan_id)
+            
+            if not json_dict: # id does not exists
+                return jsonify({"error":"invalid url argument"})
+            
+            
+            if not "content" in json_dict.keys():
+                return jsonify({"this kind of scan cannot be copied to clipboard"})
+                
+
+            copy(json_dict['password'])
 
             return redirect("/")
 
 
         if process_id == "[COPY CONTENT]":
             
-            copy(get_history_file_by_id(int(request.args.get("scan_id")))['content'])
-
+            try:
+                scan_id = request.args.get("scan_id",type=int)
+            except ValueError:
+                return jsonify({"error":"invalid url argument"})
+            
+            
+            json_dict = get_history_file_by_id(scan_id)
+            
+            if not json_dict: # id does not exists
+                return jsonify({"error":"invalid url argument"})
+            
+            
+            if not "content" in json_dict.keys():
+                return jsonify({"this kind of scan cannot be copied to clipboard"})
+                
+            # finally, if nothing is wrong, copy the scan content
+            copy(json_dict["content"])
+            return redirect("/")
         
         if process_id == "[OPEN VIDEO]":
-            file_path = request.args.get('file_path')
             
+            try:
+                video_id = request.args.get('video_id',type=int)
+            except ValueError:
+                return jsonify({"error":"invalid url argument"})
             
-            # try to secure the file path
-            # if suspicious path, just go home
-            if (not path.exists(file_path)) or (not file_path.startswith("static/files_hist/")) or (".." in file_path):
-                return redirect("/")
+            if video_id <= get_history_file_last_id():
+                file_path = get_history_file_by_id(video_id)["path"]
+                
+            else: # id does not exists
+                return jsonify({"error":"invalid url argument"})
             
             
             return render_template("video_preview.html",file_path=file_path)

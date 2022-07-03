@@ -215,14 +215,14 @@
                     //videos
                     }else if(videos_ext.includes(obj.file_type)){
                         
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_id="+i+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
                         
-                        var play_video_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"window.open('/process/[OPEN VIDEO]?file_path="+obj.path+"')\"><i class=\"bi bi-play\"></i></button>";
+                        var play_video_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"window.open('/process/[OPEN VIDEO]?video_id="+i+"')\"><i class=\"bi bi-play\"></i></button>";
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+play_video_icon+open_file_icon+"<br>"+open_folder_icon+delete_file_icon+"</div></td></tr>";
                     
                     //audio
                     }else if(audios_ext.includes(obj.file_type)){
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_id="+i+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
@@ -266,7 +266,7 @@
 
                         //random file
                         }else{
-                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_path="+obj.path+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
+                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_id="+i+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
 
                             tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td>"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</td></tr>";
                         }
