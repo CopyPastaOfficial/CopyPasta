@@ -545,7 +545,6 @@ def download():
     
     file_path = path.join(APP_PATH,"static","ot_upload",file)
     if path.exists(file_path):
-        print("exists",file_path)
         return send_file(file_path,as_attachment=True)
     else:
         return jsonify({"Error":"This file does not exists or have already been downloaded one time."})
