@@ -189,7 +189,7 @@ def get_history():
         history.pop()
         history.append("]}")
     else:
-        history +"]}"
+        history.append("]}")
 
     return "".join(history)
 
@@ -361,3 +361,4 @@ def identify_product(isbn:str):
     
     else:
         return {"name":isbn,"url":f"https://www.google.com/search?q={isbn}"}
+    

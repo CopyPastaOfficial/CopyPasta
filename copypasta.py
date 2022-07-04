@@ -1,6 +1,6 @@
 import sys
 import socket
-from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash, send_from_directory
+from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 from requests import get
