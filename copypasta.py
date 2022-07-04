@@ -1,12 +1,13 @@
-from readline import get_current_history_length, get_history_length
 import sys
 import socket
-from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
-from itsdangerous import json
+from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash, send_from_directory
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 from requests import get
 from os import path,remove, startfile, rename,chdir
 import PIL.Image as Image
 from io import BytesIO
+from shutil import copyfile
 try:
     import win32clipboard
 except ImportError:
@@ -456,6 +457,7 @@ def api(api_req):
     
     if request.remote_addr == "127.0.0.1":
 
+        
 
         if api_req == "get_history":
 
@@ -498,9 +500,29 @@ def api(api_req):
                       
             return jsonify({"success":"shutting down CopyPasta server..."})
         
+        elif api_req == "gen_otdl_url":
+            
+            # keep main window hidden
+            root = Tk()
+            root.attributes("-topmost", True)
+            root.withdraw()
+            # open file dialog
+            file_path = askopenfilename(parent=root)
+            
+            if not file_path:
+                return jsonify({"Error":"no file selected"})
+                
+            
+            if not path.exists("static/ot_upload"):
+                mkdir("static/ot_upload")
+            
+            #move file in a downloadable directory
+            copyfile(file_path,path.join(APP_PATH,f"static/ot_upload/{path.basename(file_path)}"))
+            
+            # return url to javascript for qr code generation and notification
+            return f"http://{get_private_ip()}:21987/download?file={path.basename(file_path)}"
         else:
             return jsonify({"Error" : "wrong api call"})
-        
         
     else:
 
@@ -512,9 +534,21 @@ def api(api_req):
             return abort(403)
 
 
+@app.route("/download",methods=["GET"])
 
-
-
+def download():
+    
+    try:
+        file = request.args.get("file",type=str)
+    except:
+        return jsonify({"Error":"Invalid url parameter"})
+    
+    file_path = path.join(APP_PATH,"static","ot_upload",file)
+    if path.exists(file_path):
+        print("exists",file_path)
+        return send_file(file_path,as_attachment=True)
+    else:
+        return jsonify({"Error":"This file does not exists or have already been downloaded one time."})
 
 
 @app.route("/upload",methods=["POST"])

@@ -24,7 +24,15 @@
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item active"> <a class="nav-link active fs-5" href="https://copypastaofficial.github.io"><i class="bi bi-info-square"></i></a></li>
                 </ul>
-              </div>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active"> <a class="nav-link active fs-5" onclick="send_file_to_phone()">Send a file to my phone </a></li>
+
+                </ul>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active"> <a class="nav-link active fs-5" onclick="send_text_to_phone()">Send a text/url to my phone </a></li>
+                </ul>
+            </div>
+
         </div>
     </nav>
     
@@ -138,6 +146,33 @@
     </style>
     
     <script>
+
+
+        function send_text_to_phone(){
+            let text = prompt('Type/paste your text/url here (max 4000 characters)');
+            if(text.length > 4000){
+                text = text.substring(0,4000);
+            }
+            let qr_img = "<h3>Scan this qr code with your phone :)<h3><br><img src=\"https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=" +text+"\" >";
+            document.getElementById("alert_container").innerHTML = "<div class=\"alert alert-primary alert-dismissible fade show\" role=\"alert\">"+qr_img+
+                "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"+
+                "</div>";
+        }
+
+        function send_file_to_phone(){
+
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/gen_otdl_url", false ); // false for synchronous request
+            xmlHttp.send( null );
+            let url = xmlHttp.responseText;
+
+
+            // notification part
+            let qr_img = "<h3>Scan this qr code with your phone :)<h3><br><img src=\"https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=" +url+"\" >";
+            document.getElementById("alert_container").innerHTML = "<div class=\"alert alert-primary alert-dismissible fade show\" role=\"alert\">"+qr_img+
+                "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"+
+                "</div>";
+        }
 
 
         function get_private_ip(){
