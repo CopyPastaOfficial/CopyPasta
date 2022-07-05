@@ -1,11 +1,14 @@
 import sys
 import socket
-from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
-from itsdangerous import json
+from flask import Flask, after_this_request, render_template, abort,jsonify,send_file,request,redirect,flash
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 from requests import get
 from os import path,remove, startfile, rename,chdir
 import PIL.Image as Image
 from io import BytesIO
+from shutil import copyfile
+from urllib.parse import quote as url_encode
 try:
     import win32clipboard
 except ImportError:
@@ -121,8 +124,16 @@ def history(i):
     """
     if request.remote_addr == "127.0.0.1":
 
-
-        file_data = get_history_file_by_id(int(i))
+        try:
+            i = int(i)
+        except ValueError:
+            return jsonify({"Error","Invalid url variable. Here, it must be an integer."})
+            
+            
+        file_data = get_history_file_by_id(i)
+        
+        if not file_data:
+            return jsonify({"Error":"This scan id does not exists."})
 
         #rewrite the scan temporary file with the old scan
         with open("static/scan.Blue","w") as f:
@@ -143,14 +154,14 @@ def img_preview():
 
         try:
             image_id = request.args.get("image_id",type=int)
-        except:
-            return jsonify({"error":"wrong image_id argument type/no argument passed"})
+        except ValueError:
+            return jsonify({"Error":"wrong image_id argument type/no argument passed"})
 
         image_path = get_history_file_by_id(image_id)
         
         
         if not image_path:
-            return jsonify({"error":"this id does not belongs to any file"})
+            return jsonify({"Error":"this id does not belongs to any file"})
         else:
             image_path = image_path["path"]
 
@@ -195,14 +206,14 @@ def process(process_id):
 
             try:
                 file_id = request.args.get("file_id",type=int)
-            except:
-                return jsonify({"error":"wrong file_id argument type/no argument passed"})
+            except ValueError:
+                return jsonify({"Error":"wrong file_id argument type/no argument passed"})
             
             file_path = get_history_file_by_id(file_id)
             
             if not file_path:
                 
-                return jsonify({"error":"this id does not belongs to any file"})
+                return jsonify({"Error":"this id does not belongs to any file"})
 
             remove(file_path['path'])
 
@@ -215,22 +226,8 @@ def process(process_id):
             
             try:
                 image_id = request.args.get("image_id",type=int)
-            except:
-                return jsonify({"error":"wrong image_id argument type/no argument passed"})
-            
-            image_path = get_history_file_by_id(image_id)
-        
-            if not image_path:
-                return jsonify({"error":"this id does not belongs to any file"})
-            
-            else:
-                
-                image_path = image_path["path"]
-            
-            # try to secure the image path
-            # if suspicious path, just go home
-            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist/")) or (".." in image_path):
-                return redirect("/")
+            except ValueError:
+                return jsonify({"Error":"wrong image_id argument type/no argument passed"})
 
             return redirect(f"/image_preview?image_id={image_id}")
 
@@ -239,17 +236,15 @@ def process(process_id):
             
             try:
                 scan_id = request.args.get("scan_id",type=int)
-            except:
-                return jsonify({"error":"wrong scan_id argument type/no argument passed"})
+            except ValueError:
+                return jsonify({"Error":"wrong scan_id argument type/no argument passed"})
 
             text = get_history_file_by_id(scan_id)
             
             if not text:
-                return jsonify({"error":"this id does not belongs to any sacn"})
+                return jsonify({"Error":"this id does not belongs to any sacn"})
             
-            text = text["text"]
-
-            copy(text)
+            copy(text["text"])
 
             return redirect("/")
 
@@ -257,8 +252,8 @@ def process(process_id):
             
             try:
                 scan_id = request.args.get("scan_id",type=int)
-            except:
-                return jsonify({"error":"wrong scan_id argument type/no argument passed"})
+            except ValueError:
+                return jsonify({"Error":"wrong scan_id argument type/no argument passed"})
             
             delete_history_file_by_id(scan_id)
 
@@ -270,23 +265,16 @@ def process(process_id):
 
             try:
                 image_id = request.args.get("image_id",type=int)
-            except:
-                return jsonify({"error":"wrong image_id argument type/no argument passed"})
+            except ValueError:
+                return jsonify({"Error":"wrong image_id argument type/no argument passed"})
             
             image_path = get_history_file_by_id(image_id)
             
             
             if not image_path:
-                return jsonify({"error":"this id does not belongs to any file"})
+                return jsonify({"Error":"this id does not belongs to any file"})
             
-            else:
-                
-                image_path = image_path["path"]
-            
-            # try to secure the image path
-            # if suspicious path, just go home
-            if (not path.exists(image_path)) or (not image_path.startswith("static/files_hist/")) or (".." in image_path):
-                return redirect("/")
+            image_path = image_path["path"]
 
             return send_file(image_path,
             download_name=secure_filename(image_path.replace("static/files_hist/","")),
@@ -316,12 +304,12 @@ def process(process_id):
             try:
                 image_id = request.args.get("image_id",type=int)
             except:
-                return jsonify({"error":"wrong image_id argument type/no argument passed"})
+                return jsonify({"Error":"wrong image_id argument type/no argument passed"})
             
             image_path = get_history_file_by_id(image_id)
             
             if not image_path:
-                return jsonify({"error":"this id does not belongs to any file"})
+                return jsonify({"Error":"this id does not belongs to any file"})
             
             else:
                 
@@ -378,31 +366,78 @@ def process(process_id):
 
         if process_id == "[OPEN FILE]":
             
-            Process(target=startfile,args=("{}/{}".format(APP_PATH,request.args.get("file_path")),)).start()
+            try:
+                file_id = request.args.get("file_id",type=int)
+            except ValueError:
+                return jsonify({"Error":"invalid url argument"})
+            
+
+            json_dict = get_history_file_by_id(file_id)
+            
+            if not json_dict: # id does not exists
+                return jsonify({"Error":"invalid url argument"})
+            
+            Process(target=startfile,args=("{}/{}".format(APP_PATH,json_dict["path"]),)).start()
 
             return redirect("/")
 
 
         if process_id == "[COPY WIFI PW]":
+            
+            try:
+                scan_id = request.args.get("scan_id",type=int)
+            except ValueError:
+                return jsonify({"Error":"invalid url argument"})
+            
 
-            copy(get_history_file_by_id(int(request.args.get("scan_id")))['password'])
+            json_dict = get_history_file_by_id(scan_id)
+            
+            if not json_dict: # id does not exists
+                return jsonify({"Error":"invalid url argument"})
+            
+            
+            if not "content" in json_dict.keys():
+                return jsonify({"this kind of scan cannot be copied to clipboard"})
+                
+
+            copy(json_dict['password'])
 
             return redirect("/")
 
 
         if process_id == "[COPY CONTENT]":
             
-            copy(get_history_file_by_id(int(request.args.get("scan_id")))['content'])
-
+            try:
+                scan_id = request.args.get("scan_id",type=int)
+            except ValueError:
+                return jsonify({"Error":"invalid url argument"})
+            
+            
+            json_dict = get_history_file_by_id(scan_id)
+            
+            if not json_dict: # id does not exists
+                return jsonify({"Error":"invalid url argument"})
+            
+            
+            if not "content" in json_dict.keys():
+                return jsonify({"this kind of scan cannot be copied to clipboard"})
+                
+            # finally, if nothing is wrong, copy the scan content
+            copy(json_dict["content"])
+            return redirect("/")
         
         if process_id == "[OPEN VIDEO]":
-            file_path = request.args.get('file_path')
             
+            try:
+                video_id = request.args.get('video_id',type=int)
+            except ValueError:
+                return jsonify({"Error":"invalid url argument"})
             
-            # try to secure the file path
-            # if suspicious path, just go home
-            if (not path.exists(file_path)) or (not file_path.startswith("static/files_hist/")) or (".." in file_path):
-                return redirect("/")
+            if video_id <= get_history_file_last_id():
+                file_path = get_history_file_by_id(video_id)["path"]
+                
+            else: # id does not exists
+                return jsonify({"Error":"invalid url argument"})
             
             
             return render_template("video_preview.html",file_path=file_path)
@@ -423,6 +458,7 @@ def api(api_req):
     
     if request.remote_addr == "127.0.0.1":
 
+        
 
         if api_req == "get_history":
 
@@ -465,9 +501,30 @@ def api(api_req):
                       
             return jsonify({"success":"shutting down CopyPasta server..."})
         
+        elif api_req == "gen_otdl_url":
+            
+            # keep main window hidden
+            root = Tk()
+            root.attributes("-topmost", True)
+            root.withdraw()
+            # open file dialog
+            file_path = askopenfilename(parent=root)
+            
+            if not file_path:
+                return jsonify({"Error":"no file selected"})
+                
+            
+            if not path.exists("static/ot_upload"):
+                mkdir("static/ot_upload")
+            
+            #move file in a downloadable directory
+            copyfile(file_path,path.join(APP_PATH,f"static/ot_upload/{path.basename(file_path)}"))
+            
+            # return url to javascript for qr code generation and notification
+            safe_arg = url_encode(url_encode(path.basename(file_path))) # twice because google charts api will transform it once before qr generation
+            return f"http://{get_private_ip()}:21987/download/main_page?file={safe_arg}"
         else:
-            return jsonify({"error" : "wrong api call"})
-        
+            return jsonify({"Error" : "wrong api call"})
         
     else:
 
@@ -479,9 +536,36 @@ def api(api_req):
             return abort(403)
 
 
+@app.route("/download/<action>",methods=["GET"])
 
+def download(action):
+    
+    try:
+        file = request.args.get("file",type=str)
+    except:
+        return jsonify({"Error":"Invalid url parameter"})
+    
+    if action == "main_page":
+        return render_template("download_page.html",file=url_encode(file))
+    
+    elif action == "send_file":
+        @after_this_request
+        def delete_ot_dl(response):
+            
+            if path.exists(path.join(APP_PATH,"static","ot_upload",file)):
+                Process(target=delete_ot_dl_proc,args=(APP_PATH,file,)).start()
 
-
+            return response
+        
+        
+        file_path = path.join(APP_PATH,"static","ot_upload",file)
+        if path.exists(file_path):
+            return send_file(file_path,as_attachment=True)
+        else:
+            return jsonify({"Error":"This file does not exists or have already been downloaded one time."})
+        
+    else:
+        return jsonify({""})
 
 
 @app.route("/upload",methods=["POST"])
@@ -502,7 +586,7 @@ def upload():
                 file_type = r['type']
                 r = r['content']
             except:
-                return jsonify({"upload_status" : "false","error":"malformed json"}), 400
+                return jsonify({"upload_status" : "false","Error":"malformed json"}), 400
 
             if file_type == "text":
                 
@@ -566,7 +650,7 @@ def upload():
 
                 isbn = r
                 
-                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}"})
+                store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}","isbn_lookup":identify_product(isbn)})
                 
                 return jsonify({"upload_status" : "true"})
 
@@ -609,7 +693,7 @@ def upload():
 
             else:
 
-                return jsonify({"upload_status" : "false","error" : "unknown type"}), 400
+                return jsonify({"upload_status" : "false","Error" : "unknown type"}), 400
 
 
         #multipart request (files)

@@ -2,6 +2,7 @@ import socket
 from getpass import getuser
 from random import randint
 from json import *
+from bs4 import BeautifulSoup
 from requests import get
 from os import mkdir, path, remove
 from xml.etree import ElementTree
@@ -15,10 +16,11 @@ from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
 from platform import system
+from time import sleep
 
 
 
-TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html"]
+TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html","download_page.html"]
 
 
 def notify_desktop(title,text):
@@ -176,22 +178,27 @@ def init_history_file(force=False):
 
 def get_history():
 
-    history = "{\"history\" : ["
+    # using lists and join() to speed up
+    history = ["{\"history\" : ["]
 
     for element in ElementTree.parse("static/history.xml").getroot():
-        history += element.text + ","
+        history.append(element.text)
+        history.append(",")
 
-    history = history[:-1] + "]}" if history != "{\"history\" : [" else history +"]}"
 
-    return history
+    if len(history) > 1:
+        history.pop()
+        history.append("]}")
+    else:
+        history.append("]}")
+
+    return "".join(history)
 
 def get_history_file_last_id():
     return len(ElementTree.parse("static/history.xml").getroot()) -1
     
     
 def get_history_file_by_id(file_id):
-
-    history = []
 
     if file_id < len(ElementTree.parse("static/history.xml").getroot()):
 
@@ -328,3 +335,37 @@ def remove_copypasta_port_redirect():
 def is_image(file_type:str):
     
     return file_type in ["jpeg","jpg","png","ico","gif","apng","avif","gif","jfif","pjpeg","pjp","svg","webp"]
+
+
+
+def identify_product(isbn:str):
+    
+    
+    
+    # edible product ?
+    r = get(f"http://world.openfoodfacts.org/api/v0/product/{isbn}")
+    r = loads(r.text)
+    
+    if "product" in r.keys():
+        r = r["product"]
+        
+        return {"name":r["product_name"]+ " - "+r["brands"] if "brands" in r.keys() else r["product_name"] ,"url":f"https://world.openfoodfacts.org/product/{isbn}"}
+    
+    
+    # book ?
+    r = get(f"https://www.isbnsearcher.com/books/{isbn}",headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37"})
+    
+    if r.status_code == 200:
+        r = BeautifulSoup(r.text,"html.parser")
+        
+        return {"name":r.find("h1").get_text(),"url":f"https://www.isbnsearcher.com/books/{isbn}"}
+    
+    else:
+        return {"name":isbn,"url":f"https://www.google.com/search?q={isbn}"}
+    
+
+def delete_ot_dl_proc(APP_PATH,file:str):
+    
+    sleep(30)
+    # delete file after download as it is only a one timer
+    remove(path.join(APP_PATH,"static","ot_upload",file))

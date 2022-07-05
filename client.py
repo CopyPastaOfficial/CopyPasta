@@ -1,5 +1,4 @@
 import requests
-from ast import literal_eval
 from util import *
 
 def send_text_scan(text):

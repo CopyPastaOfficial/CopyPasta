@@ -1,9 +1,8 @@
-from ast import literal_eval
-from os import startfile
-from requests import get
+# keep main window hidden
+from tkinter import Tk
+from tkinter.filedialog import askopenfile
 
 
-startfile("C:/")
-
-
-print(literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'])
+Tk().withdraw()
+# open file dialog
+file_path = askopenfile(mode = "r")
