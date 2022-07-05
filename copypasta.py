@@ -1,6 +1,6 @@
 import sys
 import socket
-from flask import Flask, render_template, abort,jsonify,send_file,request,redirect,flash
+from flask import Flask, after_this_request, render_template, abort,jsonify,send_file,request,redirect,flash
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
 from requests import get
@@ -8,6 +8,7 @@ from os import path,remove, startfile, rename,chdir
 import PIL.Image as Image
 from io import BytesIO
 from shutil import copyfile
+from urllib.parse import quote as url_encode
 try:
     import win32clipboard
 except ImportError:
@@ -520,7 +521,8 @@ def api(api_req):
             copyfile(file_path,path.join(APP_PATH,f"static/ot_upload/{path.basename(file_path)}"))
             
             # return url to javascript for qr code generation and notification
-            return f"http://{get_private_ip()}:21987/download?file={path.basename(file_path)}"
+            safe_arg = url_encode(url_encode(path.basename(file_path))) # twice because google charts api will transform it once before qr generation
+            return f"http://{get_private_ip()}:21987/download/main_page?file={safe_arg}"
         else:
             return jsonify({"Error" : "wrong api call"})
         
@@ -534,20 +536,36 @@ def api(api_req):
             return abort(403)
 
 
-@app.route("/download",methods=["GET"])
+@app.route("/download/<action>",methods=["GET"])
 
-def download():
+def download(action):
     
     try:
         file = request.args.get("file",type=str)
     except:
         return jsonify({"Error":"Invalid url parameter"})
     
-    file_path = path.join(APP_PATH,"static","ot_upload",file)
-    if path.exists(file_path):
-        return send_file(file_path,as_attachment=True)
+    if action == "main_page":
+        return render_template("download_page.html",file=url_encode(file))
+    
+    elif action == "send_file":
+        @after_this_request
+        def delete_ot_dl(response):
+            
+            if path.exists(path.join(APP_PATH,"static","ot_upload",file)):
+                Process(target=delete_ot_dl_proc,args=(APP_PATH,file,)).start()
+
+            return response
+        
+        
+        file_path = path.join(APP_PATH,"static","ot_upload",file)
+        if path.exists(file_path):
+            return send_file(file_path,as_attachment=True)
+        else:
+            return jsonify({"Error":"This file does not exists or have already been downloaded one time."})
+        
     else:
-        return jsonify({"Error":"This file does not exists or have already been downloaded one time."})
+        return jsonify({""})
 
 
 @app.route("/upload",methods=["POST"])

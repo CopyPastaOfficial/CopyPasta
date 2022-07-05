@@ -16,10 +16,11 @@ from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
 from platform import system
+from time import sleep
 
 
 
-TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html"]
+TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html","download_page.html"]
 
 
 def notify_desktop(title,text):
@@ -362,3 +363,9 @@ def identify_product(isbn:str):
     else:
         return {"name":isbn,"url":f"https://www.google.com/search?q={isbn}"}
     
+
+def delete_ot_dl_proc(APP_PATH,file:str):
+    
+    sleep(30)
+    # delete file after download as it is only a one timer
+    remove(path.join(APP_PATH,"static","ot_upload",file))
