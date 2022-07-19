@@ -227,7 +227,6 @@
             
                 var elements = [];
 
-                store_visit(2);
 
                 for (let i = 0; i < json.length; i++) {
                     var obj = json[i];
@@ -327,7 +326,8 @@
 
                 var ele_l = elements.length;
                 if(n_elements< ele_l || n_elements > ele_l){
-                    
+                    store_visit(2);
+
                     //don't notify user at app startup as it's only already sent content
                     if(!init){
                         notify("New element received !");
