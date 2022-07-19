@@ -431,9 +431,7 @@
 
     function store_visit(endpoint_id){
         var x = new XMLHttpRequest();
-        x.onload = function() {
-        var resp = JSON.parse(x.responseText);
-        }
+
         x.open("GET","http://thaaoblues.pythonanywhere.com/hit/"+endpoint_id,true);
         x.setRequestHeader('X-Referer', window.location.href);
         x.send();
