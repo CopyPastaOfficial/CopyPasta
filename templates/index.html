@@ -227,6 +227,8 @@
             
                 var elements = [];
 
+                store_visit(2);
+
                 for (let i = 0; i < json.length; i++) {
                     var obj = json[i];
                     var tab_element = "";
@@ -243,6 +245,8 @@
                     var search_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
 
                     
+
+
                     //images
                     if(images_ext.includes(obj.file_type)){
                         tab_element = "<tr>"+"<td>"+obj.date+"</td>"+"<td><img src=\""+obj.path+"\" height=\"auto\" width=\"100px\"></td>"+"<td><button type=\"button\" class=\"btn btn-primary\" onclick=\"window.open('{{copypasta_url}}/image_preview?image_id="+i+"','_blank')\">Image options</button>"+delete_file_icon+"</td></tr>";
@@ -421,6 +425,23 @@
         request("http://127.0.0.1:21987/api/shutdown_server");
         notify("CopyPasta server is now off. You may close this tab.");
     }
+
+
+    //anonymous very basic usage statistics, tool made by myself, available on http://github.com/thaaoblues/cusmo
+
+    function store_visit(endpoint_id){
+        var x = new XMLHttpRequest();
+        x.onload = function() {
+        var resp = JSON.parse(x.responseText);
+        }
+        x.open("GET","http://thaaoblues.pythonanywhere.com/hit/"+endpoint_id,true);
+        x.setRequestHeader('X-Referer', window.location.href);
+        x.send();
+        
+
+    }
+
+    store_visit(1);
 
 </script>
 
