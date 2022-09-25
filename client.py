@@ -4,6 +4,8 @@ from util import *
 def send_text_scan(text:str,ip_addr:str):
 
     """
+    sends the specified text
+    to the instance of copypasta running on the specified address
     """
     requests.post(f"http://{ip_addr}:21987/upload",json={"type" : "text", "content" : f"{text}"})
 
@@ -11,12 +13,13 @@ def send_text_scan(text:str,ip_addr:str):
 def send_file(file_path:str,ip_addr:str):
 
     """
+    sends the specified file
+    to the instance of copypasta running on the specified address
     """
 
     files = {'files': open(file_path,'rb')}
     
     r = requests.post(f"http://{ip_addr}:21987/upload",files=files)
-    print(r.text)
 
 
 def send_keystrokes(text):
