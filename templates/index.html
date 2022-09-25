@@ -25,11 +25,15 @@
                   <li class="nav-item active"> <a class="nav-link active fs-5" href="https://copypastaofficial.github.io"><i class="bi bi-info-square"></i></a></li>
                 </ul>
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active"> <a class="nav-link active fs-5" onclick="send_file_to_phone()">Send a file to my phone </a></li>
+                    <li class="nav-item active"> <a class="nav-link active fs-5 nav-btn ms-2" onclick="send_file_to_phone()">Send a file to my phone </a></li>
 
                 </ul>
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active"> <a class="nav-link active fs-5" onclick="send_text_to_phone()">Send a text/url to my phone </a></li>
+                    <li class="nav-item active"> <a class="nav-link active fs-5 nav-btn ms-2" onclick="send_text_to_phone()">Send a text/url to my phone </a></li>
+                </ul>
+                
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active" > <a class="nav-link active fs-5 nav-btn ms-2" href="/client">Send a things to another PC</a></li>
                 </ul>
             </div>
 
@@ -112,6 +116,10 @@
     {% endif %} {% endwith %}
 
     <style>
+        .nav-btn{
+            border: 1px solid white;
+            border-radius: 5px;
+        }
         .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited, .btn-outline-primary {
             background-color: #009c74 !important;
             border-color: #009c74;

@@ -1,14 +1,21 @@
 import requests
 from util import *
 
-def send_text_scan(text):
-    r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "text", "content" : f"{text}"})
-    print(r.text)
+def send_text_scan(text:str,ip_addr:str):
+
+    """
+    """
+    requests.post(f"http://{ip_addr}:21987/upload",json={"type" : "text", "content" : f"{text}"})
 
 
-def send_file(file_path):
+def send_file(file_path:str,ip_addr:str):
+
+    """
+    """
+
     files = {'files': open(file_path,'rb')}
-    r = requests.post("http://127.0.0.1:21987/upload", files = files)
+    
+    r = requests.post(f"http://{ip_addr}:21987/upload",files=files)
     print(r.text)
 
 

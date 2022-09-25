@@ -7,3 +7,4 @@ output/*
 copypasta.exe
 *.build
 *.dist
+tmp/

@@ -14,6 +14,8 @@
 - you only needs to start CopyPasta once on your desktop, even if you close the browser window CopyPasta can still receive scans and notify you ! (You still need to restart it after each shutdown of your computer)
 - If you have closed the browser window, you can reopen it by clicking on the shortcut like if you wanted to start copypasta or even just send your things and click on the notification toast ;D 
 
+## new feature in building : PC-to-PC copypasta !
+
 ## Installation :
 - download "launcher.exe" from the releases section
 - start the file once downloaded (let it make its things, it takes some time to download everything :D )

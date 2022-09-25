@@ -9,6 +9,7 @@ import PIL.Image as Image
 from io import BytesIO
 from shutil import copyfile
 from urllib.parse import quote as url_encode
+import client as pc_client
 try:
     import win32clipboard
 except ImportError:
@@ -214,8 +215,10 @@ def process(process_id):
             if not file_path:
                 
                 return jsonify({"Error":"this id does not belongs to any file"})
-
-            remove(file_path['path'])
+            
+            # check if file haven't been deleted by another process (we never know ^^)
+            if path.exists(file_path["path"]):
+                remove(file_path['path'])
 
             delete_history_file_by_id(file_id)
 
@@ -576,8 +579,8 @@ def upload():
         
         notify_desktop("New scan Incoming !", "Click to open CopyPasta")
 
-        r = request.get_json()
 
+        r = request.get_json(silent=True)
         time = date.today().strftime("%d/%m/%Y")
 
         if r != None:
@@ -736,6 +739,75 @@ def upload():
         return abort(403)
 
 
+
+# new feature, pc-to-pc
+@app.route("/client",methods=["GET","POST"])
+
+def client():
+    
+    # obviously only allowed from the current computer
+    if request.remote_addr == "127.0.0.1":
+
+        
+        if request.method == "POST":
+
+            try:
+                scan_type = request.form.get("type",type=str)
+                ip_addr = request.form.get("pc_ip_addr",type=str)
+            except ValueError:
+                return render_template("send_client.html",msg="erreur")
+
+
+
+            if scan_type == "text":
+                try:
+                    scan_ctt = request.form.get("text_content",type=str)
+                except ValueError:
+                    return render_template("send_client.html",msg="ValueError")
+
+                pc_client.send_text_scan(scan_ctt,ip_addr)
+
+
+
+            elif scan_type == "file":
+                files = request.files.getlist("files_input")
+
+                #go and store each files
+                for file in files :
+                    
+                    # If the user does not select a file, the browser submits an
+                    # empty file without a filename.
+                    if file.filename == '':
+                        flash('No selected file')
+                        return jsonify({"upload_status" : "false"})
+
+                    #store file in temporary folder and delete after request
+                    elif file :
+                        filename = secure_filename(file.filename)
+                        
+                        # create temp folder if it does not exists
+
+                        if not path.exists("tmp"):
+                            mkdir("tmp")
+                            
+                        # save the file into it
+                        file.save(f"tmp/{filename}")
+
+                        pc_client.send_file(f"tmp/{filename}",ip_addr)
+
+                        def clear_tmp():
+                            # wait the complete transfert
+                            sleep(10)
+                            #remove the temporary file
+                            remove(f"/tmp/{filename}")
+
+                        # don't sleep on main thread ^^
+                        #Process(target=clear_tmp).start()
+
+        # finally, render the same page with a little message ;)
+        return render_template("send_client.html",msg="Scan sent !")
+    else:
+        return abort(403)
 
 if __name__ == "__main__":
 
