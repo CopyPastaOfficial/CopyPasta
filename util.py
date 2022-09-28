@@ -1,7 +1,10 @@
+from asyncore import write
 import socket
 from getpass import getuser
-from random import randint
+from random import randint,choices
 from json import *
+from string import ascii_uppercase, printable
+from xmlrpc.client import Boolean
 from bs4 import BeautifulSoup
 from requests import get
 from os import mkdir, path, remove
@@ -369,3 +372,31 @@ def delete_ot_dl_proc(APP_PATH,file:str):
     sleep(30)
     # delete file after download as it is only a one timer
     remove(path.join(APP_PATH,"static","ot_upload",file))
+
+
+def clear_tmp(filename:str):
+    # wait the complete transfert
+    sleep(10)
+    #remove the temporary file
+    remove(f"tmp/{filename}")
+
+
+def gen_upload_code():
+
+    return "".join(choices(ascii_uppercase,k=4))
+
+
+def store_upload_code(APP_PATH:str,upload_code:str):
+
+    with open(path.join(APP_PATH,"static/upload_code.cpasta"),"w") as f:
+        f.write(upload_code)
+
+def get_upload_code(APP_PATH:str):
+
+    with open(path.join(APP_PATH,"static/upload_code.cpasta"),"r") as f:
+        return f.read()
+
+def is_upload_code_valid(APP_PATH:str,upload_code:str) -> bool:
+
+    with open(path.join(APP_PATH,"static/upload_code.cpasta"),"r") as f:
+        return f.read() == upload_code

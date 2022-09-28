@@ -108,9 +108,8 @@ def home():
             
             init_history_file()
             
-            
         #render the html with the history
-        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
+        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"),upload_code=get_upload_code(APP_PATH))
 
     else:
         return abort(403)
@@ -577,11 +576,18 @@ def upload():
 
     if request.method == "POST":
         
-        notify_desktop("New scan Incoming !", "Click to open CopyPasta")
-
 
         r = request.get_json(silent=True)
         time = date.today().strftime("%d/%m/%Y")
+
+        # check upload code validity
+        upload_code = request.args.get("code",default="[NO CODE]",type=str)
+        if not is_upload_code_valid(APP_PATH,upload_code):
+            return jsonify({"Error":"Invalid upload code"}),403
+
+        notify_desktop("New scan Incoming !", "Click to open CopyPasta")
+
+
 
         if r != None:
 
@@ -747,15 +753,18 @@ def client():
     
     # obviously only allowed from the current computer
     if request.remote_addr == "127.0.0.1":
+        msg = ""
 
-        
         if request.method == "POST":
+            
+            msg = "Document sent !"
 
             try:
                 scan_type = request.form.get("type",type=str)
                 ip_addr = request.form.get("pc_ip_addr",type=str)
+                upload_code = request.form.get("upload_code",type=str)
             except ValueError:
-                return render_template("send_client.html",msg="erreur")
+                return render_template("send_client.html",msg="erreur, champs non remplis")
 
 
 
@@ -765,7 +774,8 @@ def client():
                 except ValueError:
                     return render_template("send_client.html",msg="ValueError")
 
-                pc_client.send_text_scan(scan_ctt,ip_addr)
+                if not pc_client.send_text_scan(scan_ctt,ip_addr,upload_code):
+                    msg = "/!\ Invalid upload code or client offline /!\\"
 
 
 
@@ -793,19 +803,15 @@ def client():
                         # save the file into it
                         file.save(f"tmp/{filename}")
 
-                        pc_client.send_file(f"tmp/{filename}",ip_addr)
+                        if not pc_client.send_file(f"tmp/{filename}",ip_addr,upload_code):
+                            msg = " /!\ Invalid upload code or client offline /!\\"
 
-                        def clear_tmp():
-                            # wait the complete transfert
-                            sleep(10)
-                            #remove the temporary file
-                            remove(f"/tmp/{filename}")
 
-                        # don't sleep on main thread ^^
-                        #Process(target=clear_tmp).start()
+                        # clear temporary file in 10s, but we don't sleep on main thread ^^
+                        Process(target=clear_tmp,args=(filename,)).start()
 
         # finally, render the same page with a little message ;)
-        return render_template("send_client.html",msg="Scan sent !")
+        return render_template("send_client.html",msg=msg)
     else:
         return abort(403)
 
@@ -834,8 +840,13 @@ if __name__ == "__main__":
             #check if the templates are up-to-date
             check_templates_update()
 
+
+
+    # code needed for another pc to upload on this machine
+    upload_code = gen_upload_code()
+    store_upload_code(APP_PATH,upload_code)
+
     #open tab in web browser
-    
     
     Process(target=open_link_process, args=(COPYPASTA_URL,)).start()
 
@@ -845,3 +856,5 @@ if __name__ == "__main__":
         webserv.create(app,host="0.0.0.0",port=21987)
         webserv.run()
         
+
+

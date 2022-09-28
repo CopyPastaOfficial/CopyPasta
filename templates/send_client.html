@@ -37,7 +37,7 @@
 
       <div class="mx-3 my-5 text-center">
         <h3> Don't forget that CopyPasta must be running on the other pc :)</h3>
-        <h3>{{msg}}</h3>
+        <h3 class="my-3"><b>{{msg}}</b></h3>
         <h5>What do you want to send ?</h5>
         <select id="select_type">
             <option selected>Select here ;)</option>
@@ -53,6 +53,8 @@
             <h3>Send some text to another pc !</h3>
             <input type="text" id="ip_addr_input" name="pc_ip_addr" class="input" placeholder="Other pc's IP address"/>
             <br>
+            <input type="text" id="upload_code_input" name="upload_code" class="input" placeholder="Other pc's upload code"/>
+            <br>
             <textarea name="text_content" class="mt-2" type="text" placeholder="Type your text here !" style="min-height: 400; min-width:300;width: auto;height: auto;"></textarea>
             <input name="type" type="text" value="text" hidden/>
             <br>
@@ -64,6 +66,8 @@
         <form action="/client" method="POST" enctype="multipart/form-data">
             <h3>Send a file to another pc !</h3>
             <input type="text" id="ip_addr_input" name="pc_ip_addr" class="input" placeholder="Other pc's IP address"/>
+            <br>
+            <input type="text" id="upload_code_input" name="upload_code" class="input" placeholder="Other pc's upload code"/>
             <br>
             <input class="mt-2" type="file" placeholder="Select the file here" name="files_input" id="file_input"/>
             <input name="type" type="text" value="file" hidden/>
