@@ -7,3 +7,4 @@ pillow
 waitress
 webtest
 beautifulsoup4
+flask-socketio

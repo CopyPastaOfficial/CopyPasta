@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title  translate="no">CopyPasta</title>
+    <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi" crossorigin="anonymous"></script>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css" integrity="sha384-eoTu3+HydHRBIjnCVwsFyCpUDZHZSFKEJD0mc3ZqSBSb6YhZzRHeiomAUWCstIWo" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -61,19 +62,19 @@
                             {%if tab!=True%}
                             <div class="form-check form-switch">                                
                                 <label class="form-check-label" for="flexSwitchCheckDefault">Open a new tab when a scan is received</label>
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="change_tab_settings()"/>
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="send_event('[CHANGE_TAB_SETTINGS]',{data:''})"/>
                             </div>
                             {%else%}
                                 <div class="form-check form-switch">
                                     <label class="form-check-label" for="flexSwitchCheckChecked">Open a new tab when a scan is received</label>
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onclick="change_tab_settings()" checked/>
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" onclick="send_event('[CHANGE_TAB_SETTINGS]',{data:''})" checked/>
                                 </div>
                             {%endif%}
                                                     
                         </h6>
                         <hr>
                         Server version : {{server_version}}
-                        <a href="javascript:shutdown_server();"><h6>Server shutdown  <a class="bi bi-power" href="javascript:shutdown_server();"></a></h6></a>
+                        <a href="javascript:send_event('[SHUTDOWN_SERVER]',{data:''});"><h6>Server shutdown  <a class="bi bi-power" href="javascript:shutdown_server();"></a></h6></a>
                     </div>
                 </div>
 
@@ -84,7 +85,7 @@
 
                 <h1>Last files/data sent :</h1>
                 <hr/>
-                <button class="btn btn-danger mb-3" onclick="request_and_notify('History deleted !','/process/[DEL HISTORY]')">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
+                <button class="btn btn-danger mb-3" id="delete_all_history_button" onclick="send_event('[DEL_HISTORY]',{data : ''})">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
@@ -104,17 +105,7 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='dist/js/bootstrap.bundle.min.js') }}"></script>
-    {% with messages = get_flashed_messages() %} {% if messages %}
-    <script>
-        var messages = {
-            {
-                messages | safe
-            }
-        };
-        alert(messages[messages.length - 1]);
-    </script>
-    {% endif %} {% endwith %}
+
 
     <style>
         .nav-btn{
@@ -157,6 +148,30 @@
     <script>
 
 
+
+        const socket = io();
+
+        socket.on("fill_history_tab",function (json) {
+            fill_history_tab(false,json);
+            alert();
+        });
+
+
+        socket.on("alert",function (data) {
+            alert(data["message"]);
+        });
+
+        socket.on("[NOTIFY_USER]",function (data) {
+            notify(data["msg"]);
+        });
+
+
+        function send_event(event_name,json_data){
+            socket.emit(event_name,json_data)
+        }
+
+
+
         function send_text_to_phone(){
             let text = prompt('Type/paste your text/url here (max 4000 characters)');
             if(text.length > 4000){
@@ -191,6 +206,8 @@
             return xmlHttp.responseText;
         }
 
+
+        var is_online = isOnline();
         var private_ip = get_private_ip();
 
         function isOnline(){
@@ -215,27 +232,35 @@
             
         }
 
+        
+        function network_changes_handler(){
+
+            if(!isOnline() && is_online){
+                notify("network change detected !")
+                request("http://127.0.0.1:21987/api/update_ip");
+                is_online = false;
+            }
+                
+            if(isOnline() && !is_online){
+                notify("network change detected !")
+                request("http://127.0.0.1:21987/api/update_ip");
+                is_online = true;
+
+                setTimeout(function() {window.location.reload(true);},2000);
+            }
+
+            setTimeout(network_changes_handler,1000)
+        }
+
 
 
         var n_elements = 0;
-        var is_online = true;
 
-        function fill_history_tab(init=false){
+        function fill_history_tab(init,json){
 
-            var xmlHttp = new XMLHttpRequest();
-
-            xmlHttp.open( "GET", "http://127.0.0.1:21987/api/get_history", false ); // false for synchronous request
-            xmlHttp.send( null );
-            var r = xmlHttp.responseText;
-
-            
-            if(r == "{\"history\" : []}"){
-                document.getElementById("history_table_body").innerHTML = "";
-            }else{
-                var json = JSON.parse(r).history;
+            var json = json.history;
             
                 var elements = [];
-
 
                 for (let i = 0; i < json.length; i++) {
                     var obj = json[i];
@@ -244,15 +269,13 @@
                     var images_ext = ["jpeg","jpg","png","ico","gif","apng","avif","gif","jfif","pjpeg","pjp","svg","webp"];
                     var videos_ext = ["mp4","avi","ogg","mow","wmf","flv","webm","mkv","vob","wmv"]
                     var audios_ext = ["m4a","flac","mp3","wav","aiff","pcm","alac","wma","ogg","aac"]
-                    var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_SCAN_FROM_HIST]?scan_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"request_and_notify('File deleted !','/process/[DELETE_FILE_FROM_HIST]?file_id="+i+"')\"><i class=\"bi bi-trash-fill\"></i></button>";
-                    var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Content copied to clipboard...','/process/[COPY CONTENT]?scan_id="+i+"')\"><i class=\"bi bi-clipboard\"></i></button>";
+                    var delete_scan_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"send_event('[DELETE_SCAN_FROM_HIST]',{scan_id:"+i+"}\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var delete_file_icon = "<button class=\"btn btn-danger ms-2\" onclick=\"send_event('[DELETE_FILE_FROM_HIST]',{file_id:"+i+"})\"><i class=\"bi bi-trash-fill\"></i></button>";
+                    var copy_content_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"send_event('[COPY_CONTENT]',{scan_id:"+i+"})\"><i class=\"bi bi-clipboard\"></i></button>";
                     var send_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-envelope-fill\"></i></button>";
                     var open_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
-                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening folder...','/process/[OPEN FILES EXPLORER]')\"><i class=\"bi bi-folder-symlink\"></i></button>";
+                    var open_folder_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"send_event('[OPEN_FILES_EXPLORER]',{data:''})\"><i class=\"bi bi-folder-symlink\"></i></button>";
                     var search_icon = "<button type=\"button\" class=\"btn btn-primary\"><i class=\"bi bi-search\"></i></button>";
-
-                    
 
 
                     //images
@@ -262,14 +285,14 @@
                     //videos
                     }else if(videos_ext.includes(obj.file_type)){
                         
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"request_and_notify('Opening video...','/process/[OPEN FILE]?file_id="+i+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"send_event('[OPEN_FILE]',{file_id:"+i+"})\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
                         
-                        var play_video_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"window.open('/process/[OPEN VIDEO]?video_id="+i+"')\"><i class=\"bi bi-play\"></i></button>";
+                        var play_video_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"window.open('/process/[OPEN_VIDEO]?video_id="+i+"')\"><i class=\"bi bi-play\"></i></button>";
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-film\"></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+play_video_icon+open_file_icon+"<br>"+open_folder_icon+delete_file_icon+"</div></td></tr>";
                     
                     //audio
                     }else if(audios_ext.includes(obj.file_type)){
-                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"request_and_notify('Opening audio...','/process/[OPEN FILE]?file_id="+i+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
+                        var open_file_icon = "<button type=\"button\" class=\"btn btn-primary\" onclick=\"send_event('[OPEN_FILE]',{file_id:"+i+"})\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button>";
 
                         tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-file-earmark-music-fill\"></i></i></div></td><td><div style=\"margin-top:15px;\">title:"+obj.file_name+"</td></div><td><div style=\"margin-top:15px;\">"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</div></td></tr>";
                     
@@ -288,7 +311,7 @@
                         //wifi type
                         }else if(obj.file_type == "wifi"){
                             
-                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"request_and_notify('Wifi password copied !','/process/[COPY WIFI PW]?scan_id="+i+"')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
+                            tab_element = "<tr><td><div class=\"fs-1 mb-1\"><i class=\"bi bi-wifi\"></i></div></td><td><div style=\"margin-top:15px;\">"+obj.ssid+"</div></td><td><div style=\"margin-top:15px;\"><a class=\"btn btn-primary\" onclick=\"send_event('[COPY_WIFI_PW]',{scan_id:"+i+"}')\">Copy password</a>"+delete_scan_icon+"</div></td></tr>";
                         
                         //barcode type
                         }else if(obj.file_type == "isbn"){
@@ -313,7 +336,7 @@
 
                         //random file
                         }else{
-                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"request_and_notify('Opening file...','/process/[OPEN FILE]?file_id="+i+"')\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
+                            var open_file_icon = "<button type=\"button\" class=\"btn btn-primary mx-1 my-1\" onclick=\"send_event('[OPEN_FILE]',{file_id:"+i+"})\"><i class=\"bi bi-file-earmark-arrow-up\"></i></button> ";
 
                             tab_element = "<tr><td>"+obj.date+"</td><td>"+obj.file_name+"</td><td>"+open_folder_icon+"<br>"+open_file_icon+delete_file_icon+"</td></tr>";
                         }
@@ -335,8 +358,6 @@
 
                 var ele_l = elements.length;
                 if(n_elements< ele_l || n_elements > ele_l){
-                    store_visit(2);
-
                     //don't notify user at app startup as it's only already sent content
                     if(!init){
                         notify("New element received !");
@@ -344,37 +365,11 @@
                     document.getElementById("history_table_body").innerHTML = all;
                     n_elements = elements.length;
                 }
-               
 
-
-            }
-
-            if(!isOnline() && is_online){
-                notify("network change detected !")
-                request("http://127.0.0.1:21987/api/update_ip");
-                is_online = false;
-            }
-                
-            if(isOnline() && !is_online){
-                notify("network change detected !")
-                request("http://127.0.0.1:21987/api/update_ip");
-                is_online = true;
-
-                setTimeout(function() {window.location.reload(true);},2000);
-            }
-            setTimeout(fill_history_tab,200);
         }
 
 
 
-
-
-    function change_tab_settings(){
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", "http://127.0.0.1:21987/process/[CHANGE TAB SETTINGS]", false ); // false for synchronous request
-        xmlHttp.send( null );
-        console.log("tab settings changed")
-    }
     
 
 
@@ -422,34 +417,8 @@
         });
         
     }
-   
 
-
-
-    window.onload = fill_history_tab(init=true);
-
-
-
-    function shutdown_server(){
-        request("http://127.0.0.1:21987/api/shutdown_server");
-        notify("CopyPasta server is now off. You may close this tab.");
-    }
-
-
-    //anonymous very basic usage statistics, tool made by myself, available on http://github.com/thaaoblues/cusmo
-
-    function store_visit(endpoint_id){
-        var x = new XMLHttpRequest();
-
-        x.open("GET","http://thaaoblues.pythonanywhere.com/hit/"+endpoint_id,true);
-        x.setRequestHeader('X-Referer', window.location.href);
-        x.send();
-        
-
-    }
-
-    store_visit(1);
-
+    
 </script>
 
 <script type="text/javascript">

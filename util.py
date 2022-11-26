@@ -14,7 +14,6 @@ from multiprocessing import Process
 from webbrowser import open as open_tab
 from ast import literal_eval
 import requests
-from subprocess import Popen, run
 from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
@@ -79,7 +78,8 @@ def check_templates_update():
     with open("static/update.Blue","r") as f:
         n = int(f.read())
         if n == 10:
-            download_templates()
+            #download_templates()
+            pass
         else:
             with open("static/update.Blue","w") as f:
                 f.write(str(n+1))
@@ -113,7 +113,7 @@ def emergency_redownload():
 
 
         
-    download_templates()
+    #download_templates()
 
 
 def is_server_already_running():
@@ -194,14 +194,25 @@ def get_history():
         history.append("]}")
     else:
         history.append("]}")
-
+        
     return "".join(history)
+
+
+def get_history_json()->dict:
+
+    # using lists and join() to speed up
+    history = {"history":[]}
+
+    for element in ElementTree.parse("static/history.xml").getroot():
+        history["history"].append(loads(element.text))
+
+    return history
 
 def get_history_file_last_id():
     return len(ElementTree.parse("static/history.xml").getroot()) -1
     
     
-def get_history_file_by_id(file_id):
+def get_history_file_by_id(file_id) -> dict:
 
     if file_id < len(ElementTree.parse("static/history.xml").getroot()):
 
@@ -271,33 +282,6 @@ def is_online():
         return True
     except OSError:
         return False
-    
-    
-def is_hosts_file_modified():
-    
-    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
-    
-    with open(hosts_file_path,"r") as f:
-        
-        return True if "copypasta.me" in f.read() else False
-    
-    
-def add_copypasta_to_hosts_file():
-    
-    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
-    
-    with open(hosts_file_path,"a") as f:
-        
-        f.write("\n127.0.0.1:21987\tcopypasta")
-        
-        f.close()
-        
-    if system() == "Windows":
-        
-        # flush dns cache
-        run("ipconfig /flushdns",shell=True)
-        
-        add_copypasta_port_redirect()
 
 def get_server_version():
     
@@ -308,32 +292,6 @@ def get_server_version():
     with open("version","r") as f:
         return f.read()
 
-
-
-
-def add_copypasta_port_redirect():
-    
-    if system() == "Windows":
-        
-        # put port redirect from 127.0.0.1:21987 to 127.0.0.1:80
-        try:
-            run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
-        except:
-            # feature that may crash sometimes, not essential
-            pass
-        
-    
-def remove_copypasta_port_redirect():
-            
-    if system() == "Windows":
-        
-        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
-        try:
-            run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
-        except:
-            # feature that may crash sometimes, not essential
-            pass
-        
         
 def is_image(file_type:str):
     
