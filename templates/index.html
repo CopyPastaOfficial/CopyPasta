@@ -206,8 +206,8 @@
         }
 
 
-        var is_online = isOnline();
         var private_ip = get_private_ip();
+        var is_online = isOnline();
 
         function isOnline(){
 
@@ -422,6 +422,7 @@
 
     window.onload = function () {
         fill_history_tab(init=true,{{hist | tojson}});
+        network_changes_handler();
     };
 
     
