@@ -1,10 +1,8 @@
-from asyncore import write
 import socket
 from getpass import getuser
 from random import randint,choices
 from json import *
-from string import ascii_uppercase, printable
-from xmlrpc.client import Boolean
+from string import ascii_uppercase
 from bs4 import BeautifulSoup
 from requests import get
 from os import mkdir, path, remove
@@ -17,8 +15,8 @@ import requests
 from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
-from platform import system
 from time import sleep
+from subprocess import Popen
 
 
 

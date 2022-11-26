@@ -101,7 +101,7 @@ def home():
             init_history_file()
             
         #render the html with the history
-        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"),upload_code=get_upload_code(APP_PATH))
+        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history_json(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"),upload_code=get_upload_code(APP_PATH))
 
 
     else:
@@ -203,6 +203,7 @@ def delete_file_from_hist(json):
         remove(file_info["path"])
 
     delete_history_file_by_id(json["file_id"])
+    
     
     # now tell the page to refresh its history content
     socketio.emit("fill_history_tab",get_history_json())
@@ -582,11 +583,14 @@ def upload():
         time = date.today().strftime("%d/%m/%Y")
 
         # check upload code validity
-        upload_code = request.args.get("code",default="[NO CODE]",type=str)
+        """upload_code = request.args.get("code",default="[NO CODE]",type=str)
         if not is_upload_code_valid(APP_PATH,upload_code):
-            return jsonify({"Error":"Invalid upload code"}),403
+            return jsonify({"Error":"Invalid upload code"}),403"""
 
         notify_desktop("New scan Incoming !", "Click to open CopyPasta")
+        
+        socketio.emit("[NOTIFY_USER]",{"msg":"New scan Incoming !"})
+        socketio.emit("fill_history_tab",get_history_json())
 
 
         if r != None:
@@ -740,6 +744,8 @@ def upload():
                         open_browser_if_settings_okay(f"{COPYPASTA_URL}/image_preview?image_id={get_history_file_last_id()}")
                         
             return jsonify({"upload_status" : "true"})
+        
+        
 
     else:
         return abort(403)
