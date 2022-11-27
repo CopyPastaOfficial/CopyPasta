@@ -26,7 +26,8 @@ from re import findall
 
 # socket io for real time speeeeeed
 from flask_socketio import SocketIO
-
+# necessary to compile -__(°-°)__-
+from engineio.async_drivers import gevent
 
 
 # to generate app secret key
@@ -44,7 +45,7 @@ app.secret_key = "".join([choice(printable) for _ in range(256)])
 
 
 # init socketio
-socketio = SocketIO(app)
+socketio = SocketIO(app,async_mode="gevent")
 
 
 if getattr(sys, 'frozen', False):

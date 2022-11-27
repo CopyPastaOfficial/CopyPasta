@@ -7,7 +7,7 @@
   },
   {
    "optionDest": "filenames",
-   "value": "G:/Mon Drive/dev/projects/CopyPasta/copypasta.py"
+   "value": "C:/Users/7h3x0/projects/copypasta/copypasta.py"
   },
   {
    "optionDest": "onefile",
@@ -19,7 +19,7 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "G:/Mon Drive/dev/projects/CopyPasta/static/favicon.ico"
+   "value": "C:/Users/7h3x0/projects/copypasta/favicon.ico"
   },
   {
    "optionDest": "ascii",
@@ -71,7 +71,23 @@
   },
   {
    "optionDest": "datas",
-   "value": "G:/Mon Drive/dev/projects/CopyPasta/version;."
+   "value": "C:/Users/7h3x0/projects//copypasta/version;."
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "engineio.async_gevent"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "gevent"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "engineio.async_drivers.aiohttp"
+  },
+  {
+   "optionDest": "hiddenimports",
+   "value": "engineio.async_aiohttp"
   }
  ],
  "nonPyinstallerOptions": {
