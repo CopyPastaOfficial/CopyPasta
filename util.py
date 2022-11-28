@@ -4,24 +4,18 @@ from random import randint,choices
 from json import *
 from string import ascii_uppercase
 from bs4 import BeautifulSoup
-from requests import get
+from requests import get as http_get
 from os import mkdir, path, remove
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
 from multiprocessing import Process
 from webbrowser import open as open_tab
 from ast import literal_eval
-import requests
 from functools import partial
 from win10toast_click import ToastNotifier
 from win32com.client import Dispatch
 from time import sleep
 from subprocess import Popen
-
-
-
-TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html","download_page.html"]
-
 
 def notify_desktop(title,text):
     # initialize 
@@ -65,9 +59,18 @@ def make_qr_url():
 
 def check_templates_update():
     
+    
+    
+     
+    # first, get a list of all templates available on github
+    
+    json_data = http_get("https://api.github.com/repos/copypastaofficial/copypasta/contents/templates").json()
+    
+    
+    
     # check templates integrity
-    for ele in TEMPLATES_FILES:
-        if not path.exists(f"templates/{ele}"):
+    for ele in json_data:
+        if not path.exists(ele["path"]):
             download_templates()
             return
     
@@ -116,7 +119,7 @@ def emergency_redownload():
 
 def is_server_already_running():
     try:
-        response = requests.get("http://127.0.0.1:21987/api/ping").text
+        response = http_get("http://127.0.0.1:21987/api/ping").text
         
     except:
         response = "not pong lol"
@@ -125,12 +128,43 @@ def is_server_already_running():
     
 
 def download_templates():
-
+    
+    
+    # first, get a list of all templates available on github
+    
+    json_data = http_get("https://api.github.com/repos/copypastaofficial/copypasta/contents/templates").json()
+    
+    
+    """
+        example :
+        [ 
+            {
+                "name": "download_page.html",
+                "path": "templates/download_page.html",
+                "sha": "34d0f64b305c1798ec0b7aa9cc5cd192e3077368",
+                "size": 3089,
+                "url": "https://api.github.com/repos/ThaaoBlues/CopyPasta/contents/templates/download_page.html?ref=main",
+                "html_url": "https://github.com/ThaaoBlues/CopyPasta/blob/main/templates/download_page.html",
+                "git_url": "https://api.github.com/repos/ThaaoBlues/CopyPasta/git/blobs/34d0f64b305c1798ec0b7aa9cc5cd192e3077368",
+                "download_url": "https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/templates/download_page.html",
+                "type": "file",
+                "_links": {
+                "self": "https://api.github.com/repos/ThaaoBlues/CopyPasta/contents/templates/download_page.html?ref=main",
+                "git": "https://api.github.com/repos/ThaaoBlues/CopyPasta/git/blobs/34d0f64b305c1798ec0b7aa9cc5cd192e3077368",
+                "html": "https://github.com/ThaaoBlues/CopyPasta/blob/main/templates/download_page.html"
+                }
+            }
+            
+        ]
+    
+    """
+    
     #get the templates
-    for ele in TEMPLATES_FILES:
+    for ele in json_data:
         
-        r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/{ele}",allow_redirects=True)
-        with open(f"templates/{ele}","wb") as f:
+        r = http_get(ele["download_url"],allow_redirects=True)
+        
+        with open(ele["path"],"wb") as f:
             f.write(r.content)
 
     with open("static/update.Blue","w") as f:
@@ -140,11 +174,11 @@ def download_templates():
 
 def update_main_executable(version):
 
-    if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
+    if not literal_eval(http_get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
 
         with open("copypasta(1).exe","wb") as f:
-            f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/copypasta.exe").content)
+            f.write(http_get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/copypasta.exe").content)
             f.close()
 
         Popen("copypasta(1).exe")
@@ -175,25 +209,6 @@ def init_history_file(force=False):
         with open("static/history.xml","w") as f:
             f.write("<history>\n</history>")
             f.close()
-
-
-def get_history():
-
-    # using lists and join() to speed up
-    history = ["{\"history\" : ["]
-
-    for element in ElementTree.parse("static/history.xml").getroot():
-        history.append(element.text)
-        history.append(",")
-
-
-    if len(history) > 1:
-        history.pop()
-        history.append("]}")
-    else:
-        history.append("]}")
-        
-    return "".join(history)
 
 
 def get_history_json()->dict:
@@ -302,7 +317,7 @@ def identify_product(isbn:str):
     
     
     # edible product ?
-    r = get(f"http://world.openfoodfacts.org/api/v0/product/{isbn}")
+    r = http_get(f"http://world.openfoodfacts.org/api/v0/product/{isbn}")
     r = loads(r.text)
     
     if "product" in r.keys():
@@ -312,7 +327,7 @@ def identify_product(isbn:str):
     
     
     # book ?
-    r = get(f"https://www.isbnsearcher.com/books/{isbn}",headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37"})
+    r = http_get(f"https://www.isbnsearcher.com/books/{isbn}",headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37"})
     
     if r.status_code == 200:
         r = BeautifulSoup(r.text,"html.parser")
