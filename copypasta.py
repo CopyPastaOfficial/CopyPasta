@@ -102,7 +102,16 @@ def home():
             init_history_file()
             
         #render the html with the history
-        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history_json(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
+        return render_template("index.html",
+                               copypasta_url=COPYPASTA_URL,
+                               server_version=get_server_version(),
+                               hist = get_history_json(),
+                               ip=get_private_ip(),
+                               hostname=socket.gethostname(),
+                               tab=path.exists("static/tab"),
+                               is_accepting_uploads = is_accepting_uploads()
+        )
+    
 
 
     else:
@@ -355,6 +364,18 @@ def copy_last_scan(json_data:dict):
     notify_desktop("CopyPasta","scan copied to clipboard :D")
                 
 
+#set the current uploads accepting state
+@socketio.on("[CHANGE_ACCEPTING_UPLOADS_STATE]")
+def change_accepting_uploads(json_data:dict):
+
+    change_accepting_uploads_state()
+
+    if is_accepting_uploads():
+        socketio.emit("[NOTIFY_USER]",{"msg":"CopyPasta is now accepting incoming files !"})
+
+    else:
+        socketio.emit("[NOTIFY_USER]",{"msg":"CopyPasta is now refusing incoming files !"})
+
 
 
 
@@ -528,6 +549,7 @@ def api(api_req):
             # return url to javascript for qr code generation and notification
             safe_arg = url_encode(url_encode(path.basename(file_path))) # twice because google charts api will transform it once before qr generation
             return f"http://{get_private_ip()}:21987/download/main_page?file={safe_arg}"
+        
         else:
             return jsonify({"Error" : "wrong api call"})
         
@@ -574,17 +596,16 @@ def download(action):
 
 
 @app.route("/upload",methods=["POST"])
-
 def upload():
-
     if request.method == "POST":
         
 
         r = request.get_json(silent=True)
         time = date.today().strftime("%d/%m/%Y")
-
         # check upload mode
-        if not is_upload_mode_activated(APP_PATH):
+        if not is_accepting_uploads():
+            socketio.emit("[NOTIFY_USER]",{"msg":"Someone is trying to upload to your computer !<br> If this is you, you must turn on uploads (the switch right under) ;)"})
+            notify_desktop("An upload request has been detected !","Someone is trying to upload to your computer ! If it is you, don't forget to activate uploads from the web app :)")
             return jsonify({"Error":"Upload mode is disapled."}),403
 
         notify_desktop("New scan Incoming !", "Click to open CopyPasta")
@@ -777,10 +798,9 @@ def client():
                 try:
                     scan_ctt = request.form.get("text_content",type=str)
                 except ValueError:
-                    return render_template("send_client.html",msg="ValueError")
+                    return render_template("send_client.html",msg="erreur, champs non remplis")
 
-                if not pc_client.send_text_scan(scan_ctt,ip_addr):
-                    msg = "/!\ Client is not accepting uploads or is offline /!\\"
+                Process(target = pc_client.send_text_scan,args = (scan_ctt,ip_addr)).start()
 
 
 
@@ -808,8 +828,7 @@ def client():
                         # save the file into it
                         file.save(f"tmp/{filename}")
 
-                        if not pc_client.send_file(f"tmp/{filename}",ip_addr):
-                            msg = " /!\ Client is not accepting uploads or is offline /!\\"
+                        Process(target = pc_client.send_file, args = (f"tmp/{filename}",ip_addr)).start()
 
 
                         # clear temporary file in 10s, but we don't sleep on main thread ^^

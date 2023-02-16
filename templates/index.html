@@ -85,7 +85,16 @@
 
                 <h1>Last files/data sent :</h1>
                 <hr/>
-                <button class="btn btn-danger mb-3" id="delete_all_history_button" onclick="send_event('[DEL_HISTORY]',{data : ''})">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
+
+                <div style="display:flex;">
+                    <button class="btn btn-danger mb-3" id="delete_all_history_button" onclick="send_event('[DEL_HISTORY]',{data : ''})">Delete all history <i class="bi bi-trash-fill fs-5"></i></button>
+                    <div class="form-check form-switch mt-2 mx-3">                                
+                        <label class="form-check-label" for="uploads_state">Accept incoming uploads (activate this to recieve things)</label>
+                        <input class="form-check-input" type="checkbox" id="uploads_state" onclick="change_accepting_uploads_state()" 
+                     {% if is_accepting_uploads%}checked{%endif%}
+                        />
+                    </div>
+                </div>
 
                 <table class="table table-striped text-center" id="history_table">
                     <thead>
@@ -169,6 +178,18 @@
             socket.emit(event_name,json_data)
         }
 
+
+        function change_accepting_uploads_state(){
+            send_event('[CHANGE_ACCEPTING_UPLOADS_STATE]',{data:''});
+
+            if( document.getElementById("uploads_state").checked){
+                document.getElementById("uploads_state").removeAttribute("checked");
+            }else{
+                document.getElementById("uploads_state").setAttribute("checked","true");
+            }
+        }
+
+        
 
 
         function send_text_to_phone(){

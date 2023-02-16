@@ -341,7 +341,7 @@ def init_config_file():
     with open("static/config.json","w") as f:
         f.write(dumps(
             {
-                "accepting_uploads":False,
+                "accepting_uploads":True,
                 "disable_updates":False,
                 "open_since_last_check":1
             }
@@ -358,3 +358,20 @@ def is_accepting_uploads() -> bool:
         config = loads(f.read())
 
         return config["accepting_uploads"]
+    
+def change_accepting_uploads_state():
+    """
+    
+    """
+
+    config = {}
+
+    with open("static/config.json","r") as f:
+        
+        config = loads(f.read())
+
+    with open("static/config.json","w") as f:
+        
+        config["accepting_uploads"] = not config["accepting_uploads"]
+
+        f.write(dumps(config))
