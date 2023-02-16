@@ -102,7 +102,7 @@ def home():
             init_history_file()
             
         #render the html with the history
-        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history_json(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"),upload_code=get_upload_code(APP_PATH))
+        return render_template("index.html",copypasta_url=COPYPASTA_URL,server_version=get_server_version(),hist = get_history_json(),ip=get_private_ip(),hostname=socket.gethostname(),tab=path.exists("static/tab"))
 
 
     else:
@@ -583,10 +583,9 @@ def upload():
         r = request.get_json(silent=True)
         time = date.today().strftime("%d/%m/%Y")
 
-        # check upload code validity
-        """upload_code = request.args.get("code",default="[NO CODE]",type=str)
-        if not is_upload_code_valid(APP_PATH,upload_code):
-            return jsonify({"Error":"Invalid upload code"}),403"""
+        # check upload mode
+        if not is_upload_mode_activated(APP_PATH):
+            return jsonify({"Error":"Upload mode is disapled."}),403
 
         notify_desktop("New scan Incoming !", "Click to open CopyPasta")
         
@@ -769,7 +768,6 @@ def client():
             try:
                 scan_type = request.form.get("type",type=str)
                 ip_addr = request.form.get("pc_ip_addr",type=str)
-                upload_code = request.form.get("upload_code",type=str)
             except ValueError:
                 return render_template("send_client.html",msg="erreur, champs non remplis")
 
@@ -781,8 +779,8 @@ def client():
                 except ValueError:
                     return render_template("send_client.html",msg="ValueError")
 
-                if not pc_client.send_text_scan(scan_ctt,ip_addr,upload_code):
-                    msg = "/!\ Invalid upload code or client offline /!\\"
+                if not pc_client.send_text_scan(scan_ctt,ip_addr):
+                    msg = "/!\ Client is not accepting uploads or is offline /!\\"
 
 
 
@@ -810,8 +808,8 @@ def client():
                         # save the file into it
                         file.save(f"tmp/{filename}")
 
-                        if not pc_client.send_file(f"tmp/{filename}",ip_addr,upload_code):
-                            msg = " /!\ Invalid upload code or client offline /!\\"
+                        if not pc_client.send_file(f"tmp/{filename}",ip_addr):
+                            msg = " /!\ Client is not accepting uploads or is offline /!\\"
 
 
                         # clear temporary file in 10s, but we don't sleep on main thread ^^
@@ -849,11 +847,6 @@ if __name__ == "__main__":
             #check if the templates are up-to-date
             check_templates_update()
 
-
-
-    # code needed for another pc to upload on this machine
-    upload_code = gen_upload_code()
-    store_upload_code(APP_PATH,upload_code)
 
     
     Process(target=open_link_process, args=(COPYPASTA_URL,)).start()

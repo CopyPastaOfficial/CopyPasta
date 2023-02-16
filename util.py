@@ -1,8 +1,7 @@
 import socket
 from getpass import getuser
-from random import randint,choices
+from random import randint
 from json import *
-from string import ascii_uppercase
 from bs4 import BeautifulSoup
 from requests import get as http_get
 from os import mkdir, path, remove
@@ -13,7 +12,6 @@ from webbrowser import open as open_tab
 from ast import literal_eval
 from functools import partial
 from win10toast_click import ToastNotifier
-from win32com.client import Dispatch
 from time import sleep
 from subprocess import Popen
 
@@ -76,14 +74,16 @@ def check_templates_update():
     
     
     # check 10 startup rule
-    with open("static/update.Blue","r") as f:
-        n = int(f.read())
-        if n == 10:
-            #download_templates()
-            pass
+    with open("static/config.json","r") as f:
+        config = loads(f.read())
+
+        if config["open_since_last_check"] >= 10 and not config["disable_updates"]:
+            download_templates()
+
         else:
-            with open("static/update.Blue","w") as f:
-                f.write(str(n+1))
+            with open("static/config.json","w") as f:
+                config["open_since_last_check"] += 1
+                f.write(dumps(config))
 
 
 def emergency_redownload():
@@ -102,19 +102,16 @@ def emergency_redownload():
 
         f = open("static/qr.jpeg","w")
         f.close()
-
-        with open("static/update.Blue","w") as f:
-            f.write("1")
-            f.close()
-            
             
         mkdir("static/files_hist")
 
         init_history_file()
 
+        init_config_file()
+
 
         
-    #download_templates()
+    download_templates()
 
 
 def is_server_already_running():
@@ -167,8 +164,8 @@ def download_templates():
         with open(ele["path"],"wb") as f:
             f.write(r.content)
 
-    with open("static/update.Blue","w") as f:
-        f.write("1")
+    # reset config
+    init_config_file()
 
 
 
@@ -272,21 +269,6 @@ def open_browser_if_settings_okay(url):
     
     if path.exists("static/tab"):
         Process(target=open_link_process,args=(url,)).start()
-        
-        
-        
-def create_shortcut(path, target='', wDir='', icon=''):    
- 
-    shell = Dispatch('WScript.Shell')
-    shortcut = shell.CreateShortCut(path)
-    shortcut.Targetpath = target
-    shortcut.WorkingDirectory = wDir
-    if icon == '':
-        pass
-    else:
-        shortcut.IconLocation = icon
-    shortcut.save()
-
 
 
 def is_online():
@@ -351,23 +333,28 @@ def clear_tmp(filename:str):
     #remove the temporary file
     remove(f"tmp/{filename}")
 
+def init_config_file():
+    """
+    creates and init the config file
+    """
 
-def gen_upload_code():
+    with open("config.json","w") as f:
+        f.write(dumps(
+            {
+                "accepting_uploads":False,
+                "disable_updates":False,
+                "open_since_last_check":1
+            }
+        ))
 
-    return "".join(choices(ascii_uppercase,k=4))
+def is_accepting_uploads() -> bool:
 
+    """
+    check if user is accepting incoming uploads
+    """
 
-def store_upload_code(APP_PATH:str,upload_code:str):
+    with open("static/config.json","r") as f:
+        
+        config = loads(f.read())
 
-    with open(path.join(APP_PATH,"static/upload_code.cpasta"),"w") as f:
-        f.write(upload_code)
-
-def get_upload_code(APP_PATH:str):
-
-    with open(path.join(APP_PATH,"static/upload_code.cpasta"),"r") as f:
-        return f.read()
-
-def is_upload_code_valid(APP_PATH:str,upload_code:str) -> bool:
-
-    with open(path.join(APP_PATH,"static/upload_code.cpasta"),"r") as f:
-        return f.read() == upload_code
+        return config["accepting_uploads"]
