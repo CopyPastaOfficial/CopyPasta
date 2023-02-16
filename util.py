@@ -338,7 +338,7 @@ def init_config_file():
     creates and init the config file
     """
 
-    with open("config.json","w") as f:
+    with open("static/config.json","w") as f:
         f.write(dumps(
             {
                 "accepting_uploads":False,
