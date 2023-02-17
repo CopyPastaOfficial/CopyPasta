@@ -7,7 +7,7 @@
   },
   {
    "optionDest": "filenames",
-   "value": "C:/Users/7h3x0/projects/copypasta/copypasta.py"
+   "value": "C:/Users/thaao/OneDrive - insa-toulouse.fr/dev/projects/copypasta/copypasta.py"
   },
   {
    "optionDest": "onefile",
@@ -19,7 +19,7 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "C:/Users/7h3x0/projects/copypasta/favicon.ico"
+   "value": "C:/Users/thaao/OneDrive - insa-toulouse.fr/dev/projects/copypasta/favicon.ico"
   },
   {
    "optionDest": "ascii",
@@ -70,10 +70,6 @@
    "value": false
   },
   {
-   "optionDest": "datas",
-   "value": "C:/Users/7h3x0/projects//copypasta/version;."
-  },
-  {
    "optionDest": "hiddenimports",
    "value": "engineio.async_gevent"
   },
@@ -88,6 +84,10 @@
   {
    "optionDest": "hiddenimports",
    "value": "engineio.async_aiohttp"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/thaao/OneDrive - insa-toulouse.fr/dev/projects/copypasta/version;."
   }
  ],
  "nonPyinstallerOptions": {
