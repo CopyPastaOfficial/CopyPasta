@@ -340,6 +340,8 @@ def shutdown_server(json_data:dict):
     socketio.emit("[NOTIFY_USER]",{"msg":"CopyPasta server is now off. You may close this tab."})
     
     socketio.stop()
+
+    exit(1)
     
 
 
