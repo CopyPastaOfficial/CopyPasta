@@ -24,6 +24,7 @@ from flask_cors import CORS, cross_origin
 from re import findall
 
 
+
 # socket io for real time speeeeeed
 from flask_socketio import SocketIO
 # necessary to compile -__(°-°)__-
@@ -33,6 +34,9 @@ from engineio.async_drivers import gevent
 # to generate app secret key
 from random import choice
 from string import printable
+
+# instances discovery server
+from discovery_server import Server as DiscoveryServer
 
 #init flask app and secret key
 app = Flask(__name__)
@@ -378,7 +382,11 @@ def change_accepting_uploads(json_data:dict):
     else:
         socketio.emit("[NOTIFY_USER]",{"msg":"CopyPasta is now refusing incoming files !"})
 
+# fill up the list of local instances of copypasta available
+@socketio.on("[GET_CP_INSTANCES]")
+def get_cp_instances(json_data:dict):
 
+    socketio.emit("[NOTIFY_USER]",{"msg":str(d_server.discover_instances())})
 
 
 #processes
@@ -872,7 +880,13 @@ if __name__ == "__main__":
     
     Process(target=open_link_process, args=(COPYPASTA_URL,)).start()
 
+
+
+
     if not is_server_already_running():
+
+        d_server = DiscoveryServer()
+        d_server.start()
         
         socketio.run(app,host="0.0.0.0",port=21987)
         

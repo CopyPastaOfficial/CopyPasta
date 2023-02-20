@@ -375,3 +375,5 @@ def change_accepting_uploads_state():
         config["accepting_uploads"] = not config["accepting_uploads"]
 
         f.write(dumps(config))
+
+

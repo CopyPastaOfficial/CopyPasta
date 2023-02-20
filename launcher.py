@@ -7,7 +7,7 @@ from shutil import move, rmtree
 from zipfile import  ZipFile
 from os import path, chdir, remove,mkdir,environ
 import sys
-from util import create_shortcut, notify_desktop
+from util import notify_desktop
 
 # to fix pyinstaller error
 import pywintypes
@@ -131,12 +131,6 @@ def move_launcher():
         with open(f"{APP_PATH}/launcher.exe","wb") as f:
             f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/launcher.exe").content)
             f.close()
-    
-    # 2
-    create_shortcut(path="C:\\Users\\Public\\Desktop\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")       
-       
-    #3
-    create_shortcut(path=f"C:\\Users\\{getuser()}\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\CopyPasta.lnk",target="C:\\Program Files\\CopyPasta\\launcher.exe",wDir="C:\\Program Files\\CopyPasta\\",icon="C:\\Program Files\\CopyPasta\\copypasta\\static\\favicon.ico")
     
 
 if __name__ == "__main__":
