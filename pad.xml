@@ -1,0 +1,31 @@
+<XML_PAD>
+<Company_Name>UnrealSoftwares</Company_Name>
+<Company_WebSite_URL>https://copypastaofficial.github.io</Company_WebSite_URL>
+<Author_Email>unrealsoft.dev@gmail.com</Author_Email>
+<Program_Name>CopyPasta</Program_Name>
+<Program_Version>1.7.1</Program_Version>
+<Program_Release_Year>2020</Program_Release_Year>
+<Program_Release_Month>01</Program_Release_Month>
+<Program_Release_Day>01</Program_Release_Day>
+<Program_Cost_Dollars>0</Program_Cost_Dollars>
+<Program_OS_Support>Windows 7 x64,Windows 8 x64, Windows 10 x64, Windows 11 x64</Program_OS_Support>
+<Program_Language>all languages</Program_Language>
+<Program_Change_Info>Security updates and new features</Program_Change_Info>
+<File_Size_Bytes>28 550 000</File_Size_Bytes>
+<Keywords>tools,productivity,phone,pictures,OCR,open source</Keywords>
+<Char_Desc_250>CopyPasta is a software linked to an android app that can basically double your productivity !</Char_Desc_250>
+<Char_Desc_2000>main features :
+scan text from camera or pictures and send it directly to your computer
+save the text detected to your phone's clipboard
+send pictures,videos,pdf... and all kind of files to your computer and to your phone
+Email addresses and URLs are automatically detected from the text sent and displayed on your computer in a way that you can directly check the website or send the mail with your favorite mail client.
+share wifi IDs to your computer so you just have to click on copy password and go !
+scan QR codes and barcodes
+send text that will directly fill the input field where your cursor is focused on. (like address, password, text, URLs, large serial numbers etc...)
+you only needs to start CopyPasta once on your desktop, even if you close the browser window CopyPasta can still receive scans and notify you ! (You still need to restart it after each shutdown of your computer)
+If you have closed the browser window, you can reopen it by clicking on the shortcut like if you wanted to start copypasta or even just send your things and click on the notification toast ;D</Char_Desc_2000>
+<Program_Category_Class>Audio & Multimedia|Business|Communications|Desktop|Development|Education|Games</Program_Category_Class>
+<Application_Screenshot_URL>raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/copypasta_desktop_screenshots/copypasta-1.png</Application_Screenshot_URL>
+<Primary_Download_URL>https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/launcher.exe</Primary_Download_URL>
+<Application_XML_File_URL>https://raw.githubusercontent.com/thaaoblues/CopyPasta/main/pad.xml</Application_XML_File_URL>
+</XML_PAD>

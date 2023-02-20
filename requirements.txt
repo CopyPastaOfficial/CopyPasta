@@ -4,6 +4,7 @@ win10toast-click
 flask_cors
 pyautogui
 pillow
-waitress
-webtest
 beautifulsoup4
+flask-socketio
+gevent
+requests

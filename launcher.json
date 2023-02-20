@@ -7,7 +7,7 @@
   },
   {
    "optionDest": "filenames",
-   "value": "G:/Mon Drive/dev/projects/CopyPasta/launcher.py"
+   "value": "C:/Users/thaao/OneDrive - insa-toulouse.fr/dev/projects/copypasta/launcher.py"
   },
   {
    "optionDest": "onefile",
@@ -19,7 +19,7 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "G:/Mon Drive/dev/projects/CopyPasta/static/favicon.ico"
+   "value": "C:/Users/thaao/OneDrive - insa-toulouse.fr/dev/projects/copypasta/favicon.ico"
   },
   {
    "optionDest": "ascii",
@@ -31,7 +31,7 @@
   },
   {
    "optionDest": "splash",
-   "value": "G:/Mon Drive/dev/projects/CopyPasta/static/favicon.ico"
+   "value": "C:/Users/thaao/OneDrive - insa-toulouse.fr/dev/projects/copypasta/favicon.ico"
   },
   {
    "optionDest": "strip",

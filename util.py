@@ -3,25 +3,17 @@ from getpass import getuser
 from random import randint
 from json import *
 from bs4 import BeautifulSoup
-from requests import get
+from requests import get as http_get
 from os import mkdir, path, remove
 from xml.etree import ElementTree
 from xml.sax.saxutils import escape
 from multiprocessing import Process
 from webbrowser import open as open_tab
 from ast import literal_eval
-import requests
-from subprocess import Popen, run
 from functools import partial
 from win10toast_click import ToastNotifier
-from win32com.client import Dispatch
-from platform import system
 from time import sleep
-
-
-
-TEMPLATES_FILES = ["favicon.ico","index.html","scan_preview.html","img_preview.html","video_preview.html","download_page.html"]
-
+from subprocess import Popen
 
 def notify_desktop(title,text):
     # initialize 
@@ -65,21 +57,33 @@ def make_qr_url():
 
 def check_templates_update():
     
+    
+    
+     
+    # first, get a list of all templates available on github
+    
+    json_data = http_get("https://api.github.com/repos/copypastaofficial/copypasta/contents/templates").json()
+    
+    
+    
     # check templates integrity
-    for ele in TEMPLATES_FILES:
-        if not path.exists(f"templates/{ele}"):
+    for ele in json_data:
+        if not path.exists(ele["path"]):
             download_templates()
             return
     
     
     # check 10 startup rule
-    with open("static/update.Blue","r") as f:
-        n = int(f.read())
-        if n == 10:
+    with open("static/config.json","r") as f:
+        config = loads(f.read())
+
+        if config["open_since_last_check"] >= 10 and not config["disable_updates"]:
             download_templates()
+
         else:
-            with open("static/update.Blue","w") as f:
-                f.write(str(n+1))
+            with open("static/config.json","w") as f:
+                config["open_since_last_check"] += 1
+                f.write(dumps(config))
 
 
 def emergency_redownload():
@@ -98,15 +102,12 @@ def emergency_redownload():
 
         f = open("static/qr.jpeg","w")
         f.close()
-
-        with open("static/update.Blue","w") as f:
-            f.write("1")
-            f.close()
-            
             
         mkdir("static/files_hist")
 
         init_history_file()
+
+        init_config_file()
 
 
         
@@ -115,7 +116,7 @@ def emergency_redownload():
 
 def is_server_already_running():
     try:
-        response = requests.get("http://127.0.0.1:21987/api/ping").text
+        response = http_get("http://127.0.0.1:21987/api/ping").text
         
     except:
         response = "not pong lol"
@@ -124,26 +125,57 @@ def is_server_already_running():
     
 
 def download_templates():
-
+    
+    
+    # first, get a list of all templates available on github
+    
+    json_data = http_get("https://api.github.com/repos/copypastaofficial/copypasta/contents/templates").json()
+    
+    
+    """
+        example :
+        [ 
+            {
+                "name": "download_page.html",
+                "path": "templates/download_page.html",
+                "sha": "34d0f64b305c1798ec0b7aa9cc5cd192e3077368",
+                "size": 3089,
+                "url": "https://api.github.com/repos/ThaaoBlues/CopyPasta/contents/templates/download_page.html?ref=main",
+                "html_url": "https://github.com/ThaaoBlues/CopyPasta/blob/main/templates/download_page.html",
+                "git_url": "https://api.github.com/repos/ThaaoBlues/CopyPasta/git/blobs/34d0f64b305c1798ec0b7aa9cc5cd192e3077368",
+                "download_url": "https://raw.githubusercontent.com/ThaaoBlues/CopyPasta/main/templates/download_page.html",
+                "type": "file",
+                "_links": {
+                "self": "https://api.github.com/repos/ThaaoBlues/CopyPasta/contents/templates/download_page.html?ref=main",
+                "git": "https://api.github.com/repos/ThaaoBlues/CopyPasta/git/blobs/34d0f64b305c1798ec0b7aa9cc5cd192e3077368",
+                "html": "https://github.com/ThaaoBlues/CopyPasta/blob/main/templates/download_page.html"
+                }
+            }
+            
+        ]
+    
+    """
+    
     #get the templates
-    for ele in TEMPLATES_FILES:
+    for ele in json_data:
         
-        r = get(f"https://raw.githubusercontent.com/copypastaofficial/copypasta/master/templates/{ele}",allow_redirects=True)
-        with open(f"templates/{ele}","wb") as f:
+        r = http_get(ele["download_url"],allow_redirects=True)
+        
+        with open(ele["path"],"wb") as f:
             f.write(r.content)
 
-    with open("static/update.Blue","w") as f:
-        f.write("1")
+    # reset config
+    init_config_file()
 
 
 
 def update_main_executable(version):
 
-    if not literal_eval(get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
+    if not literal_eval(http_get("https://api.github.com/repos/CopyPastaOfficial/CopyPasta/tags").text)[0]['name'] == version:
         
 
         with open("copypasta(1).exe","wb") as f:
-            f.write(get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/copypasta.exe").content)
+            f.write(http_get("https://github.com/CopyPastaOfficial/CopyPasta/releases/latest/download/copypasta.exe").content)
             f.close()
 
         Popen("copypasta(1).exe")
@@ -176,29 +208,21 @@ def init_history_file(force=False):
             f.close()
 
 
-def get_history():
+def get_history_json()->dict:
 
     # using lists and join() to speed up
-    history = ["{\"history\" : ["]
+    history = {"history":[]}
 
     for element in ElementTree.parse("static/history.xml").getroot():
-        history.append(element.text)
-        history.append(",")
+        history["history"].append(loads(element.text))
 
-
-    if len(history) > 1:
-        history.pop()
-        history.append("]}")
-    else:
-        history.append("]}")
-
-    return "".join(history)
+    return history
 
 def get_history_file_last_id():
     return len(ElementTree.parse("static/history.xml").getroot()) -1
     
     
-def get_history_file_by_id(file_id):
+def get_history_file_by_id(file_id) -> dict:
 
     if file_id < len(ElementTree.parse("static/history.xml").getroot()):
 
@@ -245,21 +269,6 @@ def open_browser_if_settings_okay(url):
     
     if path.exists("static/tab"):
         Process(target=open_link_process,args=(url,)).start()
-        
-        
-        
-def create_shortcut(path, target='', wDir='', icon=''):    
- 
-    shell = Dispatch('WScript.Shell')
-    shortcut = shell.CreateShortCut(path)
-    shortcut.Targetpath = target
-    shortcut.WorkingDirectory = wDir
-    if icon == '':
-        pass
-    else:
-        shortcut.IconLocation = icon
-    shortcut.save()
-
 
 
 def is_online():
@@ -268,33 +277,6 @@ def is_online():
         return True
     except OSError:
         return False
-    
-    
-def is_hosts_file_modified():
-    
-    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
-    
-    with open(hosts_file_path,"r") as f:
-        
-        return True if "copypasta.me" in f.read() else False
-    
-    
-def add_copypasta_to_hosts_file():
-    
-    hosts_file_path = "C:\Windows\System32\Drivers\etc\hosts" if system() == "Windows" else "/etc/hosts"
-    
-    with open(hosts_file_path,"a") as f:
-        
-        f.write("\n127.0.0.1:21987\tcopypasta")
-        
-        f.close()
-        
-    if system() == "Windows":
-        
-        # flush dns cache
-        run("ipconfig /flushdns",shell=True)
-        
-        add_copypasta_port_redirect()
 
 def get_server_version():
     
@@ -305,32 +287,6 @@ def get_server_version():
     with open("version","r") as f:
         return f.read()
 
-
-
-
-def add_copypasta_port_redirect():
-    
-    if system() == "Windows":
-        
-        # put port redirect from 127.0.0.1:21987 to 127.0.0.1:80
-        try:
-            run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=21987 connectaddress=127.0.0.1")
-        except:
-            # feature that may crash sometimes, not essential
-            pass
-        
-    
-def remove_copypasta_port_redirect():
-            
-    if system() == "Windows":
-        
-        # re-put port redirect from 127.0.0.1:80 to 127.0.0.1:80
-        try:
-            run("netsh interface portproxy add v4tov4 listenport=80 listenaddress=127.0.0.1 connectport=80 connectaddress=127.0.0.1")
-        except:
-            # feature that may crash sometimes, not essential
-            pass
-        
         
 def is_image(file_type:str):
     
@@ -343,7 +299,7 @@ def identify_product(isbn:str):
     
     
     # edible product ?
-    r = get(f"http://world.openfoodfacts.org/api/v0/product/{isbn}")
+    r = http_get(f"http://world.openfoodfacts.org/api/v0/product/{isbn}")
     r = loads(r.text)
     
     if "product" in r.keys():
@@ -353,7 +309,7 @@ def identify_product(isbn:str):
     
     
     # book ?
-    r = get(f"https://www.isbnsearcher.com/books/{isbn}",headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37"})
+    r = http_get(f"https://www.isbnsearcher.com/books/{isbn}",headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36 Edg/103.0.1264.37"})
     
     if r.status_code == 200:
         r = BeautifulSoup(r.text,"html.parser")
@@ -369,3 +325,53 @@ def delete_ot_dl_proc(APP_PATH,file:str):
     sleep(30)
     # delete file after download as it is only a one timer
     remove(path.join(APP_PATH,"static","ot_upload",file))
+
+
+def clear_tmp(filename:str):
+    # wait the complete transfert
+    sleep(10)
+    #remove the temporary file
+    remove(f"tmp/{filename}")
+
+def init_config_file():
+    """
+    creates and init the config file
+    """
+
+    with open("static/config.json","w") as f:
+        f.write(dumps(
+            {
+                "accepting_uploads":True,
+                "disable_updates":False,
+                "open_since_last_check":1
+            }
+        ))
+
+def is_accepting_uploads() -> bool:
+
+    """
+    check if user is accepting incoming uploads
+    """
+
+    with open("static/config.json","r") as f:
+        
+        config = loads(f.read())
+
+        return config["accepting_uploads"]
+    
+def change_accepting_uploads_state():
+    """
+    
+    """
+
+    config = {}
+
+    with open("static/config.json","r") as f:
+        
+        config = loads(f.read())
+
+    with open("static/config.json","w") as f:
+        
+        config["accepting_uploads"] = not config["accepting_uploads"]
+
+        f.write(dumps(config))

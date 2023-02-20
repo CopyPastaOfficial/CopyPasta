@@ -1,44 +1,46 @@
 import requests
 from util import *
 
-def send_text_scan(text):
-    r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "text", "content" : f"{text}"})
-    print(r.text)
+def send_text_scan(text:str,ip_addr:str) -> bool:
+    """
+    sends the specified text
+    to the instance of copypasta running on the specified address
+    """
+    r = requests.post(f"http://{ip_addr}:21987/upload",json={"type" : "text", "content" : f"{text}"})
+
+    return r.status_code == 200
 
 
-def send_file(file_path):
+def send_file(file_path:str,ip_addr:str):
+
+    """
+    sends the specified file
+    to the instance of copypasta running on the specified address
+    """
+
     files = {'files': open(file_path,'rb')}
-    r = requests.post("http://127.0.0.1:21987/upload", files = files)
-    print(r.text)
+    
+    r = requests.post(f"http://{ip_addr}:21987/upload",files=files)
+    return r.status_code == 200
 
-
-def send_keystrokes(text):
+def send_keystrokes(text:str):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "keystrokes", "content" : {"text" : f"{text}"}})
-    print(r.text)
+    return r.status_code == 200
 
-def send_barcode(text):
+def send_barcode(text:str):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "isbn", "content" : f"{text}"})
-    print(r.text)
+    return r.status_code == 200
 
 
-def send_wifi(ssid, encryption, key):
+def send_wifi(ssid:str, encryption:str, key:str):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "wifi", "content" : {"ssid" : f"{ssid}", "encryption" : f"{encryption}", "key" : f"{key}"}})
-    print(r.text) 
+    return r.status_code == 200
 
 
-def send_email(dest_addr,subject,content):
+def send_email(dest_addr:str,subject:str,content:str):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "email", "content" : {"address" : f"{dest_addr}", "subject" : f"{subject}", "content" : f"{content}"}})
-    print(r.text) 
+    return r.status_code == 200
 
-def send_url(url):
+def send_url(url:str):
     r = requests.post("http://127.0.0.1:21987/upload",json={"type" : "url", "content" : f"{url}"})
-    print(r.text) 
-
-#send_email("unrealsoft.dev@gmail.com","test","test of email body")
-#send_barcode("test")
-#send_file("static/qr.jpeg")
-#send_text_scan("test of text scan")
-#send_wifi("This_is_a_wifi_name","wpa","password")
-#send_url("https://www.google.com")
-
-check_templates_update()
+    return r.status_code == 200
