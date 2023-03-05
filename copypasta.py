@@ -621,7 +621,6 @@ def upload():
         notify_desktop("New scan Incoming !", "Click to open CopyPasta")
         
         socketio.emit("[NOTIFY_USER]",{"msg":"New scan Incoming !"})
-        socketio.emit("fill_history_tab",get_history_json())
 
 
         if r != None:
@@ -669,15 +668,12 @@ def upload():
                     open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
                 
 
-                return jsonify({"upload_status" : "true"})
-
             elif file_type == "keystrokes":
 
 
                 keystrokes = r['text']
                 send_keystrokes(keystrokes)
 
-                return jsonify({"upload_status" : "true"})
 
             elif file_type == "wifi":
 
@@ -687,8 +683,6 @@ def upload():
 
                 store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
-
 
             elif file_type == "isbn":
 
@@ -696,44 +690,32 @@ def upload():
                 
                 store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}","isbn_lookup":identify_product(isbn)})
                 
-                return jsonify({"upload_status" : "true"})
-
 
             elif file_type == "email":
 
                 store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}", "date" : f"{time}"})
-
-                return jsonify({"upload_status" : "true"})
 
 
             elif file_type == "url":
 
                 store_to_history({"file_type" : "url","url" : f"{r}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
 
             elif file_type == "phone":
 
                 store_to_history({"file_type" : "phone","phone_number" : f"{r}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
-
             elif file_type == "sms":
 
                 store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
-
             elif file_type == "location":
                 lat = r['lattitude']
                 long = r['longitude']
-
-                store_to_history({"file_type" : "location", "lat" : f"{lat}", "long" : f"{long}", "date" : f"{time}"})            
             
             elif file_type == "contact":
                 
                 store_to_history({"file_type" : "contact", "first_name" : f"{r['firstName']}", "name" : f"{r['name']}", "organization" : f"{r['organization']}", "job" : f"{r['title']}"})
-
 
             else:
 
@@ -773,8 +755,12 @@ def upload():
 
                     if is_image(file_type):
                         open_browser_if_settings_okay(f"{COPYPASTA_URL}/image_preview?image_id={get_history_file_last_id()}")
-                        
-            return jsonify({"upload_status" : "true"})
+                      
+            
+            
+        socketio.emit("fill_history_tab",get_history_json())
+        
+        return jsonify({"upload_status" : "true"})
         
         
 
