@@ -24,6 +24,7 @@ from flask_cors import CORS, cross_origin
 from re import findall
 
 
+
 # socket io for real time speeeeeed
 from flask_socketio import SocketIO
 # necessary to compile -__(°-°)__-
@@ -33,6 +34,9 @@ from engineio.async_drivers import gevent
 # to generate app secret key
 from random import choice
 from string import printable
+
+# instances discovery server
+#from discovery_server import Server as DiscoveryServer
 
 #init flask app and secret key
 app = Flask(__name__)
@@ -274,7 +278,7 @@ def change_tab_settings(json_data:dict):
 
 
 # open files explorer into the the copypasta directory
-socketio.on("[OPEN_FILES_EXPLORER]")
+@socketio.on("[OPEN_FILES_EXPLORER]")
 def open_files_explorer(json_data:dict):
     
     Process(target=startfile,args=(f"{APP_PATH}/static/files_hist",)).start()
@@ -283,7 +287,7 @@ def open_files_explorer(json_data:dict):
 
 
 # open a file with default app
-socketio.on("[OPEN_FILE]")
+@socketio.on("[OPEN_FILE]")
 def open_file(json_data:dict):
     
             
@@ -300,7 +304,7 @@ def open_file(json_data:dict):
 
 
 
-socketio.on("[COPY_WIFI_PW]")
+@socketio.on("[COPY_WIFI_PW]")
 def copy_wifi_pw(json_data:dict):
             
 
@@ -318,7 +322,7 @@ def copy_wifi_pw(json_data:dict):
     
 
 # copy text scan content
-socketio.on("[COPY_CONTENT]")
+@socketio.on("[COPY_CONTENT]")
 def copy_text_scan_content(json_data:dict):
             
             
@@ -377,9 +381,6 @@ def change_accepting_uploads(json_data:dict):
 
     else:
         socketio.emit("[NOTIFY_USER]",{"msg":"CopyPasta is now refusing incoming files !"})
-
-
-
 
 #processes
 @app.route("/process/<process_id>")
@@ -613,7 +614,6 @@ def upload():
         notify_desktop("New scan Incoming !", "Click to open CopyPasta")
         
         socketio.emit("[NOTIFY_USER]",{"msg":"New scan Incoming !"})
-        socketio.emit("fill_history_tab",get_history_json())
 
 
         if r != None:
@@ -661,15 +661,12 @@ def upload():
                     open_browser_if_settings_okay("http://127.0.0.1:21987/scan_preview")
                 
 
-                return jsonify({"upload_status" : "true"})
-
             elif file_type == "keystrokes":
 
 
                 keystrokes = r['text']
                 send_keystrokes(keystrokes)
 
-                return jsonify({"upload_status" : "true"})
 
             elif file_type == "wifi":
 
@@ -679,8 +676,6 @@ def upload():
 
                 store_to_history({"file_type" : "wifi", "ssid" : f"{ssid}","password" : f"{password}", "enctype" : f"{enctype}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
-
 
             elif file_type == "isbn":
 
@@ -688,44 +683,32 @@ def upload():
                 
                 store_to_history({"file_type" : "isbn", "content" : f"{isbn}", "date" :f"{time}","isbn_lookup":identify_product(isbn)})
                 
-                return jsonify({"upload_status" : "true"})
-
 
             elif file_type == "email":
 
                 store_to_history({"file_type" : "email","addr" : f"{r['address']}", "subject" : f"{r['subject']}", "content" : f"{r['content']}", "date" : f"{time}"})
-
-                return jsonify({"upload_status" : "true"})
 
 
             elif file_type == "url":
 
                 store_to_history({"file_type" : "url","url" : f"{r}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
 
             elif file_type == "phone":
 
                 store_to_history({"file_type" : "phone","phone_number" : f"{r}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
-
             elif file_type == "sms":
 
                 store_to_history({"file_type" : "sms","phone_number" : f"{r['number']}", "content": f"{r['content']}", "date" : f"{time}"})
 
-                return jsonify({"upload_status" : "true"})
-
             elif file_type == "location":
                 lat = r['lattitude']
                 long = r['longitude']
-
-                store_to_history({"file_type" : "location", "lat" : f"{lat}", "long" : f"{long}", "date" : f"{time}"})            
             
             elif file_type == "contact":
                 
                 store_to_history({"file_type" : "contact", "first_name" : f"{r['firstName']}", "name" : f"{r['name']}", "organization" : f"{r['organization']}", "job" : f"{r['title']}"})
-
 
             else:
 
@@ -765,8 +748,12 @@ def upload():
 
                     if is_image(file_type):
                         open_browser_if_settings_okay(f"{COPYPASTA_URL}/image_preview?image_id={get_history_file_last_id()}")
-                        
-            return jsonify({"upload_status" : "true"})
+                      
+            
+            
+        socketio.emit("fill_history_tab",get_history_json())
+        
+        return jsonify({"upload_status" : "true"})
         
         
 
@@ -872,7 +859,13 @@ if __name__ == "__main__":
     
     Process(target=open_link_process, args=(COPYPASTA_URL,)).start()
 
+
+
+
     if not is_server_already_running():
+
+        #d_server = DiscoveryServer()
+        #d_server.start()
         
         socketio.run(app,host="0.0.0.0",port=21987)
         
