@@ -278,7 +278,7 @@ def change_tab_settings(json_data:dict):
 
 
 # open files explorer into the the copypasta directory
-socketio.on("[OPEN_FILES_EXPLORER]")
+@socketio.on("[OPEN_FILES_EXPLORER]")
 def open_files_explorer(json_data:dict):
     
     Process(target=startfile,args=(f"{APP_PATH}/static/files_hist",)).start()
@@ -287,7 +287,7 @@ def open_files_explorer(json_data:dict):
 
 
 # open a file with default app
-socketio.on("[OPEN_FILE]")
+@socketio.on("[OPEN_FILE]")
 def open_file(json_data:dict):
     
             
@@ -304,7 +304,7 @@ def open_file(json_data:dict):
 
 
 
-socketio.on("[COPY_WIFI_PW]")
+@socketio.on("[COPY_WIFI_PW]")
 def copy_wifi_pw(json_data:dict):
             
 
@@ -322,7 +322,7 @@ def copy_wifi_pw(json_data:dict):
     
 
 # copy text scan content
-socketio.on("[COPY_CONTENT]")
+@socketio.on("[COPY_CONTENT]")
 def copy_text_scan_content(json_data:dict):
             
             
@@ -381,13 +381,6 @@ def change_accepting_uploads(json_data:dict):
 
     else:
         socketio.emit("[NOTIFY_USER]",{"msg":"CopyPasta is now refusing incoming files !"})
-
-# fill up the list of local instances of copypasta available
-@socketio.on("[GET_CP_INSTANCES]")
-def get_cp_instances(json_data:dict):
-    # not finished
-    socketio.emit("[NOTIFY_USER]",{"msg":"str(d_server.discover_instances())"})
-
 
 #processes
 @app.route("/process/<process_id>")

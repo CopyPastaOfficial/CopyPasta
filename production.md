@@ -4,7 +4,7 @@
     - copypasta icon
 
 - nuitka :
-    - python -m nuitka .\copypasta.py --follow-imports --plugin-enable=multiprocessing --onefile --windows-disable-console
+    ```python -m nuitka .\copypasta.py --follow-imports --standalone --windows-disable-console```
 
 ## compile copypasta with pyinstaller :
 
